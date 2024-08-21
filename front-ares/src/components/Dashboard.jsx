@@ -1,4 +1,4 @@
-// src/pages/Dashboard.jsx
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ProduccionGrafica from '../components/Dashboard/produccionGrafica'; // Ajusta la ruta según tu estructura de carpetas
