@@ -85,7 +85,6 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
         fetchFechasProduccion();
     }, [idLote, isUpdateMode, item]);
 
-
     const handleChange = (e) => {
         const { name, value } = e.target;
 
@@ -198,8 +197,12 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
             onClose();
             refreshData();
         } catch (error) {
-            console.error('Error saving/updating classification:', error);
-            alert(`Error al ${isUpdateMode ? 'actualizar' : 'guardar'} la clasificación.`);
+            if (error.response && error.response.data) {
+                alert(`Error al registrar clasificación: ${error.response.data.message || 'Error desconocido.'}`);
+            } else {
+                alert('Error al registrar clasificación.');
+            }
+            console.error('Error al registrar clasificación:', error);
         } finally {
             setLoading(false);
         }
@@ -318,21 +321,40 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                 </form>
             </div>
 
-            <div className="flex-1 p-6 bg-gray-100 rounded shadow-md">
-                <h3 className="text-xl font-bold mb-4">Detalles de Producción</h3>
+            <div className="flex-1 p-6 bg-white rounded shadow-md">
+                <h3 className="text-xl font-bold mb-4 text-gray-700">Detalles de Producción</h3>
                 {selectedProduccion ? (
-                    <>
-                        <p><strong>Fecha Producción:</strong> {new Date(selectedProduccion.fechaProdu).toLocaleDateString()}</p>
-                        <p><strong>Cantidad Total Producción:</strong> {selectedProduccion.cantidadTotalProduccion}</p>
-                        <p><strong>Stock Restante:</strong> {selectedProduccion.stockRestante}</p>
-                        <p><strong>Cajas Restantes:</strong> {selectedProduccion.cajasRestantes}</p>
-                        <p><strong>Cartones Restantes:</strong> {selectedProduccion.cartonesRestantes}</p>
-                        <p><strong>Huevos Sueltos Restantes:</strong> {selectedProduccion.huevosSueltosRestantes}</p>
-                    </>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-gray-50 p-4 rounded-md shadow-sm">
+                            <h4 className="font-semibold text-gray-600 mb-2">Fecha Producción</h4>
+                            <p className="text-gray-800">{new Date(selectedProduccion.fechaProdu).toLocaleDateString()}</p>
+                        </div>
+                        <div className="bg-gray-50 p-4 rounded-md shadow-sm">
+                            <h4 className="font-semibold text-gray-600 mb-2">Cantidad Total Producción</h4>
+                            <p className="text-gray-800">{selectedProduccion.cantidadTotalProduccion}</p>
+                        </div>
+                        <div className="bg-gray-50 p-4 rounded-md shadow-sm">
+                            <h4 className="font-semibold text-gray-600 mb-2">Stock Restante</h4>
+                            <p className="text-gray-800">{selectedProduccion.stockRestante}</p>
+                        </div>
+                        <div className="bg-gray-50 p-4 rounded-md shadow-sm">
+                            <h4 className="font-semibold text-gray-600 mb-2">Cajas Restantes</h4>
+                            <p className="text-gray-800">{selectedProduccion.cajasRestantes}</p>
+                        </div>
+                        <div className="bg-gray-50 p-4 rounded-md shadow-sm">
+                            <h4 className="font-semibold text-gray-600 mb-2">Cartones Restantes</h4>
+                            <p className="text-gray-800">{selectedProduccion.cartonesRestantes}</p>
+                        </div>
+                        <div className="bg-gray-50 p-4 rounded-md shadow-sm">
+                            <h4 className="font-semibold text-gray-600 mb-2">Huevos Sueltos Restantes</h4>
+                            <p className="text-gray-800">{selectedProduccion.huevosSueltosRestantes}</p>
+                        </div>
+                    </div>
                 ) : (
-                    <p>Seleccione una fecha de producción para ver los detalles.</p>
+                    <p className="text-gray-600">Seleccione una fecha de producción para ver los detalles.</p>
                 )}
             </div>
+
         </div>
     );
 };

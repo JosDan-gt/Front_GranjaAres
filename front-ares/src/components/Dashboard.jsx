@@ -98,13 +98,31 @@ const Dashboard = () => {
       </div>
 
       <div className="bg-white shadow-lg rounded-lg p-6 mb-4">
-        <h3 className="text-2xl font-semibold mb-4">Detalles del Lote</h3>
-        <p className="text-lg mb-2"><strong>Producción Total:</strong> {datosLote.produccionTotal || 0} huevos</p>
-        <p className="text-lg mb-2"><strong>Cantidad de Gallinas:</strong> {datosLote.cantidadGallinas || 'No disponible'}</p>
-        <p className="text-lg mb-2"><strong>Cantidad de Gallinas Actual:</strong> {datosLote.cantidadGallinasActual || 'No disponible'}</p>
-        <p className="text-lg mb-2"><strong>Bajas:</strong> {datosLote.bajas != null ? datosLote.bajas : 'No disponible'}</p>
-        <p className="text-lg mb-2"><strong>Raza:</strong> {datosLote.raza || 'No disponible'}</p>
+        <h3 className="text-2xl font-semibold text-gray-700 mb-6">Detalles del Lote</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-gray-50 p-4 rounded-md shadow-sm">
+            <h4 className="font-semibold text-gray-600 mb-2">Producción Total</h4>
+            <p className="text-gray-800">{datosLote.produccionTotal || 0} huevos</p>
+          </div>
+          <div className="bg-gray-50 p-4 rounded-md shadow-sm">
+            <h4 className="font-semibold text-gray-600 mb-2">Cantidad de Gallinas</h4>
+            <p className="text-gray-800">{datosLote.cantidadGallinas || 'No disponible'}</p>
+          </div>
+          <div className="bg-gray-50 p-4 rounded-md shadow-sm">
+            <h4 className="font-semibold text-gray-600 mb-2">Cantidad de Gallinas Actual</h4>
+            <p className="text-gray-800">{datosLote.cantidadGallinasActual || 'No disponible'}</p>
+          </div>
+          <div className="bg-gray-50 p-4 rounded-md shadow-sm">
+            <h4 className="font-semibold text-gray-600 mb-2">Bajas</h4>
+            <p className="text-gray-800">{datosLote.bajas != null ? datosLote.bajas : 'No disponible'}</p>
+          </div>
+          <div className="bg-gray-50 p-4 rounded-md shadow-sm">
+            <h4 className="font-semibold text-gray-600 mb-2">Raza</h4>
+            <p className="text-gray-800">{datosLote.raza || 'No disponible'}</p>
+          </div>
+        </div>
       </div>
+
 
       <ProduccionGrafica
         produccionDiaria={produccionDiaria}
