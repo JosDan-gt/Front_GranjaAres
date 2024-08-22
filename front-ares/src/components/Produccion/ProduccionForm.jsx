@@ -94,89 +94,101 @@ const ProduccionForm = ({ item, idLote, onClose, refreshData }) => {
   };
 
   return (
-    <div className="p-4 bg-white border border-gray-200 rounded shadow-md">
-      <h3 className="text-xl font-semibold mb-4">{formData.idProd ? 'Actualizar Producción' : 'Agregar Producción'}</h3>
+    <div className="p-6 bg-white shadow-lg rounded-lg max-w-full w-full">
+      <h3 className="text-3xl font-bold text-gray-800 mb-6">
+        {formData.idProd ? 'Actualizar Producción' : 'Agregar Producción'}
+      </h3>
       <form onSubmit={handleSubmit}>
-        <div className="flex gap-4 mb-4">
-          <div className="flex flex-col w-1/6">
-            <label className="text-sm font-medium mb-1">Cajas</label>
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
+          <div className="col-span-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Cajas</label>
             <input
               type="number"
               name="cantCajas"
               value={formData.cantCajas}
               onChange={handleChange}
               placeholder="Cajas"
-              className="p-2 border border-gray-300 rounded text-sm"
+              className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               min="0"
             />
-            {errors.cantCajas && <p className="text-red-500 text-xs mt-1">{errors.cantCajas}</p>}
+            {errors.cantCajas && <p className="text-red-500 text-xs mt-2">{errors.cantCajas}</p>}
           </div>
 
-          <div className="flex flex-col w-1/6">
-            <label className="text-sm font-medium mb-1">Cartones</label>
+          <div className="col-span-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Cartones</label>
             <input
               type="number"
               name="cantCartones"
               value={formData.cantCartones}
               onChange={handleChange}
               placeholder="Cartones"
-              className="p-2 border border-gray-300 rounded text-sm"
+              className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               min="0"
             />
-            {errors.cantCartones && <p className="text-red-500 text-xs mt-1">{errors.cantCartones}</p>}
+            {errors.cantCartones && <p className="text-red-500 text-xs mt-2">{errors.cantCartones}</p>}
           </div>
 
-          <div className="flex flex-col w-1/6">
-            <label className="text-sm font-medium mb-1">Sueltos</label>
+          <div className="col-span-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Sueltos</label>
             <input
               type="number"
               name="cantSueltos"
               value={formData.cantSueltos}
               onChange={handleChange}
               placeholder="Sueltos"
-              className="p-2 border border-gray-300 rounded text-sm"
+              className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               min="0"
             />
-            {errors.cantSueltos && <p className="text-red-500 text-xs mt-1">{errors.cantSueltos}</p>}
+            {errors.cantSueltos && <p className="text-red-500 text-xs mt-2">{errors.cantSueltos}</p>}
           </div>
 
-          <div className="flex flex-col w-1/6">
-            <label className="text-sm font-medium mb-1">Defectuosos</label>
+          <div className="col-span-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Defectuosos</label>
             <input
               type="number"
               name="defectuosos"
               value={formData.defectuosos}
               onChange={handleChange}
               placeholder="Defectuosos"
-              className="p-2 border border-gray-300 rounded text-sm"
+              className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               min="0"
             />
-            {errors.defectuosos && <p className="text-red-500 text-xs mt-1">{errors.defectuosos}</p>}
+            {errors.defectuosos && <p className="text-red-500 text-xs mt-2">{errors.defectuosos}</p>}
           </div>
 
-          <div className="flex flex-col w-1/6">
-            <label className="text-sm font-medium mb-1">Fecha de Registro</label>
+          <div className="col-span-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Fecha de Registro</label>
             <input
               type="date"
               name="fechaRegistroP"
               value={formData.fechaRegistroP}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded text-sm"
+              className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
-            {errors.fechaRegistroP && <p className="text-red-500 text-xs mt-1">{errors.fechaRegistroP}</p>}
+            {errors.fechaRegistroP && <p className="text-red-500 text-xs mt-2">{errors.fechaRegistroP}</p>}
           </div>
         </div>
-        <div className="mt-4">
-          <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded mr-2" disabled={loading}>
+
+        <div className="flex justify-end mt-6 space-x-3">
+          <button
+            type="submit"
+            className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-300"
+            disabled={loading}
+          >
             {formData.idProd ? 'Actualizar' : 'Agregar'}
           </button>
-          <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-500 text-white rounded">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-6 py-3 bg-gray-600 text-white font-semibold rounded-lg shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-colors duration-300"
+          >
             Cancelar
           </button>
         </div>
       </form>
     </div>
   );
+
 };
 
 export default ProduccionForm;

@@ -12,12 +12,10 @@ const Sidebar = () => {
         <li>
           <Link to="/lotes" className="block p-2 hover:bg-gray-700">Lotes</Link>
         </li>
-        {/* Comenta o elimina esta línea para quitar la opción de Producción
         <li>
-          <Link to="/produccion" className="block p-2 hover:bg-gray-700">Producción</Link>
+          <Link to="/corrales" className="block p-2 hover:bg-gray-700">Corrales</Link>
         </li>
-        */}
-        {/* Agrega otras opciones del menú aquí */}
+        
       </ul>
     </nav>
   );

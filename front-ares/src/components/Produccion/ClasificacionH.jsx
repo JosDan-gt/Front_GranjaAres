@@ -5,6 +5,7 @@ import { FaSortUp, FaSortDown } from 'react-icons/fa';
 import ClasificacionForm from './ClasificacionForm';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useLocation } from 'react-router-dom';
 
 const ClasificacionH = () => {
   const { id } = useParams();
@@ -16,10 +17,14 @@ const ClasificacionH = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const location = useLocation();
+  const { estadoBaja } = location.state || {};
 
-  // Estados para el rango de fechas y la búsqueda por fecha específica
+  
   const [dateRange, setDateRange] = useState([null, null]);
-  const [selectedDateType, setSelectedDateType] = useState('fechaClaS'); // 'fechaClaS' o 'fechaRegistroP'
+  const [selectedDateType, setSelectedDateType] = useState('fechaClaS');
+
+  const isDisabled = estadoBaja !== undefined ? estadoBaja : false;
 
   const refreshData = async () => {
     setLoading(true);
@@ -99,29 +104,27 @@ const ClasificacionH = () => {
   };
 
   return (
-    <div className="p-4 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-semibold mb-4">Clasificación de Huevos</h2>
-
-      {/* Formulario de búsqueda en diseño horizontal */}
-
+    <div className="p-6 bg-white shadow-lg rounded-lg max-w-full w-full">
+      <h2 className="text-3xl font-bold text-gray-800 mb-6">Clasificación de Huevos</h2>
 
       <button
-        onClick={() => setShowForm(!showForm)}
-        className="px-4 py-2 bg-green-500 text-white rounded mb-4"
+        disabled={isDisabled}
+        onClick={handleAddClick}
+        className={`px-6 py-3 text-white font-semibold rounded-lg transition-colors duration-300 ${isDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} mb-6`}
       >
-        {showForm ? '-' : '+'}
+        {showForm ? 'Ocultar Formulario' : 'Agregar Nueva Clasificación'}
       </button>
 
       {showForm && (
         <ClasificacionForm
+          key={selectedItem ? selectedItem.id : 'new'}
           item={selectedItem}
           idLote={id}
           onClose={handleCloseForm}
           refreshData={refreshData}
-          isUpdateMode={selectedItem !== null} // true si hay un item seleccionado, false si no
+          isUpdateMode={selectedItem !== null}
         />
       )}
-
 
       <div className="flex flex-wrap items-center space-x-4 mb-4 mt-5">
         <input
@@ -132,7 +135,6 @@ const ClasificacionH = () => {
           className="px-4 py-2 border rounded"
         />
 
-        {/* Selector para tipo de fecha */}
         <select
           value={selectedDateType}
           onChange={handleDateTypeChange}
@@ -142,7 +144,6 @@ const ClasificacionH = () => {
           <option value="fechaRegistroP">Fecha de Producción</option>
         </select>
 
-        {/* Calendario de rango de fechas */}
         <div className="flex items-center space-x-2">
           <DatePicker
             selectsRange
@@ -160,87 +161,84 @@ const ClasificacionH = () => {
         <p className="text-gray-700">Cargando datos...</p>
       ) : filteredData.length > 0 ? (
         <>
-          <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-            <thead className="bg-gray-100 text-gray-700">
-              <tr>
-                <th className="py-2 px-4 border-b border-gray-300 text-left">Tamaño</th>
-                <th className="py-2 px-4 border-b border-gray-300 text-left">Cajas</th>
-                <th className="py-2 px-4 border-b border-gray-300 text-left">Cartones Extra</th>
-                <th className="py-2 px-4 border-b border-gray-300 text-left">Huevos Sueltos</th>
-                <th className="py-2 px-4 border-b border-gray-300 text-left">Cantidad Total</th>
-                <th className="py-2 px-4 border-b border-gray-300 text-left">
-                  <div className="flex items-center">
-                    Fecha de Clasificación
-                    <button
-                      onClick={handleSortChange}
-                      className="ml-2 text-gray-600 flex items-center"
-                    >
-                      {sortOrder === 'asc' ? <FaSortUp /> : <FaSortDown />}
-                    </button>
-                  </div>
-                </th>
-                <th className="py-2 px-4 border-b border-gray-300 text-left">Fecha de Producción</th>
-                <th className="py-2 px-4 border-b border-gray-300 text-left">Acciones</th>
-              </tr>
-            </thead>
-            <tbody className="text-gray-700">
-              {currentItems.map((item, index) => (
-                <tr
-                  key={index}
-                  className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}
-                >
-                  <td className="py-2 px-4 border-b border-gray-300">{item.tamano}</td>
-                  <td className="py-2 px-4 border-b border-gray-300">{item.cajas}</td>
-                  <td className="py-2 px-4 border-b border-gray-300">{item.cartonesExtras}</td>
-                  <td className="py-2 px-4 border-b border-gray-300">{item.huevosSueltos}</td>
-                  <td className="py-2 px-4 border-b border-gray-300">{item.totalUnitaria}</td>
-                  <td className="py-2 px-4 border-b border-gray-300">
-                    {item.fechaClaS
-                      ? new Date(item.fechaClaS).toLocaleDateString()
-                      : 'Sin fecha'}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-300">
-                    {item.fechaRegistroP
-                      ? new Date(item.fechaRegistroP).toLocaleDateString()
-                      : 'Sin fecha'}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-300">
-                    <button
-                      onClick={() => handleEditClick(item)}
-                      className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-                    >
-                      Editar
-                    </button>
-                  </td>
+          <div className="w-full overflow-x-auto">
+            <table className="w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Tamaño</th>
+                  <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Cajas</th>
+                  <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Cartones Extra</th>
+                  <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Huevos Sueltos</th>
+                  <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Cantidad Total</th>
+                  <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">
+                    <div className="flex items-center">
+                      Fecha de Clasificación
+                      <button
+                        onClick={handleSortChange}
+                        className="ml-2 text-gray-600 flex items-center"
+                      >
+                        {sortOrder === 'asc' ? '▲' : '▼'}
+                      </button>
+                    </div>
+                  </th>
+                  <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Fecha de Producción</th>
+                  <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Acciones</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="mt-4 flex justify-between items-center">
+              </thead>
+              <tbody className="text-gray-600">
+                {currentItems.map((item, index) => (
+                  <tr
+                    key={index}
+                    className={`border-b border-gray-200 hover:bg-gray-50 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}
+                  >
+                    <td className="py-3 px-6 whitespace-nowrap">{item.tamano}</td>
+                    <td className="py-3 px-6 whitespace-nowrap">{item.cajas}</td>
+                    <td className="py-3 px-6 whitespace-nowrap">{item.cartonesExtras}</td>
+                    <td className="py-3 px-6 whitespace-nowrap">{item.huevosSueltos}</td>
+                    <td className="py-3 px-6 whitespace-nowrap">{item.totalUnitaria}</td>
+                    <td className="py-3 px-6 whitespace-nowrap">{item.fechaClaS ? new Date(item.fechaClaS).toLocaleDateString() : 'Sin fecha'}</td>
+                    <td className="py-3 px-6 whitespace-nowrap">{item.fechaRegistroP ? new Date(item.fechaRegistroP).toLocaleDateString() : 'Sin fecha'}</td>
+                    <td className="py-3 px-6 whitespace-nowrap">
+                      <button
+                        onClick={() => handleEditClick(item)}
+                        className="px-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition-colors duration-300"
+                      >
+                        Editar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="flex justify-between items-center mt-6">
             <button
               onClick={() => paginate(currentPage - 1)}
               disabled={currentPage === 1}
-              className="px-4 py-2 bg-blue-500 text-white rounded mr-2 hover:bg-blue-600 disabled:bg-blue-300"
+              className="px-6 py-3 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-colors duration-300"
             >
               Anterior
             </button>
-            <span className="text-gray-700">
+
+            <span className="text-lg text-gray-700">
               Página {currentPage} de {Math.ceil(filteredData.length / itemsPerPage)}
             </span>
+
             <button
               onClick={() => paginate(currentPage + 1)}
               disabled={currentPage * itemsPerPage >= filteredData.length}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-blue-300"
+              className="px-6 py-3 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-colors duration-300"
             >
               Siguiente
             </button>
           </div>
         </>
       ) : (
-        <p className="text-gray-700">No hay datos disponibles.</p>
+        <p className="text-gray-600 text-lg">No hay datos disponibles.</p>
       )}
     </div>
   );
+
 };
 
 export default ClasificacionH;

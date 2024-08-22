@@ -1,4 +1,3 @@
-// src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header.jsx';
@@ -8,7 +7,9 @@ import Dashboard from './components/Dashboard.jsx';
 import ProduccionG from './components/Produccion/ProduccionG.jsx';
 import Lote from './components/Lote/Lote.jsx';
 import ClasificacionH from './components/Produccion/ClasificacionH.jsx';
-import { ErrorProvider } from './components/Error/ErrorContext.jsx'; // Importa el ErrorProvider
+import EstadoLote from './components/EstadoLote/EstadoLote.jsx'; // Importa EstadoLote
+import { ErrorProvider } from './components/Error/ErrorContext.jsx';
+import Corral from './components/Corral/Corral.jsx';
 
 function App() {
   return (
@@ -24,6 +25,8 @@ function App() {
                 <Route path="/lotes" element={<Lote />} />
                 <Route path="/produccion/:idLote" element={<ProduccionG />} />
                 <Route path="/clasificacion/:id" element={<ClasificacionH />} />
+                <Route path="/estado/:idLote" element={<EstadoLote />} />
+                <Route path='/corrales' element={<Corral />} />
               </Routes>
             </main>
           </div>

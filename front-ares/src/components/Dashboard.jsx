@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import ProduccionGrafica from '../components/Dashboard/produccionGrafica'; // Ajusta la ruta según tu estructura de carpetas
+import ProduccionGrafica from '../components/Dashboard/produccionGrafica';
 
 const Dashboard = () => {
   const [lotes, setLotes] = useState([]);
@@ -10,8 +9,8 @@ const Dashboard = () => {
   const [produccionDiaria, setProduccionDiaria] = useState([]);
   const [produccionSemanal, setProduccionSemanal] = useState([]);
   const [produccionMensual, setProduccionMensual] = useState([]);
+  const [loading, setLoading] = useState(true);  // Añadido para gestionar el estado de carga
 
-  // Función para obtener lotes
   useEffect(() => {
     const fetchLotes = async () => {
       try {
@@ -23,13 +22,14 @@ const Dashboard = () => {
         }
       } catch (error) {
         console.error('Error fetching lotes:', error);
+      } finally {
+        setLoading(false);  // Finaliza el estado de carga
       }
     };
 
     fetchLotes();
   }, []);
 
-  // Función para obtener datos del lote seleccionado
   useEffect(() => {
     if (loteActual !== null) {
       const fetchLoteData = async () => {
@@ -45,7 +45,6 @@ const Dashboard = () => {
     }
   }, [loteActual]);
 
-  // Función para obtener la producción
   useEffect(() => {
     if (loteActual !== null) {
       const fetchProduccion = async (periodo) => {
@@ -75,8 +74,20 @@ const Dashboard = () => {
     }
   }, [loteActual]);
 
-  if (!lotes.length) return <div>Cargando lotes...</div>;
-  if (!datosLote) return <div>Cargando datos del lote...</div>;
+  if (loading) return <div className="text-center text-gray-500 mt-20">Cargando lotes...</div>;
+
+  if (!lotes.length) {
+    return (
+      <div className="flex items-center justify-center h-full text-center">
+        <div>
+          <h2 className="text-xl font-bold text-gray-600">No hay lotes disponibles</h2>
+          <p className="text-gray-500">Agrega un nuevo lote para comenzar a ver los datos.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!datosLote) return <div className="text-center text-gray-500 mt-20">Cargando datos del lote...</div>;
 
   return (
     <div className="p-4">
@@ -122,7 +133,6 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-
 
       <ProduccionGrafica
         produccionDiaria={produccionDiaria}

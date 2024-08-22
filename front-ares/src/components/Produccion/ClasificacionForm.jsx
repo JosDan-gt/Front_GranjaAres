@@ -209,80 +209,80 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
     };
 
     return (
-        <div className="flex space-x-6 p-6 bg-white rounded shadow-md">
+        <div className="flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6 p-6 bg-white rounded-lg shadow-md">
             <div className="flex-1">
-                <h2 className="text-2xl font-bold mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-6">
                     {isUpdateMode ? 'Actualizar Clasificación' : 'Registrar Clasificación'}
                 </h2>
                 <form onSubmit={handleSubmit}>
-                    <div className="grid grid-cols-6 gap-4">
-                        <div className="col-span-6 sm:col-span-3">
-                            <label className="text-sm font-medium">Tamaño</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div className="col-span-1">
+                            <label className="text-sm font-medium text-gray-700">Tamaño</label>
                             <input
                                 type="text"
                                 name="tamano"
                                 value={formData.tamano}
                                 onChange={handleChange}
-                                className="w-full p-2 border border-gray-300 rounded text-sm"
+                                className="w-full p-2 mt-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             />
                             {errors.tamano && <p className="text-red-500 text-xs mt-1">{errors.tamano}</p>}
                         </div>
 
-                        <div className="col-span-6 sm:col-span-3">
-                            <label className="text-sm font-medium">Cajas</label>
+                        <div className="col-span-1">
+                            <label className="text-sm font-medium text-gray-700">Cajas</label>
                             <input
                                 type="number"
                                 name="cajas"
                                 value={formData.cajas}
                                 onChange={handleChange}
-                                className="w-full p-2 border border-gray-300 rounded text-sm"
+                                className="w-full p-2 mt-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             />
                             {errors.cajas && <p className="text-red-500 text-xs mt-1">{errors.cajas}</p>}
                         </div>
 
-                        <div className="col-span-6 sm:col-span-3">
-                            <label className="text-sm font-medium">Cartones Extras</label>
+                        <div className="col-span-1">
+                            <label className="text-sm font-medium text-gray-700">Cartones Extras</label>
                             <input
                                 type="number"
                                 name="cartonesExtras"
                                 value={formData.cartonesExtras}
                                 onChange={handleChange}
-                                className="w-full p-2 border border-gray-300 rounded text-sm"
+                                className="w-full p-2 mt-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             />
                             {errors.cartonesExtras && <p className="text-red-500 text-xs mt-1">{errors.cartonesExtras}</p>}
                         </div>
 
-                        <div className="col-span-6 sm:col-span-3">
-                            <label className="text-sm font-medium">Huevos Sueltos</label>
+                        <div className="col-span-1">
+                            <label className="text-sm font-medium text-gray-700">Huevos Sueltos</label>
                             <input
                                 type="number"
                                 name="huevosSueltos"
                                 value={formData.huevosSueltos}
                                 onChange={handleChange}
-                                className="w-full p-2 border border-gray-300 rounded text-sm"
+                                className="w-full p-2 mt-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             />
                             {errors.huevosSueltos && <p className="text-red-500 text-xs mt-1">{errors.huevosSueltos}</p>}
                         </div>
 
-                        <div className="col-span-6 sm:col-span-3">
-                            <label className="text-sm font-medium">Fecha Clasificación</label>
+                        <div className="col-span-1">
+                            <label className="text-sm font-medium text-gray-700">Fecha Clasificación</label>
                             <input
                                 type="date"
                                 name="fechaClaS"
                                 value={formData.fechaClaS}
                                 onChange={handleChange}
-                                className="w-full p-2 border border-gray-300 rounded text-sm"
+                                className="w-full p-2 mt-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             />
                             {errors.fechaClaS && <p className="text-red-500 text-xs mt-1">{errors.fechaClaS}</p>}
                         </div>
 
-                        <div className="col-span-6 sm:col-span-3">
-                            <label className="text-sm font-medium">Fecha Producción</label>
+                        <div className="col-span-1">
+                            <label className="text-sm font-medium text-gray-700">Fecha Producción</label>
                             <select
                                 name="fechaProdu"
                                 value={formData.fechaProdu}
                                 onChange={handleFechaProduChange}
-                                className="w-full p-2 border border-gray-300 rounded text-sm"
+                                className="w-full p-2 mt-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             >
                                 <option value="">Seleccione una fecha</option>
                                 {fechasProduccion.map((fecha) => (
@@ -295,25 +295,25 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                         </div>
                     </div>
 
-                    <div className="flex justify-end mt-4 space-x-2">
+                    <div className="flex justify-end mt-6 space-x-3">
                         <button
                             type="button"
                             onClick={handleReset}
-                            className="px-4 py-2 bg-yellow-500 text-white rounded"
+                            className="px-4 py-2 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50"
                         >
                             Limpiar
                         </button>
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 bg-gray-500 text-white rounded"
+                            className="px-4 py-2 bg-gray-500 text-white font-semibold rounded-lg shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="px-4 py-2 bg-blue-500 text-white rounded"
+                            className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                         >
                             {loading ? 'Guardando...' : isUpdateMode ? 'Actualizar' : 'Guardar'}
                         </button>
@@ -321,10 +321,10 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                 </form>
             </div>
 
-            <div className="flex-1 p-6 bg-white rounded shadow-md">
+            <div className="flex-1 p-6 bg-white rounded-lg shadow-md">
                 <h3 className="text-xl font-bold mb-4 text-gray-700">Detalles de Producción</h3>
                 {selectedProduccion ? (
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div className="bg-gray-50 p-4 rounded-md shadow-sm">
                             <h4 className="font-semibold text-gray-600 mb-2">Fecha Producción</h4>
                             <p className="text-gray-800">{new Date(selectedProduccion.fechaProdu).toLocaleDateString()}</p>
@@ -354,9 +354,9 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                     <p className="text-gray-600">Seleccione una fecha de producción para ver los detalles.</p>
                 )}
             </div>
-
         </div>
     );
+
 };
 
 export default ClasificacionForm;
