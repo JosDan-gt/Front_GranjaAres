@@ -32,14 +32,15 @@ const ProduccionForm = ({ item, idLote, onClose, refreshData }) => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.cantCajas) newErrors.cantCajas = 'Este campo es obligatorio.';
-    if (!formData.cantCartones) newErrors.cantCartones = 'Este campo es obligatorio.';
-    if (!formData.cantSueltos) newErrors.cantSueltos = 'Este campo es obligatorio.';
-    if (!formData.defectuosos) newErrors.defectuosos = 'Este campo es obligatorio.';
+    if (formData.cantCajas === '') newErrors.cantCajas = 'Este campo es obligatorio.';
+    if (formData.cantCartones === '') newErrors.cantCartones = 'Este campo es obligatorio.';
+    if (formData.cantSueltos === '') newErrors.cantSueltos = 'Este campo es obligatorio.';
+    if (formData.defectuosos === '') newErrors.defectuosos = 'Este campo es obligatorio.';
     if (!formData.fechaRegistroP) newErrors.fechaRegistroP = 'Este campo es obligatorio.';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();

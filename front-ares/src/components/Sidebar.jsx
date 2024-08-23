@@ -15,6 +15,10 @@ const Sidebar = () => {
         <li>
           <Link to="/corrales" className="block p-2 hover:bg-gray-700">Corrales</Link>
         </li>
+        <li>
+          <Link to="/gestion" className="block p-2 hover:bg-gray-700">Gestion de Lotes</Link>
+        </li>
+
         
       </ul>
     </nav>

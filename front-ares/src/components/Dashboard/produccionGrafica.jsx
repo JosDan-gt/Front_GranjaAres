@@ -15,7 +15,7 @@ ChartJS.register(
   Filler
 );
 
-const ProduccionGrafica = ({ produccionDiaria, produccionSemanal, produccionMensual }) => {
+const ProduccionGrafica = ({ produccionDiaria, produccionSemanal, produccionMensual, clasificacionDiaria, clasificacionSemanal, clasificacionMensual }) => {
   
   const weekToDate = (weekNumber) => {
     const startOfYear = new Date(new Date().getFullYear(), 0, 1);
@@ -23,7 +23,7 @@ const ProduccionGrafica = ({ produccionDiaria, produccionSemanal, produccionMens
     return startOfWeek;
   };
 
-  const processData = (data, type) => {
+  const processData = (data, type, label) => {
     const labels = data.map(entry => {
       if (type === 'diario') {
         return new Date(entry.fechaRegistro);
@@ -39,13 +39,13 @@ const ProduccionGrafica = ({ produccionDiaria, produccionSemanal, produccionMens
       labels,
       datasets: [
         {
-          label: `Producción ${type.charAt(0).toUpperCase() + type.slice(1)}`,
+          label: `${label} ${type.charAt(0).toUpperCase() + type.slice(1)}`,
           data: data.map(entry => ({
             x: type === 'diario' || type === 'mensual' ? new Date(entry.fechaRegistro) : weekToDate(parseInt(entry.fechaRegistro.replace('Semana ', ''), 10)),
-            y: entry.produccion
+            y: entry.produccion || entry.totalUnitaria // Usar el campo correcto según el contexto
           })),
-          borderColor: 'rgba(75, 192, 192, 1)',
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: label === 'Producción' ? 'rgba(75, 192, 192, 1)' : 'rgba(153, 102, 255, 1)',
+          backgroundColor: label === 'Producción' ? 'rgba(75, 192, 192, 0.2)' : 'rgba(153, 102, 255, 0.2)',
           borderWidth: 2,
           fill: true,
         },
@@ -53,9 +53,13 @@ const ProduccionGrafica = ({ produccionDiaria, produccionSemanal, produccionMens
     };
   };
 
-  const dataDiaria = processData(produccionDiaria, 'diario');
-  const dataSemanal = processData(produccionSemanal, 'semanal');
-  const dataMensual = processData(produccionMensual, 'mensual');
+  const dataProduccionDiaria = processData(produccionDiaria, 'diario', 'Producción');
+  const dataProduccionSemanal = processData(produccionSemanal, 'semanal', 'Producción');
+  const dataProduccionMensual = processData(produccionMensual, 'mensual', 'Producción');
+
+  const dataClasificacionDiaria = processData(clasificacionDiaria, 'diario', 'Clasificación');
+  const dataClasificacionSemanal = processData(clasificacionSemanal, 'semanal', 'Clasificación');
+  const dataClasificacionMensual = processData(clasificacionMensual, 'mensual', 'Clasificación');
 
   const options = {
     responsive: true,
@@ -66,7 +70,7 @@ const ProduccionGrafica = ({ produccionDiaria, produccionSemanal, produccionMens
       },
       title: {
         display: true,
-        text: 'Producción',
+        text: 'Producción y Clasificación',
       },
     },
     scales: {
@@ -84,7 +88,7 @@ const ProduccionGrafica = ({ produccionDiaria, produccionSemanal, produccionMens
       y: {
         title: {
           display: true,
-          text: 'Producción',
+          text: 'Cantidad',
         },
       },
     },
@@ -94,15 +98,28 @@ const ProduccionGrafica = ({ produccionDiaria, produccionSemanal, produccionMens
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <div className="bg-white shadow-lg rounded-lg p-6 h-[400px] overflow-hidden">
         <h3 className="text-xl font-semibold mb-4">Producción Diaria</h3>
-        <Line data={dataDiaria} options={options} />
+        <Line data={dataProduccionDiaria} options={options} />
       </div>
       <div className="bg-white shadow-lg rounded-lg p-6 h-[400px] overflow-hidden">
         <h3 className="text-xl font-semibold mb-4">Producción Semanal</h3>
-        <Line data={dataSemanal} options={options} />
+        <Line data={dataProduccionSemanal} options={options} />
       </div>
       <div className="bg-white shadow-lg rounded-lg p-6 h-[400px] overflow-hidden">
         <h3 className="text-xl font-semibold mb-4">Producción Mensual</h3>
-        <Line data={dataMensual} options={options} />
+        <Line data={dataProduccionMensual} options={options} />
+      </div>
+
+      <div className="bg-white shadow-lg rounded-lg p-6 h-[400px] overflow-hidden">
+        <h3 className="text-xl font-semibold mb-4">Clasificación Diaria</h3>
+        <Line data={dataClasificacionDiaria} options={options} />
+      </div>
+      <div className="bg-white shadow-lg rounded-lg p-6 h-[400px] overflow-hidden">
+        <h3 className="text-xl font-semibold mb-4">Clasificación Semanal</h3>
+        <Line data={dataClasificacionSemanal} options={options} />
+      </div>
+      <div className="bg-white shadow-lg rounded-lg p-6 h-[400px] overflow-hidden">
+        <h3 className="text-xl font-semibold mb-4">Clasificación Mensual</h3>
+        <Line data={dataClasificacionMensual} options={options} />
       </div>
     </div>
   );

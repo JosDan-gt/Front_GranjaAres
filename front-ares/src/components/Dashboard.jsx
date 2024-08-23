@@ -9,7 +9,10 @@ const Dashboard = () => {
   const [produccionDiaria, setProduccionDiaria] = useState([]);
   const [produccionSemanal, setProduccionSemanal] = useState([]);
   const [produccionMensual, setProduccionMensual] = useState([]);
-  const [loading, setLoading] = useState(true);  // Añadido para gestionar el estado de carga
+  const [clasificacionDiaria, setClasificacionDiaria] = useState([]);
+  const [clasificacionSemanal, setClasificacionSemanal] = useState([]);
+  const [clasificacionMensual, setClasificacionMensual] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchLotes = async () => {
@@ -23,7 +26,7 @@ const Dashboard = () => {
       } catch (error) {
         console.error('Error fetching lotes:', error);
       } finally {
-        setLoading(false);  // Finaliza el estado de carga
+        setLoading(false);
       }
     };
 
@@ -71,6 +74,36 @@ const Dashboard = () => {
       fetchProduccion('diario');
       fetchProduccion('semanal');
       fetchProduccion('mensual');
+    }
+  }, [loteActual]);
+
+  
+  useEffect(() => {
+    if (loteActual !== null) {
+      const fetchClasificacion = async (periodo) => {
+        try {
+          const response = await axios.get(`https://localhost:7249/api/dashboard/clasificacion/${loteActual}/${periodo}`);
+          switch (periodo) {
+            case 'diario':
+              setClasificacionDiaria(response.data);
+              break;
+            case 'semanal':
+              setClasificacionSemanal(response.data);
+              break;
+            case 'mensual':
+              setClasificacionMensual(response.data);
+              break;
+            default:
+              break;
+          }
+        } catch (error) {
+          console.error(`Error fetching clasificación ${periodo}:`, error);
+        }
+      };
+
+      fetchClasificacion('diario');
+      fetchClasificacion('semanal');
+      fetchClasificacion('mensual');
     }
   }, [loteActual]);
 
@@ -138,6 +171,9 @@ const Dashboard = () => {
         produccionDiaria={produccionDiaria}
         produccionSemanal={produccionSemanal}
         produccionMensual={produccionMensual}
+        clasificacionDiaria={clasificacionDiaria}
+        clasificacionSemanal={clasificacionSemanal}
+        clasificacionMensual={clasificacionMensual}
       />
     </div>
   );

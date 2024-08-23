@@ -10,6 +10,7 @@ import ClasificacionH from './components/Produccion/ClasificacionH.jsx';
 import EstadoLote from './components/EstadoLote/EstadoLote.jsx'; // Importa EstadoLote
 import { ErrorProvider } from './components/Error/ErrorContext.jsx';
 import Corral from './components/Corral/Corral.jsx';
+import GestionLote from './components/GestionLote.jsx';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
                 <Route path="/clasificacion/:id" element={<ClasificacionH />} />
                 <Route path="/estado/:idLote" element={<EstadoLote />} />
                 <Route path='/corrales' element={<Corral />} />
+                <Route path='/gestion' element={<GestionLote />} />
               </Routes>
             </main>
           </div>

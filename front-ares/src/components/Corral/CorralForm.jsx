@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
     const [formData, setFormData] = useState({
+        idCorral: corralData?.idCorral || '',
         numCorral: corralData?.numCorral || '',
         capacidad: corralData?.capacidad || '',
         alto: corralData?.alto || '',
@@ -16,6 +17,24 @@ const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
     });
 
     const [errors, setErrors] = useState({});
+
+    useEffect(() => {
+        if (corralData) {
+            setFormData({
+                idCorral: corralData.idCorral,
+                numCorral: corralData.numCorral,
+                capacidad: corralData.capacidad,
+                alto: corralData.alto,
+                ancho: corralData.ancho,
+                largo: corralData.largo,
+                agua: corralData.agua,
+                comederos: corralData.comederos,
+                bebederos: corralData.bebederos,
+                ponederos: corralData.ponederos,
+                estado: corralData.estado,
+            });
+        }
+    }, [corralData]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -57,15 +76,33 @@ const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
                 const url = isEditing ? `https://localhost:7249/putcorral` : `https://localhost:7249/postcorral`;
                 const method = isEditing ? 'put' : 'post';
 
-                console.log('Datos enviados:', formData);
+                // Construye el payload sin incluir `idCorral` si no está definido o es una cadena vacía
+                const payload = {
+                    numCorral: formData.numCorral,
+                    capacidad: parseInt(formData.capacidad, 10),
+                    alto: parseInt(formData.alto, 10),
+                    ancho: parseInt(formData.ancho, 10),
+                    largo: parseInt(formData.largo, 10),
+                    agua: formData.agua,
+                    comederos: parseInt(formData.comederos, 10),
+                    bebederos: parseInt(formData.bebederos, 10),
+                    ponederos: parseInt(formData.ponederos, 10),
+                    estado: formData.estado
+                };
 
-                await axios[method](url, formData, {
+                // Solo agrega `idCorral` si se está actualizando un corral existente y `idCorral` tiene un valor
+                if (isEditing && formData.idCorral) {
+                    payload.idCorral = formData.idCorral;
+                }
+
+                console.log('Datos enviados:', payload);
+
+                await axios[method](url, payload, {
                     headers: { 'Content-Type': 'application/json' }
                 });
 
                 alert(`Corral ${isEditing ? 'actualizado' : 'creado'} exitosamente`);
 
-                // Verifica que onSubmit esté definido antes de ejecutarlo
                 if (onSubmit) {
                     onSubmit();
                 }
@@ -80,6 +117,7 @@ const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
 
     const handleClear = () => {
         setFormData({
+            idCorral: '',
             numCorral: '',
             capacidad: '',
             alto: '',

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const LoteForm = ({ loteData, razas, corrales, lotes, isEditing, onCancel, onSubmit, idLote }) => {
+const LoteForm = ({ loteData, razas, lotes, isEditing, onCancel, onSubmit, idLote }) => {
   const [formData, setFormData] = useState({
     idLote: '',
     numLote: '',
@@ -10,6 +10,7 @@ const LoteForm = ({ loteData, razas, corrales, lotes, isEditing, onCancel, onSub
     fechaAdq: '',
     idCorral: '',
   });
+  const [corrales, setCorrales] = useState([]); // Almacena los corrales aquí
   const [errors, setErrors] = useState({});
   const [estadoLoteExists, setEstadoLoteExists] = useState(false);
 
@@ -24,6 +25,17 @@ const LoteForm = ({ loteData, razas, corrales, lotes, isEditing, onCancel, onSub
       fechaAdq: '',
       idCorral: '',
     });
+
+    const fetchCorrales = async () => {
+      try {
+        const response = await axios.get('https://localhost:7249/getcorral');
+        const corralesHabilitados = response.data.filter(corral => corral.estado === true); // Filtra por estado habilitado (true)
+        setCorrales(corralesHabilitados);
+        console.log('Corrales habilitados:', corralesHabilitados); // Verifica que se están cargando los corrales habilitados
+      } catch (error) {
+        console.error('Error al obtener corrales:', error);
+      }
+    };
 
     const fetchEstadoLote = async () => {
       if (idLote) {
@@ -43,6 +55,7 @@ const LoteForm = ({ loteData, razas, corrales, lotes, isEditing, onCancel, onSub
       }
     };
 
+    fetchCorrales();
     fetchEstadoLote();
   }, [loteData, idLote]);
 
@@ -181,15 +194,16 @@ const LoteForm = ({ loteData, razas, corrales, lotes, isEditing, onCancel, onSub
               required
             >
               <option value="" disabled>Seleccione un corral</option>
-              {corrales.map((corral) => (
-                <option
-                  key={corral.idCorral}
-                  value={corral.idCorral}
-                  disabled={isCorralInUse(corral.idCorral) && corral.idCorral !== formData.idCorral}
-                >
-                  {corral.numCorral} {isCorralInUse(corral.idCorral) ? '(En uso)' : ''}
-                </option>
-              ))}
+              {corrales
+                .map((corral) => (
+                  <option
+                    key={corral.idCorral}
+                    value={corral.idCorral}
+                    disabled={isCorralInUse(corral.idCorral) && corral.idCorral !== formData.idCorral}
+                  >
+                    {corral.numCorral} {isCorralInUse(corral.idCorral) ? '(En uso)' : ''}
+                  </option>
+                ))}
             </select>
             {errors.idCorral && <p className="text-red-500 text-xs mt-1">{errors.idCorral}</p>}
           </div>
