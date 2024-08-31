@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance';
 import { Line } from 'react-chartjs-2';
 import { Document, Page, Text, View, StyleSheet, PDFDownloadLink, Image } from '@react-pdf/renderer';
 
@@ -75,11 +75,13 @@ const ClassificationPDFDocument = ({ classificationData, classificationImage }) 
                 <View style={styles.table}>
                     <View style={styles.tableRow}>
                         <Text style={[styles.tableCol, styles.tableCell]}>Fecha</Text>
+                        <Text style={[styles.tableCol, styles.tableCell]}>Tamaño</Text>
                         <Text style={[styles.tableCol, styles.tableCell]}>Total Unitaria</Text>
                     </View>
                     {classificationData.map((d, index) => (
                         <View key={index} style={styles.tableRow}>
                             <Text style={[styles.tableCol, styles.tableCell]}>{d.fechaRegistro}</Text>
+                            <Text style={[styles.tableCol, styles.tableCell]}>{d.tamano}</Text>
                             <Text style={[styles.tableCol, styles.tableCell]}>{d.totalUnitaria}</Text>
                         </View>
                     ))}
@@ -149,11 +151,13 @@ const CombinedPDFDocument = ({ productionData, classificationData, estadoLoteDat
             <View style={styles.table}>
                 <View style={styles.tableRow}>
                     <Text style={[styles.tableCol, styles.tableCell]}>Fecha</Text>
+                    <Text style={[styles.tableCol, styles.tableCell]}>Tamaño</Text>
                     <Text style={[styles.tableCol, styles.tableCell]}>Total Unitaria</Text>
                 </View>
                 {classificationData.map((d, index) => (
                     <View key={index} style={styles.tableRow}>
                         <Text style={[styles.tableCol, styles.tableCell]}>{d.fechaRegistro}</Text>
+                        <Text style={[styles.tableCol, styles.tableCell]}>{d.tamano}</Text>
                         <Text style={[styles.tableCol, styles.tableCell]}>{d.totalUnitaria}</Text>
                     </View>
                 ))}
@@ -184,7 +188,6 @@ const CombinedPDFDocument = ({ productionData, classificationData, estadoLoteDat
     </Document>
 );
 
-
 const GraficasLote = ({ idLote }) => {
     const [productionData, setProductionData] = useState([]);
     const [classificationData, setClassificationData] = useState([]);
@@ -200,15 +203,15 @@ const GraficasLote = ({ idLote }) => {
 
     useEffect(() => {
         if (idLote) {
-            axios.get(`https://localhost:7249/api/dashboard/produccion/${idLote}/${period}`)
+            axiosInstance.get(`/api/dashboard/produccion/${idLote}/${period}`)
                 .then(response => setProductionData(response.data))
                 .catch(error => console.error('Error fetching production data:', error));
 
-            axios.get(`https://localhost:7249/api/dashboard/clasificacion/${idLote}/${period}`)
+            axiosInstance.get(`/api/dashboard/clasificacion/${idLote}/${period}`)
                 .then(response => setClassificationData(response.data))
                 .catch(error => console.error('Error fetching classification data:', error));
 
-            axios.get(`https://localhost:7249/getestadolote?idLote=${idLote}`)
+            axiosInstance.get(`/getestadolote?idLote=${idLote}`)
                 .then(response => setEstadoLoteData(response.data))
                 .catch(error => console.error('Error fetching estado lote data:', error));
         }
@@ -232,35 +235,55 @@ const GraficasLote = ({ idLote }) => {
             {
                 label: 'Producción',
                 data: productionData.map(d => d.produccion),
-                backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                fill: false,
+                borderColor: 'rgba(107, 142, 35, 1)', // Verde oscuro
+                backgroundColor: 'rgba(107, 142, 35, 0.2)',
+                fill: true,
                 tension: 0.4,
             },
             {
                 label: 'Defectuosos',
                 data: productionData.map(d => d.defectuosos),
-                backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                fill: false,
+                borderColor: 'rgba(139, 69, 19, 1)', // Marrón
+                backgroundColor: 'rgba(139, 69, 19, 0.2)',
+                fill: true,
                 tension: 0.4,
             },
         ],
     };
 
-    const classificationChart = {
-        labels: classificationData.map(d => d.fechaRegistro),
-        datasets: [
-            {
-                label: 'Total Unitaria',
-                data: classificationData.map(d => d.totalUnitaria),
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                fill: false,
-                tension: 0.4,
-            },
-        ],
+    const processClassificationChartData = () => {
+        const labels = [...new Set(classificationData.map(d => d.fechaRegistro))];
+        const tamanoGroups = ['Pigui', 'Pequeño', 'Mediano', 'Grande', 'Extra Grande'];
+
+        const datasets = tamanoGroups.map(tamano => ({
+            label: tamano,
+            data: labels.map(label => {
+                const data = classificationData.find(d => d.fechaRegistro === label && d.tamano === tamano);
+                return data ? data.totalUnitaria : 0;
+            }),
+            backgroundColor: tamano === 'Pigui' ? 'rgba(139, 69, 19, 0.2)' : // Marrón
+                tamano === 'Pequeño' ? 'rgba(85, 107, 47, 0.2)' : // Verde oliva
+                    tamano === 'Mediano' ? 'rgba(218, 165, 32, 0.2)' : // Dorado
+                        tamano === 'Grande' ? 'rgba(107, 142, 35, 0.2)' : // Verde oscuro
+                            tamano === 'Extra Grande' ? 'rgba(154, 205, 50, 0.2)' : // Verde amarillento
+                                'rgba(160, 82, 45, 0.2)',  // Marrón oscuro por defecto
+            borderColor: tamano === 'Pigui' ? 'rgba(139, 69, 19, 1)' :
+                tamano === 'Pequeño' ? 'rgba(85, 107, 47, 1)' :
+                    tamano === 'Mediano' ? 'rgba(218, 165, 32, 1)' :
+                        tamano === 'Grande' ? 'rgba(107, 142, 35, 1)' :
+                            tamano === 'Extra Grande' ? 'rgba(154, 205, 50, 1)' :
+                                'rgba(160, 82, 45, 1)',  // Marrón oscuro por defecto
+            fill: true,
+            tension: 0.4,
+        }));
+
+        return {
+            labels,
+            datasets,
+        };
     };
+
+    const classificationChart = processClassificationChartData();
 
     const estadoLoteChart = {
         labels: estadoLoteData.map(d => d.fechaRegistro),
@@ -268,17 +291,17 @@ const GraficasLote = ({ idLote }) => {
             {
                 label: 'Cantidad de Gallinas',
                 data: estadoLoteData.map(d => d.cantidadG),
-                backgroundColor: 'rgba(153, 102, 255, 0.6)',
-                borderColor: 'rgba(153, 102, 255, 1)',
-                fill: false,
+                borderColor: 'rgba(107, 142, 35, 1)', // Verde oscuro
+                backgroundColor: 'rgba(107, 142, 35, 0.2)',
+                fill: true,
                 tension: 0.4,
             },
             {
                 label: 'Bajas',
                 data: estadoLoteData.map(d => d.bajas),
-                backgroundColor: 'rgba(255, 159, 64, 0.6)',
-                borderColor: 'rgba(255, 159, 64, 1)',
-                fill: false,
+                borderColor: 'rgba(139, 69, 19, 1)', // Marrón
+                backgroundColor: 'rgba(139, 69, 19, 0.2)',
+                fill: true,
                 tension: 0.4,
             },
         ],
@@ -287,15 +310,15 @@ const GraficasLote = ({ idLote }) => {
     return (
         <div className="container mx-auto p-4">
             <div className="flex justify-center space-x-2 mb-6">
-                <button onClick={() => setPeriod('diario')} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200">Diario</button>
-                <button onClick={() => setPeriod('semanal')} className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-200">Semanal</button>
-                <button onClick={() => setPeriod('mensual')} className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition duration-200">Mensual</button>
+                <button onClick={() => setPeriod('diario')} className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition duration-200">Diario</button>
+                <button onClick={() => setPeriod('semanal')} className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition duration-200">Semanal</button>
+                <button onClick={() => setPeriod('mensual')} className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-200">Mensual</button>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Gráfica de Producción */}
-                <div className="bg-white p-4 rounded-lg shadow-lg">
-                    <h2 className="text-lg font-bold mb-4 text-center">Producción</h2>
+                <div className="bg-white p-4 rounded-lg shadow-lg border border-yellow-300">
+                    <h2 className="text-lg font-bold mb-4 text-center text-yellow-800">Producción</h2>
                     <div className="w-full h-64">
                         <Line ref={productionChartRef} data={productionChart} options={{ maintainAspectRatio: false }} />
                     </div>
@@ -312,11 +335,11 @@ const GraficasLote = ({ idLote }) => {
                 </div>
 
                 {/* Tabla de Producción */}
-                <div className="bg-white p-4 rounded-lg shadow-lg">
-                    <h2 className="text-lg font-bold mb-4 text-center">Producción Detallada</h2>
+                <div className="bg-white p-4 rounded-lg shadow-lg border border-orange-300">
+                    <h2 className="text-lg font-bold mb-4 text-center text-orange-800">Producción Detallada</h2>
                     <div className="overflow-x-auto">
                         <table className="min-w-full text-sm text-left text-gray-500">
-                            <thead className="text-xs text-gray-700 uppercase bg-gray-100">
+                            <thead className="text-xs text-gray-700 uppercase bg-orange-100">
                                 <tr>
                                     <th className="px-6 py-3 text-center">Fecha</th>
                                     <th className="px-6 py-3 text-center">Producción</th>
@@ -325,7 +348,7 @@ const GraficasLote = ({ idLote }) => {
                             </thead>
                             <tbody>
                                 {productionData.map((d, index) => (
-                                    <tr key={index} className="bg-white border-b hover:bg-gray-50">
+                                    <tr key={index} className="bg-white border-b hover:bg-orange-50">
                                         <td className="px-6 py-4 text-center">{d.fechaRegistro}</td>
                                         <td className="px-6 py-4 text-center">{d.produccion}</td>
                                         <td className="px-6 py-4 text-center">{d.defectuosos}</td>
@@ -337,8 +360,8 @@ const GraficasLote = ({ idLote }) => {
                 </div>
 
                 {/* Gráfica de Clasificación */}
-                <div className="bg-white p-4 rounded-lg shadow-lg">
-                    <h2 className="text-lg font-bold mb-4 text-center">Clasificación</h2>
+                <div className="bg-white p-4 rounded-lg shadow-lg border border-green-300">
+                    <h2 className="text-lg font-bold mb-4 text-center text-green-800">Clasificación</h2>
                     <div className="w-full h-64">
                         <Line ref={classificationChartRef} data={classificationChart} options={{ maintainAspectRatio: false }} />
                     </div>
@@ -346,7 +369,7 @@ const GraficasLote = ({ idLote }) => {
                         <PDFDownloadLink
                             document={<ClassificationPDFDocument classificationData={classificationData} classificationImage={classificationImage} />}
                             fileName="clasificacion.pdf"
-                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200"
+                            className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition duration-200"
                             disabled={!classificationImage}
                         >
                             {({ loading }) => (loading ? 'Generando PDF...' : 'Descargar PDF de Clasificación')}
@@ -355,20 +378,22 @@ const GraficasLote = ({ idLote }) => {
                 </div>
 
                 {/* Tabla de Clasificación */}
-                <div className="bg-white p-4 rounded-lg shadow-lg">
-                    <h2 className="text-lg font-bold mb-4 text-center">Clasificación Detallada</h2>
+                <div className="bg-white p-4 rounded-lg shadow-lg border border-red-300">
+                    <h2 className="text-lg font-bold mb-4 text-center text-red-800">Clasificación Detallada</h2>
                     <div className="overflow-x-auto">
                         <table className="min-w-full text-sm text-left text-gray-500">
-                            <thead className="text-xs text-gray-700 uppercase bg-gray-100">
+                            <thead className="text-xs text-gray-700 uppercase bg-red-100">
                                 <tr>
                                     <th className="px-6 py-3 text-center">Fecha</th>
+                                    <th className="px-6 py-3 text-center">Tamaño</th>
                                     <th className="px-6 py-3 text-center">Total Unitaria</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {classificationData.map((d, index) => (
-                                    <tr key={index} className="bg-white border-b hover:bg-gray-50">
+                                    <tr key={index} className="bg-white border-b hover:bg-red-50">
                                         <td className="px-6 py-4 text-center">{d.fechaRegistro}</td>
+                                        <td className="px-6 py-4 text-center">{d.tamano}</td>
                                         <td className="px-6 py-4 text-center">{d.totalUnitaria}</td>
                                     </tr>
                                 ))}
@@ -378,8 +403,8 @@ const GraficasLote = ({ idLote }) => {
                 </div>
 
                 {/* Gráfica de Estado del Lote */}
-                <div className="bg-white p-4 rounded-lg shadow-lg">
-                    <h2 className="text-lg font-bold mb-4 text-center">Estado del Lote</h2>
+                <div className="bg-white p-4 rounded-lg shadow-lg border border-brown-300">
+                    <h2 className="text-lg font-bold mb-4 text-center text-brown-800">Estado del Lote</h2>
                     <div className="w-full h-64">
                         <Line ref={estadoLoteChartRef} data={estadoLoteChart} options={{ maintainAspectRatio: false }} />
                     </div>
@@ -396,11 +421,11 @@ const GraficasLote = ({ idLote }) => {
                 </div>
 
                 {/* Tabla de Estado del Lote */}
-                <div className="bg-white p-4 rounded-lg shadow-lg">
-                    <h2 className="text-lg font-bold mb-4 text-center">Estado del Lote Detallado</h2>
+                <div className="bg-white p-4 rounded-lg shadow-lg border border-yellow-300">
+                    <h2 className="text-lg font-bold mb-4 text-center text-yellow-800">Estado del Lote Detallado</h2>
                     <div className="overflow-x-auto">
                         <table className="min-w-full text-sm text-left text-gray-500">
-                            <thead className="text-xs text-gray-700 uppercase bg-gray-100">
+                            <thead className="text-xs text-gray-700 uppercase bg-yellow-100">
                                 <tr>
                                     <th className="px-6 py-3 text-center">Fecha</th>
                                     <th className="px-6 py-3 text-center">Cantidad Gallinas</th>
@@ -409,7 +434,7 @@ const GraficasLote = ({ idLote }) => {
                             </thead>
                             <tbody>
                                 {estadoLoteData.map((d, index) => (
-                                    <tr key={index} className="bg-white border-b hover:bg-gray-50">
+                                    <tr key={index} className="bg-white border-b hover:bg-yellow-50">
                                         <td className="px-6 py-4 text-center">{d.fechaRegistro}</td>
                                         <td className="px-6 py-4 text-center">{d.cantidadG}</td>
                                         <td className="px-6 py-4 text-center">{d.bajas}</td>
@@ -434,7 +459,7 @@ const GraficasLote = ({ idLote }) => {
                         />
                     }
                     fileName="reporte_completo.pdf"
-                    className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition duration-200"
+                    className="bg-brown-600 text-white px-4 py-2 rounded-lg hover:bg-brown-700 transition duration-200"
                     disabled={!productionImage || !classificationImage || !estadoLoteImage}
                 >
                     {({ loading }) => (loading ? 'Generando PDF...' : 'Descargar PDF Completo')}

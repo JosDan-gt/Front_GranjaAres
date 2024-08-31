@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Line } from 'react-chartjs-2';
+import axiosInstance from '../axiosInstance';
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend, TimeScale, Filler } from 'chart.js';
-import 'chartjs-adapter-date-fns';
 
+// Registrar las escalas y componentes necesarios
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -15,111 +16,92 @@ ChartJS.register(
   Filler
 );
 
-const ProduccionGrafica = ({ produccionDiaria, produccionSemanal, produccionMensual, clasificacionDiaria, clasificacionSemanal, clasificacionMensual }) => {
-  
-  const weekToDate = (weekNumber) => {
-    const startOfYear = new Date(new Date().getFullYear(), 0, 1);
-    const startOfWeek = new Date(startOfYear.setDate(startOfYear.getDate() + (weekNumber - 1) * 7));
-    return startOfWeek;
+const ProduccionGrafica = ({ idLote, period }) => {
+  const [productionData, setProductionData] = useState([]);
+  const productionChartRef = useRef(null);
+
+  useEffect(() => {
+    if (idLote) {
+      axiosInstance.get(`/api/dashboard/produccion/${idLote}/${period}`)
+        .then(response => setProductionData(response.data))
+        .catch(error => console.error('Error fetching production data:', error));
+    }
+  }, [idLote, period]);
+
+  const productionChart = {
+    labels: productionData.map(d => d.fechaRegistro),
+    datasets: [
+      {
+        label: 'Producción',
+        data: productionData.map(d => d.produccion),
+        borderColor: 'rgba(107, 142, 35, 1)', // Verde oscuro
+        backgroundColor: 'rgba(107, 142, 35, 0.2)',
+        fill: true,
+        tension: 0.4,
+      },
+      {
+        label: 'Defectuosos',
+        data: productionData.map(d => d.defectuosos),
+        borderColor: 'rgba(139, 69, 19, 1)', // Marrón
+        backgroundColor: 'rgba(139, 69, 19, 0.2)',
+        fill: true,
+        tension: 0.4,
+      },
+    ],
   };
-
-  const processData = (data, type, label) => {
-    const labels = data.map(entry => {
-      if (type === 'diario') {
-        return new Date(entry.fechaRegistro);
-      } else if (type === 'semanal') {
-        const weekNumber = parseInt(entry.fechaRegistro.replace('Semana ', ''), 10);
-        return weekToDate(weekNumber);
-      } else if (type === 'mensual') {
-        return new Date(entry.fechaRegistro + '-01'); // Agregamos un día ficticio para usar Date
-      }
-    });
-
-    return {
-      labels,
-      datasets: [
-        {
-          label: `${label} ${type.charAt(0).toUpperCase() + type.slice(1)}`,
-          data: data.map(entry => ({
-            x: type === 'diario' || type === 'mensual' ? new Date(entry.fechaRegistro) : weekToDate(parseInt(entry.fechaRegistro.replace('Semana ', ''), 10)),
-            y: entry.produccion || entry.totalUnitaria // Usar el campo correcto según el contexto
-          })),
-          borderColor: label === 'Producción' ? 'rgba(75, 192, 192, 1)' : 'rgba(153, 102, 255, 1)',
-          backgroundColor: label === 'Producción' ? 'rgba(75, 192, 192, 0.2)' : 'rgba(153, 102, 255, 0.2)',
-          borderWidth: 2,
-          fill: true,
-        },
-      ],
-    };
-  };
-
-  const dataProduccionDiaria = processData(produccionDiaria, 'diario', 'Producción');
-  const dataProduccionSemanal = processData(produccionSemanal, 'semanal', 'Producción');
-  const dataProduccionMensual = processData(produccionMensual, 'mensual', 'Producción');
-
-  const dataClasificacionDiaria = processData(clasificacionDiaria, 'diario', 'Clasificación');
-  const dataClasificacionSemanal = processData(clasificacionSemanal, 'semanal', 'Clasificación');
-  const dataClasificacionMensual = processData(clasificacionMensual, 'mensual', 'Clasificación');
 
   const options = {
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: 'top',
+        labels: {
+          color: '#3e3e3e', // Color natural para las etiquetas de la leyenda
+        },
       },
       title: {
         display: true,
-        text: 'Producción y Clasificación',
+        text: `Producción y Defectuosos (${period.charAt(0).toUpperCase() + period.slice(1)})`,
+        font: {
+          size: 18,
+          family: "'Comic Sans MS', cursive, sans-serif", // Estilo amigable y natural
+          color: '#3e3e3e',
+        },
       },
     },
     scales: {
       x: {
-        type: 'time',
-        time: {
-          unit: 'week', // Ajusta esto para mostrar semanas
-          tooltipFormat: 'MMM yyyy',
-        },
+        type: 'category',
         title: {
           display: true,
           text: 'Fecha',
+          font: {
+            size: 14,
+            family: "'Comic Sans MS', cursive, sans-serif",
+            color: '#3e3e3e',
+          },
         },
       },
       y: {
         title: {
           display: true,
           text: 'Cantidad',
+          font: {
+            size: 14,
+            family: "'Comic Sans MS', cursive, sans-serif",
+            color: '#3e3e3e',
+          },
         },
       },
     },
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div className="bg-white shadow-lg rounded-lg p-6 h-[400px] overflow-hidden">
-        <h3 className="text-xl font-semibold mb-4">Producción Diaria</h3>
-        <Line data={dataProduccionDiaria} options={options} />
-      </div>
-      <div className="bg-white shadow-lg rounded-lg p-6 h-[400px] overflow-hidden">
-        <h3 className="text-xl font-semibold mb-4">Producción Semanal</h3>
-        <Line data={dataProduccionSemanal} options={options} />
-      </div>
-      <div className="bg-white shadow-lg rounded-lg p-6 h-[400px] overflow-hidden">
-        <h3 className="text-xl font-semibold mb-4">Producción Mensual</h3>
-        <Line data={dataProduccionMensual} options={options} />
-      </div>
-
-      <div className="bg-white shadow-lg rounded-lg p-6 h-[400px] overflow-hidden">
-        <h3 className="text-xl font-semibold mb-4">Clasificación Diaria</h3>
-        <Line data={dataClasificacionDiaria} options={options} />
-      </div>
-      <div className="bg-white shadow-lg rounded-lg p-6 h-[400px] overflow-hidden">
-        <h3 className="text-xl font-semibold mb-4">Clasificación Semanal</h3>
-        <Line data={dataClasificacionSemanal} options={options} />
-      </div>
-      <div className="bg-white shadow-lg rounded-lg p-6 h-[400px] overflow-hidden">
-        <h3 className="text-xl font-semibold mb-4">Clasificación Mensual</h3>
-        <Line data={dataClasificacionMensual} options={options} />
+    <div className="bg-white p-4 rounded-lg shadow-lg border border-green-600">
+      <h2 className="text-lg font-bold mb-4 text-center text-green-800">Producción</h2>
+      <div className="w-full h-64">
+        <Line ref={productionChartRef} data={productionChart} options={options} />
       </div>
     </div>
   );

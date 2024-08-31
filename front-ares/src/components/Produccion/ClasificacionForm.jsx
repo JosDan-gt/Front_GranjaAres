@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; // Importa la instancia de axios configurada
 
 const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData }) => {
     const [formData, setFormData] = useState({
@@ -19,13 +19,13 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
     useEffect(() => {
         const fetchFechasProduccion = async () => {
             try {
-                const responseViewStock = await axios.get(`https://localhost:7249/viewstock?idLote=${idLote}`);
+                const responseViewStock = await axiosInstance.get(`/viewstock?idLote=${idLote}`);
                 const fechasConStock = responseViewStock.data;
 
                 let fechasFiltradas;
 
                 if (isUpdateMode && item) {
-                    const responseAllFechas = await axios.get(`https://localhost:7249/getproduccion?IdLote=${idLote}`);
+                    const responseAllFechas = await axiosInstance.get(`/getproduccion?IdLote=${idLote}`);
                     const todasLasFechas = responseAllFechas.data;
 
                     const fechasCombinadas = todasLasFechas.map(fecha => {
@@ -176,7 +176,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
 
         try {
             const response = isUpdateMode
-                ? await axios.put('https://localhost:7249/putclasificacion', {
+                ? await axiosInstance.put('/putclasificacion', {
                     Id: item?.id,
                     Tamano: formData.tamano,
                     Cajas: parseInt(formData.cajas),
@@ -184,7 +184,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                     HuevosSueltos: parseInt(formData.huevosSueltos),
                     IdProd: formData.idProd,
                 })
-                : await axios.post('https://localhost:7249/postclasificacion', {
+                : await axiosInstance.post('/postclasificacion', {
                     Tamano: formData.tamano,
                     Cajas: parseInt(formData.cajas),
                     CartonesExtras: parseInt(formData.cartonesExtras),
@@ -209,80 +209,80 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
     };
 
     return (
-        <div className="flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6 p-6 bg-white rounded-lg shadow-md">
+        <div className="flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6 p-6 bg-yellow-50 rounded-lg shadow-md mb-5" style={{ backgroundColor: '#F5F5DC' }}>
             <div className="flex-1">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6">
+                <h2 className="text-2xl font-bold text-green-900 mb-6">
                     {isUpdateMode ? 'Actualizar Clasificación' : 'Registrar Clasificación'}
                 </h2>
                 <form onSubmit={handleSubmit}>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div className="col-span-1">
-                            <label className="text-sm font-medium text-gray-700">Tamaño</label>
+                            <label className="text-sm font-medium text-green-900">Tamaño</label>
                             <input
                                 type="text"
                                 name="tamano"
                                 value={formData.tamano}
                                 onChange={handleChange}
-                                className="w-full p-2 mt-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full p-2 mt-1 border border-green-700 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
                             />
                             {errors.tamano && <p className="text-red-500 text-xs mt-1">{errors.tamano}</p>}
                         </div>
-
+    
                         <div className="col-span-1">
-                            <label className="text-sm font-medium text-gray-700">Cajas</label>
+                            <label className="text-sm font-medium text-green-900">Cajas</label>
                             <input
                                 type="number"
                                 name="cajas"
                                 value={formData.cajas}
                                 onChange={handleChange}
-                                className="w-full p-2 mt-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full p-2 mt-1 border border-green-700 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
                             />
                             {errors.cajas && <p className="text-red-500 text-xs mt-1">{errors.cajas}</p>}
                         </div>
-
+    
                         <div className="col-span-1">
-                            <label className="text-sm font-medium text-gray-700">Cartones Extras</label>
+                            <label className="text-sm font-medium text-green-900">Cartones Extras</label>
                             <input
                                 type="number"
                                 name="cartonesExtras"
                                 value={formData.cartonesExtras}
                                 onChange={handleChange}
-                                className="w-full p-2 mt-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full p-2 mt-1 border border-green-700 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
                             />
                             {errors.cartonesExtras && <p className="text-red-500 text-xs mt-1">{errors.cartonesExtras}</p>}
                         </div>
-
+    
                         <div className="col-span-1">
-                            <label className="text-sm font-medium text-gray-700">Huevos Sueltos</label>
+                            <label className="text-sm font-medium text-green-900">Huevos Sueltos</label>
                             <input
                                 type="number"
                                 name="huevosSueltos"
                                 value={formData.huevosSueltos}
                                 onChange={handleChange}
-                                className="w-full p-2 mt-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full p-2 mt-1 border border-green-700 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
                             />
                             {errors.huevosSueltos && <p className="text-red-500 text-xs mt-1">{errors.huevosSueltos}</p>}
                         </div>
-
+    
                         <div className="col-span-1">
-                            <label className="text-sm font-medium text-gray-700">Fecha Clasificación</label>
+                            <label className="text-sm font-medium text-green-900">Fecha Clasificación</label>
                             <input
                                 type="date"
                                 name="fechaClaS"
                                 value={formData.fechaClaS}
                                 onChange={handleChange}
-                                className="w-full p-2 mt-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full p-2 mt-1 border border-green-700 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
                             />
                             {errors.fechaClaS && <p className="text-red-500 text-xs mt-1">{errors.fechaClaS}</p>}
                         </div>
-
+    
                         <div className="col-span-1">
-                            <label className="text-sm font-medium text-gray-700">Fecha Producción</label>
+                            <label className="text-sm font-medium text-green-900">Fecha Producción</label>
                             <select
                                 name="fechaProdu"
                                 value={formData.fechaProdu}
                                 onChange={handleFechaProduChange}
-                                className="w-full p-2 mt-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full p-2 mt-1 border border-green-700 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
                             >
                                 <option value="">Seleccione una fecha</option>
                                 {fechasProduccion.map((fecha) => (
@@ -294,7 +294,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                             {errors.fechaProdu && <p className="text-red-500 text-xs mt-1">{errors.fechaProdu}</p>}
                         </div>
                     </div>
-
+    
                     <div className="flex justify-end mt-6 space-x-3">
                         <button
                             type="button"
@@ -313,41 +313,41 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                         <button
                             type="submit"
                             disabled={loading}
-                            className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                            className="px-4 py-2 bg-green-700 text-white font-semibold rounded-lg shadow-md hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
                         >
                             {loading ? 'Guardando...' : isUpdateMode ? 'Actualizar' : 'Guardar'}
                         </button>
                     </div>
                 </form>
             </div>
-
+    
             <div className="flex-1 p-6 bg-white rounded-lg shadow-md">
-                <h3 className="text-xl font-bold mb-4 text-gray-700">Detalles de Producción</h3>
+                <h3 className="text-xl font-bold mb-4 text-green-900">Detalles de Producción</h3>
                 {selectedProduccion ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div className="bg-gray-50 p-4 rounded-md shadow-sm">
-                            <h4 className="font-semibold text-gray-600 mb-2">Fecha Producción</h4>
-                            <p className="text-gray-800">{new Date(selectedProduccion.fechaProdu).toLocaleDateString()}</p>
+                        <div className="bg-green-50 p-4 rounded-md shadow-sm">
+                            <h4 className="font-semibold text-green-700 mb-2">Fecha Producción</h4>
+                            <p className="text-green-900">{new Date(selectedProduccion.fechaProdu).toLocaleDateString()}</p>
                         </div>
-                        <div className="bg-gray-50 p-4 rounded-md shadow-sm">
-                            <h4 className="font-semibold text-gray-600 mb-2">Cantidad Total Producción</h4>
-                            <p className="text-gray-800">{selectedProduccion.cantidadTotalProduccion}</p>
+                        <div className="bg-green-50 p-4 rounded-md shadow-sm">
+                            <h4 className="font-semibold text-green-700 mb-2">Cantidad Total Producción</h4>
+                            <p className="text-green-900">{selectedProduccion.cantidadTotalProduccion}</p>
                         </div>
-                        <div className="bg-gray-50 p-4 rounded-md shadow-sm">
-                            <h4 className="font-semibold text-gray-600 mb-2">Stock Restante</h4>
-                            <p className="text-gray-800">{selectedProduccion.stockRestante}</p>
+                        <div className="bg-green-50 p-4 rounded-md shadow-sm">
+                            <h4 className="font-semibold text-green-700 mb-2">Stock Restante</h4>
+                            <p className="text-green-900">{selectedProduccion.stockRestante}</p>
                         </div>
-                        <div className="bg-gray-50 p-4 rounded-md shadow-sm">
-                            <h4 className="font-semibold text-gray-600 mb-2">Cajas Restantes</h4>
-                            <p className="text-gray-800">{selectedProduccion.cajasRestantes}</p>
+                        <div className="bg-green-50 p-4 rounded-md shadow-sm">
+                            <h4 className="font-semibold text-green-700 mb-2">Cajas Restantes</h4>
+                            <p className="text-green-900">{selectedProduccion.cajasRestantes}</p>
                         </div>
-                        <div className="bg-gray-50 p-4 rounded-md shadow-sm">
-                            <h4 className="font-semibold text-gray-600 mb-2">Cartones Restantes</h4>
-                            <p className="text-gray-800">{selectedProduccion.cartonesRestantes}</p>
+                        <div className="bg-green-50 p-4 rounded-md shadow-sm">
+                            <h4 className="font-semibold text-green-700 mb-2">Cartones Restantes</h4>
+                            <p className="text-green-900">{selectedProduccion.cartonesRestantes}</p>
                         </div>
-                        <div className="bg-gray-50 p-4 rounded-md shadow-sm">
-                            <h4 className="font-semibold text-gray-600 mb-2">Huevos Sueltos Restantes</h4>
-                            <p className="text-gray-800">{selectedProduccion.huevosSueltosRestantes}</p>
+                        <div className="bg-green-50 p-4 rounded-md shadow-sm">
+                            <h4 className="font-semibold text-green-700 mb-2">Huevos Sueltos Restantes</h4>
+                            <p className="text-green-900">{selectedProduccion.huevosSueltosRestantes}</p>
                         </div>
                     </div>
                 ) : (
@@ -356,6 +356,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
             </div>
         </div>
     );
+    
 
 };
 

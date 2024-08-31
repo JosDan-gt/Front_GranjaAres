@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; 
 import { useNavigate } from 'react-router-dom';
 import LoteForm from './LoteForm';
-
 
 const Lote = () => {
   const [lotes, setLotes] = useState([]);
@@ -16,59 +15,25 @@ const Lote = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchLotes = async () => {
-      try {
-        const response = await axios.get('https://localhost:7249/getlotes');
-        if (response.status === 200 && response.data.length > 0) {
-          console.log('Lotes cargados:', response.data);
-          setLotes(response.data);
-        } else {
-          console.log('No se encontraron lotes activos.');
-          setLotes([]); // Asigna un array vacío si no hay lotes activos
-        }
-      } catch (error) {
-        if (error.response && error.response.status === 404) {
-          console.log('No se encontraron lotes activos.');
-          setLotes([]); // Asigna un array vacío en caso de error 404
-        } else {
-          console.error('Error al obtener lotes:', error);
-        }
-      }
-    };
-
-    const fetchLotesDadosDeBaja = async () => {
-      try {
-        const response = await axios.get('https://localhost:7249/getlotesdadosdebaja');
-        setLotesDadosDeBaja(response.data);
-      } catch (error) {
-        console.error('Error al obtener lotes dados de baja:', error);
-      }
-    };
-
-    const fetchRazas = async () => {
-      try {
-        const response = await axios.get('https://localhost:7249/getrazaG');
-        setRazas(response.data);
-      } catch (error) {
-        console.error('Error al obtener razas:', error);
-      }
-    };
-
-    const fetchCorrales = async () => {
-      try {
-        const response = await axios.get('https://localhost:7249/getcorral');
-        setCorrales(response.data);
-      } catch (error) {
-        console.error('Error al obtener corrales:', error);
-      }
-    };
-
     const fetchData = async () => {
-      await fetchLotes();
-      await fetchLotesDadosDeBaja();
-      await fetchRazas();
-      await fetchCorrales();
-      setIsLoading(false); // Indica que la carga ha terminado
+      try {
+        const responseLotes = await axiosInstance.get('/getlotes');
+        setLotes(responseLotes.data || []);
+
+        const responseLotesBaja = await axiosInstance.get('/getlotesdadosdebaja');
+        setLotesDadosDeBaja(responseLotesBaja.data || []);
+
+        const responseRazas = await axiosInstance.get('/getrazaG');
+        setRazas(responseRazas.data || []);
+
+        const responseCorrales = await axiosInstance.get('/getcorral');
+        setCorrales(responseCorrales.data || []);
+
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchData();
@@ -78,20 +43,12 @@ const Lote = () => {
     const selectedLote = lotes.find(lote => lote.idLote === idLote) || lotesDadosDeBaja.find(lote => lote.idLote === idLote);
 
     if (!selectedLote) {
-      console.error(`Lote con id ${idLote} no encontrado`);
       alert('Lote no encontrado. Por favor, selecciona un lote válido.');
       return;
     }
 
-    if (value === 'produccion') {
-      navigate(`/produccion/${idLote}`, { state: { estadoBaja: selectedLote.estadoBaja } });
-    } else if (value === 'clasificacion') {
-      navigate(`/clasificacion/${idLote}`, { state: { estadoBaja: selectedLote.estadoBaja } });
-    } else if (value === 'estado') {
-      navigate(`/estado/${idLote}`, { state: { estadoBaja: selectedLote.estadoBaja } });
-    }
+    navigate(`/${value}/${idLote}`, { state: { estadoBaja: selectedLote.estadoBaja } });
   };
-
 
   const handleAddNew = () => {
     setSelectedLote(null);
@@ -100,13 +57,7 @@ const Lote = () => {
   };
 
   const handleEdit = (lote) => {
-    const formattedDate = lote.fechaAdq ? lote.fechaAdq.split('T')[0] : '';
-    setSelectedLote({
-      ...lote,
-      fechaAdq: formattedDate,
-      idLote: lote.idLote
-    });
-
+    setSelectedLote({ ...lote, fechaAdq: lote.fechaAdq.split('T')[0] });
     setIsEditing(true);
     setShowForm(true);
   };
@@ -118,57 +69,43 @@ const Lote = () => {
   };
 
   const handleDelete = async (idLote) => {
-    const confirmed = window.confirm("¿Estás seguro de que deseas eliminar este lote?");
-    if (confirmed) {
+    if (window.confirm("¿Estás seguro de que deseas eliminar este lote?")) {
       try {
-        await axios.put(`https://localhost:7249/updateestadolot?idlote=${idLote}`, { Estado: false });
+        await axiosInstance.put(`/updateestadolot?idlote=${idLote}`, { Estado: false });
+        setLotes(lotes.filter(lote => lote.idLote !== idLote));
         alert('Lote eliminado correctamente');
-        setLotes(lotes.filter(lote => lote.idLote !== idLote)); // Remover el lote eliminado de la lista
       } catch (error) {
-        console.error('Error al eliminar el lote:', error.response?.data || error.message);
+        console.error('Error al eliminar el lote:', error);
         alert('Error al eliminar el lote');
       }
     }
   };
 
   const handleDarDeBaja = async (idLote) => {
-    const confirmed = window.confirm("¿Estás seguro de que deseas dar de baja este lote?");
-    if (confirmed) {
+    if (window.confirm("¿Estás seguro de que deseas dar de baja este lote?")) {
       try {
-        // Asegúrate de que el cuerpo se envía correctamente como JSON
-        const response = await axios.put(
-          `https://localhost:7249/api/lotes/putLoteBaja?idLote=${idLote}`,
-          { estadoBaja: true }, // Aquí se envía el JSON correcto
-          { headers: { 'Content-Type': 'application/json' } } // Especifica el tipo de contenido
-        );
-        alert('Lote dado de baja correctamente');
-
-        // Actualizar el estado en el frontend
+        await axiosInstance.put(`/api/lotes/putLoteBaja?idLote=${idLote}`, { estadoBaja: true });
         const lote = lotes.find(lote => lote.idLote === idLote);
         setLotesDadosDeBaja([...lotesDadosDeBaja, { ...lote, estadoBaja: true }]);
         setLotes(lotes.filter(lote => lote.idLote !== idLote));
+        alert('Lote dado de baja correctamente');
       } catch (error) {
-        console.error('Error al dar de baja el lote:', error.response?.data || error.message);
+        console.error('Error al dar de baja el lote:', error);
         alert('Error al dar de baja el lote');
       }
     }
   };
 
   const handleDarDeAlta = async (idLote) => {
-    const confirmed = window.confirm("¿Estás seguro de que deseas dar de alta este lote?");
-    if (confirmed) {
+    if (window.confirm("¿Estás seguro de que deseas dar de alta este lote?")) {
       try {
-        // Nota: El idLote lo estás enviando como parámetro de la URL, lo cual está bien,
-        // pero también necesitas asegurarte de que el cuerpo de la solicitud JSON esté correctamente formateado.
-        const response = await axios.put(`https://localhost:7249/api/lotes/putLoteBaja?idLote=${idLote}`, { estadoBaja: false });
-        alert('Lote dado de alta correctamente');
-
-        // Actualizar el estado en el frontend
+        await axiosInstance.put(`/api/lotes/putLoteBaja?idLote=${idLote}`, { estadoBaja: false });
         const lote = lotesDadosDeBaja.find(lote => lote.idLote === idLote);
         setLotes([...lotes, { ...lote, estadoBaja: false }]);
         setLotesDadosDeBaja(lotesDadosDeBaja.filter(lote => lote.idLote !== idLote));
+        alert('Lote dado de alta correctamente');
       } catch (error) {
-        console.error('Error al dar de alta el lote:', error.response?.data || error.message);
+        console.error('Error al dar de alta el lote:', error);
         alert('Error al dar de alta el lote');
       }
     }
@@ -185,22 +122,17 @@ const Lote = () => {
       };
 
       if (isEditing && formData.idLote) {
-        payload.idLote = parseInt(formData.idLote, 10);
-        await axios.put('https://localhost:7249/putLote', payload);
+        await axiosInstance.put('/putLote', { ...payload, idLote: parseInt(formData.idLote, 10) });
         alert('Lote actualizado exitosamente');
       } else {
-        await axios.post('https://localhost:7249/postLote', payload);
+        await axiosInstance.post('/postLote', payload);
         alert('Lote creado exitosamente');
       }
 
       handleFormClose();
       navigate(0);
     } catch (error) {
-      if (error.response && error.response.data) {
-        alert(`Error al registrar clasificación: ${error.response.data.message || 'Error desconocido.'}`);
-      } else {
-        alert('Error al registrar clasificación.');
-      }
+      alert('Error al registrar clasificación.');
       console.error('Error al registrar clasificación:', error);
     }
   };
@@ -210,24 +142,16 @@ const Lote = () => {
   }
 
   return (
-    <div className="p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-3xl font-bold text-gray-800 mb-6">Lotes</h2>
-
-      {lotes.length === 0 ? (
-        <p>No hay lotes activos disponibles en este momento.</p>
-      ) : (
-        <>
-          <button
-            onClick={() => setShowForm(!showForm)}
-            className={`px-4 py-2 bg-blue-500 text-white rounded mb-4`}
-          >
-            {showForm ? 'Ocultar Formulario' : 'Agregar Nuevo Lote'}
-          </button>
-
-          {/* Resto de la lógica para mostrar los lotes */}
-        </>
-      )}
-
+    <div className="p-4 sm:p-6 bg-yellow-50 shadow-lg rounded-lg">
+      <h2 className="text-2xl sm:text-3xl font-bold text-green-900 mb-4 sm:mb-6">Lotes de la Granja</h2>
+  
+      <button
+        onClick={handleAddNew}
+        className="px-4 py-2 mb-4 bg-green-700 text-white rounded hover:bg-green-800 transition duration-300"
+      >
+        {showForm ? 'Ocultar Formulario' : 'Agregar Nuevo Lote'}
+      </button>
+  
       {showForm && (
         <LoteForm
           loteData={selectedLote}
@@ -237,56 +161,43 @@ const Lote = () => {
           isEditing={isEditing}
           onCancel={handleFormClose}
           onSubmit={handleSubmit}
-          idLote={selectedLote?.idLote}
-          isDisabled={selectedLote?.estadoBaja}
         />
       )}
-
-      <h3 className="text-2xl font-bold text-gray-700 mb-4">Lotes Activos</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  
+      <h3 className="text-xl sm:text-2xl font-bold text-green-700 mb-4">Lotes Activos</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {lotes.map((lote) => (
-          <div
-            key={lote.idLote}
-            className="border border-gray-300 rounded-lg p-6 bg-white shadow-sm hover:shadow-lg transition-shadow duration-300"
-          >
-            <h3 className="text-xl font-semibold text-gray-700 mb-4"> {lote.numLote}</h3>
-
-            <div className="mb-4">
-              <p className="text-gray-600">
-                <span className="font-medium text-gray-800">Cantidad:</span> {lote.cantidadG}
-              </p>
-              <p className="text-gray-600">
-                <span className="font-medium text-gray-800">Fecha de Adquisición:</span> {new Date(lote.fechaAdq).toLocaleDateString()}
-              </p>
-            </div>
-
-            <div className="mb-4">
-              <label htmlFor={`select-${lote.idLote}`} className="block text-sm font-medium text-gray-700 mb-2">
-                Acciones
-              </label>
-              <select
-                id={`select-${lote.idLote}`}
-                onChange={(e) => handleSelectionChange(lote.idLote, e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700"
-                defaultValue=""
-              >
-                <option value="" disabled>Selecciona una opción</option>
-                <option value="produccion">Producción</option>
-                <option value="clasificacion">Clasificación</option>
-                <option value="estado">Estado</option>
-              </select>
-            </div>
-
-            <div className="flex justify-between">
+          <div key={lote.idLote} className="border border-green-300 rounded-lg p-4 sm:p-6 bg-white shadow-sm hover:shadow-lg transition-shadow duration-300">
+            <h3 className="text-lg sm:text-xl font-semibold text-green-900 mb-2 sm:mb-4">Lote {lote.numLote}</h3>
+  
+            <p className="text-green-700"><span className="font-medium text-green-900">Cantidad:</span> {lote.cantidadG}</p>
+            <p className="text-green-700"><span className="font-medium text-green-900">Fecha de Adquisición:</span> {new Date(lote.fechaAdq).toLocaleDateString()}</p>
+  
+            <label htmlFor={`select-${lote.idLote}`} className="block text-sm font-medium text-green-900 mt-2 sm:mt-4 mb-2">
+              Acciones
+            </label>
+            <select
+              id={`select-${lote.idLote}`}
+              onChange={(e) => handleSelectionChange(lote.idLote, e.target.value)}
+              className="w-full px-2 sm:px-3 py-1 sm:py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-green-900"
+              defaultValue=""
+            >
+              <option value="" disabled>Selecciona una opción</option>
+              <option value="produccionG">Producción</option>
+              <option value="clasificacion">Clasificación</option>
+              <option value="estado">Estado</option>
+            </select>
+  
+            <div className="flex flex-col sm:flex-row justify-between mt-2 sm:mt-4">
               <button
                 onClick={() => handleEdit(lote)}
-                className="px-4 py-2 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition duration-300"
+                className="px-4 py-2 mb-2 sm:mb-0 sm:mr-2 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition duration-300"
               >
                 Editar
               </button>
               <button
                 onClick={() => handleDelete(lote.idLote)}
-                className="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition duration-300"
+                className="px-4 py-2 mb-2 sm:mb-0 sm:mr-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition duration-300"
               >
                 Eliminar
               </button>
@@ -300,43 +211,33 @@ const Lote = () => {
           </div>
         ))}
       </div>
-
-      <h3 className="text-2xl font-bold text-gray-700 mt-10 mb-4">Lotes Dados de Baja</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  
+      <h3 className="text-xl sm:text-2xl font-bold text-green-700 mt-8 mb-4">Lotes Dados de Baja</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {lotesDadosDeBaja.map((lote) => (
-          <div
-            key={lote.idLote}
-            className="border border-gray-300 rounded-lg p-6 bg-red-300 bg-opacity-50 shadow-sm hover:shadow-lg transition-shadow duration-300"
-          >
-            <h3 className="text-xl font-semibold text-gray-700 mb-4"> {lote.numLote}</h3>
+          <div key={lote.idLote} className="border border-red-400 rounded-lg p-4 sm:p-6 bg-red-200 bg-opacity-50 shadow-sm hover:shadow-lg transition-shadow duration-300">
+            <h3 className="text-lg sm:text-xl font-semibold text-green-900 mb-2 sm:mb-4">Lote {lote.numLote}</h3>
+  
+            <p className="text-green-700"><span className="font-medium text-green-900">Cantidad:</span> {lote.cantidadG}</p>
+            <p className="text-green-700"><span className="font-medium text-green-900">Fecha de Adquisición:</span> {new Date(lote.fechaAdq).toLocaleDateString()}</p>
+  
+            <label htmlFor={`select-${lote.idLote}`} className="block text-sm font-medium text-green-900 mt-2 sm:mt-4 mb-2">
+              Acciones
+            </label>
+            <select
+              id={`select-${lote.idLote}`}
+              onChange={(e) => handleSelectionChange(lote.idLote, e.target.value)}
+              className="w-full px-2 sm:px-3 py-1 sm:py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-green-900"
+              defaultValue=""
+            >
+              <option value="" disabled>Selecciona una opción</option>
+              <option value="produccionG">Producción</option>
 
-            <div className="mb-4">
-              <p className="text-gray-600">
-                <span className="font-medium text-gray-800">Cantidad:</span> {lote.cantidadG}
-              </p>
-              <p className="text-gray-600">
-                <span className="font-medium text-gray-800">Fecha de Adquisición:</span> {new Date(lote.fechaAdq).toLocaleDateString()}
-              </p>
-            </div>
-
-            <div className="mb-4">
-              <label htmlFor={`select-${lote.idLote}`} className="block text-sm font-medium text-gray-700 mb-2">
-                Acciones
-              </label>
-              <select
-                id={`select-${lote.idLote}`}
-                onChange={(e) => handleSelectionChange(lote.idLote, e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700"
-                defaultValue=""
-              >
-                <option value="" disabled>Selecciona una opción</option>
-                <option value="produccion">Producción</option>
-                <option value="clasificacion">Clasificación</option>
-                <option value="estado">Estado</option>
-              </select>
-            </div>
-
-            <div className="flex justify-between">
+              <option value="clasificacion">Clasificación</option>
+              <option value="estado">Estado</option>
+            </select>
+  
+            <div className="flex justify-between mt-2 sm:mt-4">
               <button
                 onClick={() => handleDarDeAlta(lote.idLote)}
                 className="px-4 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition duration-300"

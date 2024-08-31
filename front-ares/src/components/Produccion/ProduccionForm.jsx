@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; // Importa la instancia de axios configurada
 
 const ProduccionForm = ({ item, idLote, onClose, refreshData }) => {
   const [formData, setFormData] = useState({
@@ -41,7 +41,6 @@ const ProduccionForm = ({ item, idLote, onClose, refreshData }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -51,7 +50,7 @@ const ProduccionForm = ({ item, idLote, onClose, refreshData }) => {
     }
     try {
       if (formData.idProd) {
-        await axios.put('https://localhost:7249/updproduccion', {
+        await axiosInstance.put('/updproduccion', {
           IdProd: formData.idProd,
           CantCajas: parseInt(formData.cantCajas),
           CantCartones: parseInt(formData.cantCartones),
@@ -62,7 +61,7 @@ const ProduccionForm = ({ item, idLote, onClose, refreshData }) => {
         });
         alert('Producción actualizada exitosamente.');
       } else {
-        await axios.post('https://localhost:7249/postproduccion', {
+        await axiosInstance.post('/postproduccion', {
           CantCajas: parseInt(formData.cantCajas),
           CantCartones: parseInt(formData.cantCartones),
           CantSueltos: parseInt(formData.cantSueltos),
@@ -95,85 +94,91 @@ const ProduccionForm = ({ item, idLote, onClose, refreshData }) => {
   };
 
   return (
-    <div className="p-6 bg-white shadow-lg rounded-lg max-w-full w-full">
-      <h3 className="text-3xl font-bold text-gray-800 mb-6">
+    <div className="p-4 md:p-6 rounded-lg shadow-md mb-6" style={{ backgroundColor: '#F5F5DC' }}>
+      <h3 className="text-lg md:text-xl font-bold mb-4" style={{ color: '#8B4513' }}>
         {formData.idProd ? 'Actualizar Producción' : 'Agregar Producción'}
       </h3>
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
-          <div className="col-span-1">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Cajas</label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-semibold mb-1" style={{ color: '#8B4513' }}>Cajas</label>
             <input
               type="number"
               name="cantCajas"
               value={formData.cantCajas}
               onChange={handleChange}
               placeholder="Cajas"
-              className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2"
+              style={{ borderColor: '#8B4513', focusRingColor: '#6B8E23' }}
               min="0"
             />
-            {errors.cantCajas && <p className="text-red-500 text-xs mt-2">{errors.cantCajas}</p>}
+            {errors.cantCajas && <p className="text-xs mt-1" style={{ color: '#B22222' }}>{errors.cantCajas}</p>}
           </div>
 
-          <div className="col-span-1">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Cartones</label>
+          <div>
+            <label className="block text-sm font-semibold mb-1" style={{ color: '#8B4513' }}>Cartones</label>
             <input
               type="number"
               name="cantCartones"
               value={formData.cantCartones}
               onChange={handleChange}
               placeholder="Cartones"
-              className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2"
+              style={{ borderColor: '#8B4513', focusRingColor: '#6B8E23' }}
               min="0"
             />
-            {errors.cantCartones && <p className="text-red-500 text-xs mt-2">{errors.cantCartones}</p>}
+            {errors.cantCartones && <p className="text-xs mt-1" style={{ color: '#B22222' }}>{errors.cantCartones}</p>}
           </div>
 
-          <div className="col-span-1">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Sueltos</label>
+          <div>
+            <label className="block text-sm font-semibold mb-1" style={{ color: '#8B4513' }}>Sueltos</label>
             <input
               type="number"
               name="cantSueltos"
               value={formData.cantSueltos}
               onChange={handleChange}
               placeholder="Sueltos"
-              className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2"
+              style={{ borderColor: '#8B4513', focusRingColor: '#6B8E23' }}
               min="0"
             />
-            {errors.cantSueltos && <p className="text-red-500 text-xs mt-2">{errors.cantSueltos}</p>}
+            {errors.cantSueltos && <p className="text-xs mt-1" style={{ color: '#B22222' }}>{errors.cantSueltos}</p>}
           </div>
 
-          <div className="col-span-1">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Defectuosos</label>
+          <div>
+            <label className="block text-sm font-semibold mb-1" style={{ color: '#8B4513' }}>Defectuosos</label>
             <input
               type="number"
               name="defectuosos"
               value={formData.defectuosos}
               onChange={handleChange}
               placeholder="Defectuosos"
-              className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2"
+              style={{ borderColor: '#8B4513', focusRingColor: '#6B8E23' }}
               min="0"
             />
-            {errors.defectuosos && <p className="text-red-500 text-xs mt-2">{errors.defectuosos}</p>}
+            {errors.defectuosos && <p className="text-xs mt-1" style={{ color: '#B22222' }}>{errors.defectuosos}</p>}
           </div>
 
-          <div className="col-span-1">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Fecha de Registro</label>
+          <div>
+            <label className="block text-sm font-semibold mb-1" style={{ color: '#8B4513' }}>Fecha de Registro</label>
             <input
               type="date"
               name="fechaRegistroP"
               value={formData.fechaRegistroP}
               onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2"
+              style={{ borderColor: '#8B4513', focusRingColor: '#6B8E23' }}
             />
-            {errors.fechaRegistroP && <p className="text-red-500 text-xs mt-2">{errors.fechaRegistroP}</p>}
+            {errors.fechaRegistroP && <p className="text-xs mt-1" style={{ color: '#B22222' }}>{errors.fechaRegistroP}</p>}
           </div>
         </div>
 
-        <div className="flex justify-end mt-6 space-x-3">
+        <div className="flex justify-end mt-4">
           <button
             type="submit"
-            className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-300"
+            className="px-4 py-2 font-semibold rounded-md focus:outline-none focus:ring-2"
+            style={{ backgroundColor: '#6B8E23', color: '#FFFFFF', hoverBackgroundColor: '#5A7A1B', focusRingColor: '#6B8E23' }}
             disabled={loading}
           >
             {formData.idProd ? 'Actualizar' : 'Agregar'}
@@ -181,14 +186,31 @@ const ProduccionForm = ({ item, idLote, onClose, refreshData }) => {
           <button
             type="button"
             onClick={onClose}
-            className="px-6 py-3 bg-gray-600 text-white font-semibold rounded-lg shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-colors duration-300"
+            className="ml-2 px-4 py-2 font-semibold rounded-md focus:outline-none focus:ring-2"
+            style={{ backgroundColor: '#FFD700', color: '#FFFFFF', hoverBackgroundColor: '#E6C200', focusRingColor: '#FFD700' }}
           >
             Cancelar
+          </button>
+          <button
+            type="button"
+            onClick={() => setFormData({
+              cantCajas: '',
+              cantCartones: '',
+              cantSueltos: '',
+              defectuosos: '',
+              fechaRegistroP: ''
+            })}
+            className="ml-2 px-4 py-2 font-semibold rounded-md focus:outline-none focus:ring-2"
+            style={{ backgroundColor: '#808080', color: '#FFFFFF', hoverBackgroundColor: '#696969', focusRingColor: '#808080' }}
+          >
+            Limpiar
           </button>
         </div>
       </form>
     </div>
   );
+
+
 
 };
 

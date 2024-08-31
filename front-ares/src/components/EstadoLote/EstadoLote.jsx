@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; // Importa la instancia de axios configurada
 import { useParams } from 'react-router-dom';
 import EstadoLoteForm from './EstadoLoteForm'; // Importa el formulario
 import { useLocation } from 'react-router-dom';
@@ -17,14 +17,13 @@ const EstadoLote = () => {
     const location = useLocation();
     const { estadoBaja } = location.state || {};
 
-
     const isDisabled = estadoBaja !== undefined ? estadoBaja : false;
 
     useEffect(() => {
         // Función para obtener el estado de los registros de 'EstadoLote'
         const fetchEstadoLote = async () => {
             try {
-                const response = await axios.get(`https://localhost:7249/getestadolote?idLote=${idLote}`);
+                const response = await axiosInstance.get(`/getestadolote?idLote=${idLote}`);
                 const sortedData = response.data.sort((a, b) => new Date(b.fechaRegistro) - new Date(a.fechaRegistro));
                 setEstadoLote(sortedData);
             } catch (error) {
@@ -35,7 +34,7 @@ const EstadoLote = () => {
         // Función para obtener el estado del lote (si está dado de baja o no)
         const fetchLoteStatus = async () => {
             try {
-                const response = await axios.get(`https://localhost:7249/getlote?idLote=${idLote}`); // Cambia a tu endpoint adecuado
+                const response = await axiosInstance.get(`/getlote?idLote=${idLote}`); // Cambia a tu endpoint adecuado
                 setIsLoteBaja(response.data.estadoBaja); // Almacena el estado de baja del lote
             } catch (error) {
                 console.error('Error fetching lote status:', error);
@@ -105,7 +104,7 @@ const EstadoLote = () => {
         const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar este estado?");
         if (confirmDelete) {
             try {
-                await axios.put(`https://localhost:7249/api/estadolote/updateestado/${idEstado}`, {
+                await axiosInstance.put(`/api/estadolote/updateestado/${idEstado}`, {
                     estado: false,
                 });
                 alert('Estado eliminado exitosamente');
@@ -135,7 +134,7 @@ const EstadoLote = () => {
         setSelectedEstado(null);
         const fetchEstadoLote = async () => {
             try {
-                const response = await axios.get(`https://localhost:7249/getestadolote?idLote=${idLote}`);
+                const response = await axiosInstance.get(`/getestadolote?idLote=${idLote}`);
                 const sortedData = response.data.sort((a, b) => new Date(b.fechaRegistro) - new Date(a.fechaRegistro));
                 setEstadoLote(sortedData);
             } catch (error) {
@@ -146,16 +145,15 @@ const EstadoLote = () => {
     };
 
     return (
-        <div className="p-6 bg-white shadow-lg rounded-lg max-w-full w-full">
-            <h2 className="text-3xl font-bold text-gray-800 mb-6">Estado del Lote {idLote}</h2>
+        <div className="p-6 bg-yellow-50 shadow-lg rounded-lg max-w-full w-full">
+            <h2 className="text-3xl font-bold text-green-900 mb-6">Estado del Lote {idLote}</h2>
 
-            {/* Solo mostrar el botón y el formulario si el lote no está dado de baja */}
             {!isLoteBaja && (
                 <>
                     <button
                         disabled={isDisabled}
                         onClick={handleAddNew}
-                        className={`px-6 py-3 text-white font-semibold rounded-lg transition-colors duration-300 ${isDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} mb-6`}
+                        className={`px-6 py-3 text-white font-semibold rounded-lg transition-colors duration-300 ${isDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-700 hover:bg-green-800'} mb-6`}
                     >
                         {showForm ? 'Ocultar Formulario' : 'Agregar Nueva Clasificación'}
                     </button>
@@ -176,25 +174,28 @@ const EstadoLote = () => {
             {estadoLote.length > 0 ? (
                 <>
                     <div className="w-full overflow-x-auto">
-                        <table className="w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
-                            <thead className="bg-gray-100">
+                        <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+                            <thead className="bg-green-700 text-white">
                                 <tr>
                                     <th
-                                        className="py-3 px-6 text-left text-sm font-semibold text-gray-700 cursor-pointer hover:bg-gray-200"
+                                        className="py-3 px-6 text-left text-sm font-semibold cursor-pointer hover:bg-green-800"
                                         onClick={handleSortByDate}
                                     >
                                         Fecha de Registro {sortDirection === 'asc' ? '▲' : '▼'}
                                     </th>
-                                    <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Cantidad de Gallinas</th>
-                                    <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Bajas</th>
-                                    <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Semana</th>
-                                    <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Etapa</th>
-                                    <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Acciones</th>
+                                    <th className="py-3 px-6 text-left text-sm font-semibold">Cantidad de Gallinas</th>
+                                    <th className="py-3 px-6 text-left text-sm font-semibold">Bajas</th>
+                                    <th className="py-3 px-6 text-left text-sm font-semibold">Semana</th>
+                                    <th className="py-3 px-6 text-left text-sm font-semibold">Etapa</th>
+                                    <th className="py-3 px-6 text-left text-sm font-semibold">Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody className="text-gray-600">
+                            <tbody className="text-gray-700">
                                 {currentItems.map((estado) => (
-                                    <tr key={estado.idEstado} className="border-b border-gray-200">
+                                    <tr
+                                        key={estado.idEstado}
+                                        className={`border-b border-gray-200 hover:bg-yellow-50 ${estado.idEstado === mostRecentRecord.idEstado ? 'bg-green-100' : ''}`}
+                                    >
                                         <td className="py-3 px-6 whitespace-nowrap">{new Date(estado.fechaRegistro).toLocaleDateString()}</td>
                                         <td className="py-3 px-6 whitespace-nowrap">{estado.cantidadG}</td>
                                         <td className="py-3 px-6 whitespace-nowrap">{estado.bajas}</td>
@@ -228,19 +229,19 @@ const EstadoLote = () => {
                     <div className="flex justify-between items-center mt-6">
                         <button
                             onClick={handlePrevPage}
-                            className="px-6 py-3 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-colors duration-300"
+                            className="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-800 transition-colors duration-300"
                             disabled={currentPage === 1}
                         >
                             Anterior
                         </button>
 
-                        <span className="text-lg text-gray-700">
+                        <span className="text-lg text-green-900">
                             Página {currentPage} de {totalPages}
                         </span>
 
                         <button
                             onClick={handleNextPage}
-                            className="px-6 py-3 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-colors duration-300"
+                            className="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-800 transition-colors duration-300"
                             disabled={currentPage >= totalPages}
                         >
                             Siguiente
@@ -248,10 +249,12 @@ const EstadoLote = () => {
                     </div>
                 </>
             ) : (
-                <p className="text-gray-600 text-lg">No hay registros de estado para este lote.</p>
+                <p className="text-gray-700 text-lg">No hay registros de estado para este lote.</p>
             )}
         </div>
     );
+
+
 };
 
 export default EstadoLote;

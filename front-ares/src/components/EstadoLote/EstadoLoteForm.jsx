@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; // Importa la instancia de axios configurada
 
 const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isDisabled }) => {
     const [formData, setFormData] = useState({
@@ -25,7 +25,7 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
     useEffect(() => {
         const fetchEtapas = async () => {
             try {
-                const response = await axios.get('https://localhost:7249/getetapas');
+                const response = await axiosInstance.get('/getetapas');
                 setEtapas(response.data);
             } catch (error) {
                 console.error('Error fetching etapas:', error);
@@ -75,7 +75,7 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
         if (validateForm()) {
             try {
                 if (isEditing) {
-                    await axios.put('https://localhost:7249/putestadolote', {
+                    await axiosInstance.put('/putestadolote', {
                         idEstado: estadoData.idEstado,
                         bajas: parseInt(formData.bajas, 10),
                         semana: parseInt(formData.semana, 10),
@@ -84,7 +84,7 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
                     });
                     alert('Estado del lote actualizado exitosamente');
                 } else {
-                    await axios.post('https://localhost:7249/postestadolote', {
+                    await axiosInstance.post('/postestadolote', {
                         bajas: parseInt(formData.bajas, 10),
                         fechaRegistro: formData.fechaRegistro,
                         semana: parseInt(formData.semana, 10),
@@ -117,42 +117,42 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6 p-6 bg-white shadow-lg rounded-lg">
+        <form onSubmit={handleSubmit} className="space-y-6 p-6 bg-yellow-50 shadow-lg rounded-lg mb-4" style={{ backgroundColor: '#F5F5DC' }}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="col-span-1">
-                    <label className="block text-sm font-semibold text-gray-700">Bajas</label>
+                    <label className="block text-sm font-semibold text-green-900">Bajas</label>
                     <input
                         type="number"
                         name="bajas"
                         value={formData.bajas}
                         onChange={handleChange}
                         disabled={isDisabled}
-                        className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600"
                         placeholder="Ingrese el número de bajas"
                     />
-                    {errors.bajas && <p className="text-red-500 text-xs mt-2">{errors.bajas}</p>}
+                    {errors.bajas && <p className="text-red-600 text-xs mt-2">{errors.bajas}</p>}
                 </div>
                 <div className="col-span-1">
-                    <label className="block text-sm font-semibold text-gray-700">Semana</label>
+                    <label className="block text-sm font-semibold text-green-900">Semana</label>
                     <input
                         type="number"
                         name="semana"
                         value={formData.semana}
                         onChange={handleChange}
                         disabled={isDisabled}
-                        className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600"
                         placeholder="Ingrese la semana"
                     />
-                    {errors.semana && <p className="text-red-500 text-xs mt-2">{errors.semana}</p>}
+                    {errors.semana && <p className="text-red-600 text-xs mt-2">{errors.semana}</p>}
                 </div>
                 <div className="col-span-1">
-                    <label className="block text-sm font-semibold text-gray-700">Etapa</label>
+                    <label className="block text-sm font-semibold text-green-900">Etapa</label>
                     <select
                         name="idEtapa"
                         value={formData.idEtapa}
                         onChange={handleChange}
                         disabled={isDisabled}
-                        className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600"
                     >
                         <option value="" disabled>Seleccione una etapa</option>
                         {etapas.map((etapa) => (
@@ -161,25 +161,25 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
                             </option>
                         ))}
                     </select>
-                    {errors.idEtapa && <p className="text-red-500 text-xs mt-2">{errors.idEtapa}</p>}
+                    {errors.idEtapa && <p className="text-red-600 text-xs mt-2">{errors.idEtapa}</p>}
                 </div>
                 {!isEditing && (
                     <div className="col-span-1">
-                        <label className="block text-sm font-semibold text-gray-700">Fecha de Registro</label>
+                        <label className="block text-sm font-semibold text-green-900">Fecha de Registro</label>
                         <input
                             type="date"
                             name="fechaRegistro"
                             value={formData.fechaRegistro}
                             onChange={handleChange}
                             disabled={isDisabled}
-                            className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600"
                         />
-                        {errors.fechaRegistro && <p className="text-red-500 text-xs mt-2">{errors.fechaRegistro}</p>}
+                        {errors.fechaRegistro && <p className="text-red-600 text-xs mt-2">{errors.fechaRegistro}</p>}
                     </div>
                 )}
                 {isEditing && (
                     <div className="col-span-1">
-                        <label className="block text-sm font-semibold text-gray-700">Fecha de Registro</label>
+                        <label className="block text-sm font-semibold text-green-900">Fecha de Registro</label>
                         <input
                             type="date"
                             name="fechaRegistro"
@@ -187,7 +187,7 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
                             disabled
                             className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none"
                         />
-                        <p className="text-gray-500 text-xs mt-2">Este campo no se puede modificar.</p>
+                        <p className="text-gray-600 text-xs mt-2">Este campo no se puede modificar.</p>
                     </div>
                 )}
             </div>
@@ -218,6 +218,7 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
             </div>
         </form>
     );
+
 };
 
 export default EstadoLoteForm;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; // Importa la instancia de axios configurada
 
 const LoteForm = ({ loteData, razas, lotes, isEditing, onCancel, onSubmit, idLote }) => {
   const [formData, setFormData] = useState({
@@ -28,7 +28,7 @@ const LoteForm = ({ loteData, razas, lotes, isEditing, onCancel, onSubmit, idLot
 
     const fetchCorrales = async () => {
       try {
-        const response = await axios.get('https://localhost:7249/getcorral');
+        const response = await axiosInstance.get('/getcorral');
         const corralesHabilitados = response.data.filter(corral => corral.estado === true); // Filtra por estado habilitado (true)
         setCorrales(corralesHabilitados);
         console.log('Corrales habilitados:', corralesHabilitados); // Verifica que se están cargando los corrales habilitados
@@ -40,7 +40,7 @@ const LoteForm = ({ loteData, razas, lotes, isEditing, onCancel, onSubmit, idLot
     const fetchEstadoLote = async () => {
       if (idLote) {
         try {
-          const response = await axios.get(`https://localhost:7249/getestadolote?idLote=${idLote}`);
+          const response = await axiosInstance.get(`/getestadolote?idLote=${idLote}`);
 
           if (response.data && response.data.length > 0) {
             setEstadoLoteExists(true); // Si existe un registro, establecemos el estado a true

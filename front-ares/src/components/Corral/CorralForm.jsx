@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance.jsx';
 
 const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
     const [formData, setFormData] = useState({
@@ -73,7 +73,7 @@ const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
         e.preventDefault();
         if (validateForm()) {
             try {
-                const url = isEditing ? `https://localhost:7249/putcorral` : `https://localhost:7249/postcorral`;
+                const url = isEditing ? `/putcorral` : `/postcorral`; // Usando la instancia de axios
                 const method = isEditing ? 'put' : 'post';
 
                 // Construye el payload sin incluir `idCorral` si no está definido o es una cadena vacía
@@ -97,9 +97,7 @@ const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
 
                 console.log('Datos enviados:', payload);
 
-                await axios[method](url, payload, {
-                    headers: { 'Content-Type': 'application/json' }
-                });
+                await axiosInstance[method](url, payload); // Usando la instancia de axios
 
                 alert(`Corral ${isEditing ? 'actualizado' : 'creado'} exitosamente`);
 
@@ -112,8 +110,6 @@ const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
             }
         }
     };
-
-
 
     const handleClear = () => {
         setFormData({

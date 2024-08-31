@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import LoteSelector from './GestionLote/LoteSelector.jsx';
 import GraficasLotes from './GestionLote/GraficasLote.jsx';
 

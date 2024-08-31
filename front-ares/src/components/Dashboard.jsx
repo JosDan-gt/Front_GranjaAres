@@ -1,43 +1,54 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import ProduccionGrafica from '../components/Dashboard/produccionGrafica';
+import React, { useState, useEffect, useContext } from 'react';
+import axiosInstance from '../components/axiosInstance';
+import ProduccionGrafica from '../components/Dashboard/produccionGrafica.jsx';
+import ClasificacionGrafica from '../components/Dashboard/clasificacionGrafica.jsx';
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
+import { AuthContext } from '../components/Context/AuthContext.jsx';
 
 const Dashboard = () => {
   const [lotes, setLotes] = useState([]);
   const [datosLote, setDatosLote] = useState(null);
   const [loteActual, setLoteActual] = useState(null);
-  const [produccionDiaria, setProduccionDiaria] = useState([]);
-  const [produccionSemanal, setProduccionSemanal] = useState([]);
-  const [produccionMensual, setProduccionMensual] = useState([]);
-  const [clasificacionDiaria, setClasificacionDiaria] = useState([]);
-  const [clasificacionSemanal, setClasificacionSemanal] = useState([]);
-  const [clasificacionMensual, setClasificacionMensual] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [period, setPeriod] = useState('diario');
+  const navigate = useNavigate();
+  const { setIsAuthenticated } = useContext(AuthContext);
 
+  // Verificar autenticación al montar el componente
+  useEffect(() => {
+    const token = localStorage.getItem('token') || Cookies.get('token');
+    if (token) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+      navigate('/login', { replace: true });
+    }
+  }, [navigate, setIsAuthenticated]);
+
+  // Cargar lotes cuando el componente se monta o cuando se cambia el estado de autenticación
   useEffect(() => {
     const fetchLotes = async () => {
       try {
-        const response = await axios.get('https://localhost:7249/getlotes');
+        const response = await axiosInstance.get('/getlotes');
         setLotes(response.data);
 
         if (response.data.length > 0) {
-          setLoteActual(response.data[0].idLote);
+          setLoteActual(response.data[0].idLote); // Selecciona el primer lote automáticamente
         }
       } catch (error) {
         console.error('Error fetching lotes:', error);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchLotes();
   }, []);
 
+  // Cargar los detalles del lote seleccionado
   useEffect(() => {
     if (loteActual !== null) {
       const fetchLoteData = async () => {
         try {
-          const response = await axios.get(`https://localhost:7249/api/dashboard/infolote/${loteActual}`);
+          const response = await axiosInstance.get(`/api/dashboard/infolote/${loteActual}`);
           setDatosLote(response.data);
         } catch (error) {
           console.error('Error fetching lote data:', error);
@@ -47,67 +58,6 @@ const Dashboard = () => {
       fetchLoteData();
     }
   }, [loteActual]);
-
-  useEffect(() => {
-    if (loteActual !== null) {
-      const fetchProduccion = async (periodo) => {
-        try {
-          const response = await axios.get(`https://localhost:7249/api/dashboard/produccion/${loteActual}/${periodo}`);
-          switch (periodo) {
-            case 'diario':
-              setProduccionDiaria(response.data);
-              break;
-            case 'semanal':
-              setProduccionSemanal(response.data);
-              break;
-            case 'mensual':
-              setProduccionMensual(response.data);
-              break;
-            default:
-              break;
-          }
-        } catch (error) {
-          console.error(`Error fetching producción ${periodo}:`, error);
-        }
-      };
-
-      fetchProduccion('diario');
-      fetchProduccion('semanal');
-      fetchProduccion('mensual');
-    }
-  }, [loteActual]);
-
-  
-  useEffect(() => {
-    if (loteActual !== null) {
-      const fetchClasificacion = async (periodo) => {
-        try {
-          const response = await axios.get(`https://localhost:7249/api/dashboard/clasificacion/${loteActual}/${periodo}`);
-          switch (periodo) {
-            case 'diario':
-              setClasificacionDiaria(response.data);
-              break;
-            case 'semanal':
-              setClasificacionSemanal(response.data);
-              break;
-            case 'mensual':
-              setClasificacionMensual(response.data);
-              break;
-            default:
-              break;
-          }
-        } catch (error) {
-          console.error(`Error fetching clasificación ${periodo}:`, error);
-        }
-      };
-
-      fetchClasificacion('diario');
-      fetchClasificacion('semanal');
-      fetchClasificacion('mensual');
-    }
-  }, [loteActual]);
-
-  if (loading) return <div className="text-center text-gray-500 mt-20">Cargando lotes...</div>;
 
   if (!lotes.length) {
     return (
@@ -120,61 +70,85 @@ const Dashboard = () => {
     );
   }
 
-  if (!datosLote) return <div className="text-center text-gray-500 mt-20">Cargando datos del lote...</div>;
-
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Lote Actual: {loteActual}</h2>
-      <div className="mb-4">
-        <label htmlFor="lote-select" className="block text-lg font-semibold mb-2">Selecciona un Lote:</label>
-        <select
-          id="lote-select"
-          className="bg-white border border-gray-300 p-2 rounded"
-          value={loteActual}
-          onChange={(e) => setLoteActual(parseInt(e.target.value))}
-        >
-          {lotes.map((lote) => (
-            <option key={lote.idLote} value={lote.idLote}>
-              {lote.numLote}
-            </option>
-          ))}
-        </select>
+    <div className="p-6 bg-yellow-50 min-h-screen">
+      <div className="mb-8 text-center">
+        <h1 className="text-4xl font-extrabold text-green-900">Dashboard</h1>
+
+        <div className="mb-4">
+          <label htmlFor="lote-select" className="block text-2xl font-semibold mb-2 text-green-900">Selecciona un Lote:</label>
+          <select
+            id="lote-select"
+            className="bg-white border border-green-300 p-3 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+            value={loteActual || ''}
+            onChange={(e) => setLoteActual(parseInt(e.target.value))}
+          >
+            {lotes.map((lote) => (
+              <option key={lote.idLote} value={lote.idLote}>
+                {lote.numLote}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      <div className="bg-white shadow-lg rounded-lg p-6 mb-4">
-        <h3 className="text-2xl font-semibold text-gray-700 mb-6">Detalles del Lote</h3>
+      <div className="bg-white shadow-lg rounded-lg p-6 mb-8">
+        <h3 className="text-2xl font-bold text-yellow-700 mb-6">Detalles del Lote</h3>
+        <h2 className="text-2xl font-semibold mb-4 text-green-700">
+          Lote Actual: {lotes.find((lote) => lote.idLote === loteActual)?.numLote || 'No disponible'}
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-gray-50 p-4 rounded-md shadow-sm">
-            <h4 className="font-semibold text-gray-600 mb-2">Producción Total</h4>
-            <p className="text-gray-800">{datosLote.produccionTotal || 0} huevos</p>
+          <div className="bg-green-50 p-4 rounded-lg shadow">
+            <h4 className="font-semibold text-green-800 mb-2">Producción Total</h4>
+            <p className="text-green-900">{datosLote?.produccionTotal || 0} huevos</p>
           </div>
-          <div className="bg-gray-50 p-4 rounded-md shadow-sm">
-            <h4 className="font-semibold text-gray-600 mb-2">Cantidad de Gallinas</h4>
-            <p className="text-gray-800">{datosLote.cantidadGallinas || 'No disponible'}</p>
+          <div className="bg-green-50 p-4 rounded-lg shadow">
+            <h4 className="font-semibold text-green-800 mb-2">Cantidad de Gallinas Inicial</h4>
+            <p className="text-green-900">{datosLote?.cantidadGallinasActual || 'No disponible'}</p>
           </div>
-          <div className="bg-gray-50 p-4 rounded-md shadow-sm">
-            <h4 className="font-semibold text-gray-600 mb-2">Cantidad de Gallinas Actual</h4>
-            <p className="text-gray-800">{datosLote.cantidadGallinasActual || 'No disponible'}</p>
+          <div className="bg-green-50 p-4 rounded-lg shadow">
+            <h4 className="font-semibold text-green-800 mb-2">Cantidad de Gallinas Actual</h4>
+            <p className="text-green-900">{datosLote?.cantidadGallinas || 'No disponible'}</p>
           </div>
-          <div className="bg-gray-50 p-4 rounded-md shadow-sm">
-            <h4 className="font-semibold text-gray-600 mb-2">Bajas</h4>
-            <p className="text-gray-800">{datosLote.bajas != null ? datosLote.bajas : 'No disponible'}</p>
+          <div className="bg-green-50 p-4 rounded-lg shadow">
+            <h4 className="font-semibold text-green-800 mb-2">Bajas</h4>
+            <p className="text-green-900">{datosLote?.bajas != null ? datosLote.bajas : 'No disponible'}</p>
           </div>
-          <div className="bg-gray-50 p-4 rounded-md shadow-sm">
-            <h4 className="font-semibold text-gray-600 mb-2">Raza</h4>
-            <p className="text-gray-800">{datosLote.raza || 'No disponible'}</p>
+          <div className="bg-green-50 p-4 rounded-lg shadow">
+            <h4 className="font-semibold text-green-800 mb-2">Raza</h4>
+            <p className="text-green-900">{datosLote?.raza || 'No disponible'}</p>
           </div>
         </div>
       </div>
 
-      <ProduccionGrafica
-        produccionDiaria={produccionDiaria}
-        produccionSemanal={produccionSemanal}
-        produccionMensual={produccionMensual}
-        clasificacionDiaria={clasificacionDiaria}
-        clasificacionSemanal={clasificacionSemanal}
-        clasificacionMensual={clasificacionMensual}
-      />
+      <div>
+        <div className="flex justify-center space-x-2 mb-6">
+          <button
+            onClick={() => setPeriod('diario')}
+            className={`px-4 py-2 rounded-lg ${period === 'diario' ? 'bg-blue-700' : 'bg-blue-600'} text-white hover:bg-blue-700`}
+          >
+            Diario
+          </button>
+          <button
+            onClick={() => setPeriod('semanal')}
+            className={`px-4 py-2 rounded-lg ${period === 'semanal' ? 'bg-green-700' : 'bg-green-600'} text-white hover:bg-green-700`}
+          >
+            Semanal
+          </button>
+          <button
+            onClick={() => setPeriod('mensual')}
+            className={`px-4 py-2 rounded-lg ${period === 'mensual' ? 'bg-purple-700' : 'bg-purple-600'} text-white hover:bg-purple-700`}
+          >
+            Mensual
+          </button>
+        </div>
+        <div className="mb-4">
+          <ProduccionGrafica idLote={loteActual} period={period} />
+        </div>
+        <div>
+          <ClasificacionGrafica idLote={loteActual} period={period} />
+        </div>
+      </div>
     </div>
   );
 };

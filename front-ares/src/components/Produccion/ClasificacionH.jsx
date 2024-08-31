@@ -6,6 +6,7 @@ import ClasificacionForm from './ClasificacionForm';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useLocation } from 'react-router-dom';
+import axiosInstance from '../axiosInstance';
 
 const ClasificacionH = () => {
   const { id } = useParams();
@@ -20,7 +21,7 @@ const ClasificacionH = () => {
   const location = useLocation();
   const { estadoBaja } = location.state || {};
 
-  
+
   const [dateRange, setDateRange] = useState([null, null]);
   const [selectedDateType, setSelectedDateType] = useState('fechaClaS');
 
@@ -29,7 +30,7 @@ const ClasificacionH = () => {
   const refreshData = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`https://localhost:7249/clasific1/${id}`);
+      const response = await axiosInstance.get(`/clasific1?IdLote=${id}`);
       const data = Array.isArray(response.data) ? response.data : [response.data];
       setClasificacion(sortData(data));
     } catch (error) {
@@ -104,16 +105,21 @@ const ClasificacionH = () => {
   };
 
   return (
-    <div className="p-6 bg-white shadow-lg rounded-lg max-w-full w-full">
-      <h2 className="text-3xl font-bold text-gray-800 mb-6">Clasificación de Huevos</h2>
+    <div className="p-4 sm:p-6 bg-yellow-50 shadow-lg rounded-lg max-w-full w-full ">
+      <h2 className="text-2xl md:text-3xl font-bold text-green-900 mb-4 md:mb-6 text-center md:text-left">
+        Clasificación de Huevos
+      </h2>
 
-      <button
-        disabled={isDisabled}
-        onClick={handleAddClick}
-        className={`px-6 py-3 text-white font-semibold rounded-lg transition-colors duration-300 ${isDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} mb-6`}
-      >
-        {showForm ? 'Ocultar Formulario' : 'Agregar Nueva Clasificación'}
-      </button>
+      <div className="flex flex-col md:flex-row justify-between items-center mb-4 md:mb-6">
+        <button
+          disabled={isDisabled}
+          onClick={handleAddClick}
+          className={`w-full md:w-auto px-4 md:px-6 py-2 md:py-3 font-semibold rounded-lg transition-colors duration-300 ${isDisabled ? 'bg-gray-400 cursor-not-allowed text-gray-500' : 'bg-green-700 text-white hover:bg-green-800'
+            } mb-4 md:mb-0`}
+        >
+          {showForm ? 'Ocultar Formulario' : 'Agregar Nueva Clasificación'}
+        </button>
+      </div>
 
       {showForm && (
         <ClasificacionForm
@@ -126,31 +132,31 @@ const ClasificacionH = () => {
         />
       )}
 
-      <div className="flex flex-wrap items-center space-x-4 mb-4 mt-5">
+      <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 mb-4 md:mb-6">
         <input
           type="text"
           placeholder="Buscar por tamaño..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="px-4 py-2 border rounded"
+          className="px-4 py-2 border border-gray-300 rounded-md w-full md:w-auto"
         />
 
         <select
           value={selectedDateType}
           onChange={handleDateTypeChange}
-          className="px-4 py-2 border rounded"
+          className="px-4 py-2 border border-gray-300 rounded-md w-full md:w-auto"
         >
           <option value="fechaClaS">Fecha de Clasificación</option>
           <option value="fechaRegistroP">Fecha de Producción</option>
         </select>
 
-        <div className="flex items-center space-x-2">
+        <div className="w-full md:w-auto">
           <DatePicker
             selectsRange
             startDate={dateRange[0]}
             endDate={dateRange[1]}
             onChange={handleDateRangeChange}
-            className="px-4 py-2 border rounded"
+            className="px-4 py-2 border border-gray-300 rounded-md w-full md:w-auto"
             isClearable={true}
             placeholderText="Seleccionar rango de fechas"
           />
@@ -160,79 +166,75 @@ const ClasificacionH = () => {
       {loading ? (
         <p className="text-gray-700">Cargando datos...</p>
       ) : filteredData.length > 0 ? (
-        <>
-          <div className="w-full overflow-x-auto">
-            <table className="w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Tamaño</th>
-                  <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Cajas</th>
-                  <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Cartones Extra</th>
-                  <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Huevos Sueltos</th>
-                  <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Cantidad Total</th>
-                  <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">
-                    <div className="flex items-center">
-                      Fecha de Clasificación
-                      <button
-                        onClick={handleSortChange}
-                        className="ml-2 text-gray-600 flex items-center"
-                      >
-                        {sortOrder === 'asc' ? '▲' : '▼'}
-                      </button>
-                    </div>
-                  </th>
-                  <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Fecha de Producción</th>
-                  <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Acciones</th>
+        <div className="w-full overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+            <thead className="bg-green-700 text-white">
+              <tr>
+                <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
+                  Tamaño
+                </th>
+                <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
+                  Cajas
+                </th>
+                <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
+                  Cartones Extra
+                </th>
+                <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
+                  Huevos Sueltos
+                </th>
+                <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
+                  Cantidad Total
+                </th>
+                <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
+                  <div className="flex items-center">
+                    Fecha de Clasificación
+                    <button
+                      onClick={handleSortChange}
+                      className="ml-2 text-gray-200 flex items-center"
+                    >
+                      {sortOrder === 'asc' ? '▲' : '▼'}
+                    </button>
+                  </div>
+                </th>
+                <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
+                  Fecha de Producción
+                </th>
+                <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
+                  Acciones
+                </th>
+              </tr>
+            </thead>
+            <tbody className="text-gray-700 text-xs md:text-sm">
+              {currentItems.map((item, index) => (
+                <tr
+                  key={index}
+                  className={`border-b border-gray-200 hover:bg-yellow-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                    }`}
+                >
+                  <td className="py-3 px-4 md:px-6 whitespace-nowrap">{item.tamano}</td>
+                  <td className="py-3 px-4 md:px-6 whitespace-nowrap">{item.cajas}</td>
+                  <td className="py-3 px-4 md:px-6 whitespace-nowrap">{item.cartonesExtras}</td>
+                  <td className="py-3 px-4 md:px-6 whitespace-nowrap">{item.huevosSueltos}</td>
+                  <td className="py-3 px-4 md:px-6 whitespace-nowrap">{item.totalUnitaria}</td>
+                  <td className="py-3 px-4 md:px-6 whitespace-nowrap">
+                    {item.fechaClaS ? new Date(item.fechaClaS).toLocaleDateString() : 'Sin fecha'}
+                  </td>
+                  <td className="py-3 px-4 md:px-6 whitespace-nowrap">
+                    {item.fechaRegistroP ? new Date(item.fechaRegistroP).toLocaleDateString() : 'Sin fecha'}
+                  </td>
+                  <td className="py-3 px-4 md:px-6 whitespace-nowrap">
+                    <button
+                      onClick={() => handleEditClick(item)}
+                      className="px-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition-colors duration-300"
+                    >
+                      Editar
+                    </button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="text-gray-600">
-                {currentItems.map((item, index) => (
-                  <tr
-                    key={index}
-                    className={`border-b border-gray-200 hover:bg-gray-50 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}
-                  >
-                    <td className="py-3 px-6 whitespace-nowrap">{item.tamano}</td>
-                    <td className="py-3 px-6 whitespace-nowrap">{item.cajas}</td>
-                    <td className="py-3 px-6 whitespace-nowrap">{item.cartonesExtras}</td>
-                    <td className="py-3 px-6 whitespace-nowrap">{item.huevosSueltos}</td>
-                    <td className="py-3 px-6 whitespace-nowrap">{item.totalUnitaria}</td>
-                    <td className="py-3 px-6 whitespace-nowrap">{item.fechaClaS ? new Date(item.fechaClaS).toLocaleDateString() : 'Sin fecha'}</td>
-                    <td className="py-3 px-6 whitespace-nowrap">{item.fechaRegistroP ? new Date(item.fechaRegistroP).toLocaleDateString() : 'Sin fecha'}</td>
-                    <td className="py-3 px-6 whitespace-nowrap">
-                      <button
-                        onClick={() => handleEditClick(item)}
-                        className="px-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition-colors duration-300"
-                      >
-                        Editar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="flex justify-between items-center mt-6">
-            <button
-              onClick={() => paginate(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="px-6 py-3 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-colors duration-300"
-            >
-              Anterior
-            </button>
-
-            <span className="text-lg text-gray-700">
-              Página {currentPage} de {Math.ceil(filteredData.length / itemsPerPage)}
-            </span>
-
-            <button
-              onClick={() => paginate(currentPage + 1)}
-              disabled={currentPage * itemsPerPage >= filteredData.length}
-              className="px-6 py-3 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-colors duration-300"
-            >
-              Siguiente
-            </button>
-          </div>
-        </>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <p className="text-gray-600 text-lg">No hay datos disponibles.</p>
       )}
