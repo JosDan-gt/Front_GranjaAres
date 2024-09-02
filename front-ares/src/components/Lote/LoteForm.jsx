@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axiosInstance from '../axiosInstance'; // Importa la instancia de axios configurada
+import axiosInstance from '../axiosInstance';
 
-const LoteForm = ({ loteData, razas, lotes, isEditing, onCancel, onSubmit, idLote }) => {
+const LoteForm = ({ loteData, razas, lotes, isEditing, onCancel, onSubmit }) => {
   const [formData, setFormData] = useState({
     idLote: '',
     numLote: '',
@@ -10,13 +10,11 @@ const LoteForm = ({ loteData, razas, lotes, isEditing, onCancel, onSubmit, idLot
     fechaAdq: '',
     idCorral: '',
   });
-  const [corrales, setCorrales] = useState([]); // Almacena los corrales aquí
+  const [corrales, setCorrales] = useState([]);
   const [errors, setErrors] = useState({});
   const [estadoLoteExists, setEstadoLoteExists] = useState(false);
 
   useEffect(() => {
-    console.log('idLote:', idLote); // Verifica si idLote tiene un valor
-
     setFormData(loteData || {
       idLote: '',
       numLote: '',
@@ -29,35 +27,41 @@ const LoteForm = ({ loteData, razas, lotes, isEditing, onCancel, onSubmit, idLot
     const fetchCorrales = async () => {
       try {
         const response = await axiosInstance.get('/getcorral');
-        const corralesHabilitados = response.data.filter(corral => corral.estado === true); // Filtra por estado habilitado (true)
+        const corralesHabilitados = response.data.filter(corral => corral.estado === true);
         setCorrales(corralesHabilitados);
-        console.log('Corrales habilitados:', corralesHabilitados); // Verifica que se están cargando los corrales habilitados
       } catch (error) {
         console.error('Error al obtener corrales:', error);
       }
     };
 
     const fetchEstadoLote = async () => {
-      if (idLote) {
+      if (loteData && loteData.idLote) {  // Solo se ejecuta si estamos editando un lote existente
         try {
-          const response = await axiosInstance.get(`/getestadolote?idLote=${idLote}`);
+          const response = await axiosInstance.get(`/getestadolote?idLote=${loteData.idLote}`);
+          console.log('Respuesta completa del EstadoLote:', response.data);
 
-          if (response.data && response.data.length > 0) {
-            setEstadoLoteExists(true); // Si existe un registro, establecemos el estado a true
+          if (Array.isArray(response.data) && response.data.length > 0) {
+            setEstadoLoteExists(true);
           } else {
             setEstadoLoteExists(false);
           }
         } catch (error) {
-          console.error('Error fetching EstadoLote:', error);
+          console.error('Error al obtener EstadoLote:', error);
+          setEstadoLoteExists(false);
         }
-      } else {
-        console.log('idLote no está definido.');
       }
     };
 
     fetchCorrales();
-    fetchEstadoLote();
-  }, [loteData, idLote]);
+
+    if (loteData && loteData.idLote) {
+      fetchEstadoLote();
+    }
+  }, [loteData]);
+
+  useEffect(() => {
+    console.log('estadoLoteExists:', estadoLoteExists);
+  }, [estadoLoteExists]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -144,14 +148,13 @@ const LoteForm = ({ loteData, razas, lotes, isEditing, onCancel, onSubmit, idLot
               type="number"
               name="cantidadG"
               value={formData.cantidadG}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              required
-              disabled={estadoLoteExists} // Disable if there's an EstadoLote record
+              onChange={(e) => setFormData({ ...formData, cantidadG: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-200 disabled:cursor-not-allowed"
+              disabled={estadoLoteExists}
             />
             {errors.cantidadG && <p className="text-red-500 text-xs mt-1">{errors.cantidadG}</p>}
             {estadoLoteExists && (
-              <p className="text-yellow-500 text-xs mt-1">Ya existe un registro con esta cantidad de gallinas. No se puede modificar.</p>
+              <p className="text-yellow-500 text-xs mt-1">No se puede modificar la cantidad de gallinas porque ya existe registro del estado del lote.</p>
             )}
           </div>
           <div className="col-span-1">

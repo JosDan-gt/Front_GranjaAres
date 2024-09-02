@@ -14,6 +14,10 @@ import Login from './components/Login/Login.jsx';
 import ProtectedRoute from './components/Login/ProtectedRoute.jsx';
 import { AuthProvider } from './components/Context/AuthContext.jsx';
 import ProduccionG from './components/Produccion/ProduccionG.jsx';
+import Cliente from './components/Ventas/Cliente.jsx';
+import Producto from './components/Ventas/Producto.jsx';
+import Ventas from './components/Ventas/Ventas.jsx';
+import DetalleVentas from './components/Ventas/DetalleVentas.jsx';
 
 
 function App() {
@@ -43,6 +47,10 @@ function App() {
                           <Route path="/estado/:idLote" element={<EstadoLote />} />
                           <Route path="/corrales" element={<Corral />} />
                           <Route path="/gestion" element={<GestionLote />} />
+                          <Route path="/cliente" element={<Cliente />} />
+                          <Route path="/producto" element={<Producto />} />
+                          <Route path="/venta" element={<Ventas />} />
+                          <Route path="/detalleventa" element={<DetalleVentas />} />
                         </Routes>
                       </main>
                     </div>
