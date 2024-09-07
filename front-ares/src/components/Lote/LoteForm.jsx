@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../axiosInstance';
 
-const LoteForm = ({ loteData, razas, lotes, isEditing, onCancel, onSubmit }) => {
+const LoteForm = ({ loteData, lotes, isEditing, onCancel, onSubmit }) => {
   const [formData, setFormData] = useState({
     idLote: '',
     numLote: '',
@@ -10,6 +10,7 @@ const LoteForm = ({ loteData, razas, lotes, isEditing, onCancel, onSubmit }) => 
     fechaAdq: '',
     idCorral: '',
   });
+  const [razas, setRazas] = useState([]);
   const [corrales, setCorrales] = useState([]);
   const [errors, setErrors] = useState({});
   const [estadoLoteExists, setEstadoLoteExists] = useState(false);
@@ -24,6 +25,7 @@ const LoteForm = ({ loteData, razas, lotes, isEditing, onCancel, onSubmit }) => 
       idCorral: '',
     });
 
+    // Función para obtener los corrales habilitados
     const fetchCorrales = async () => {
       try {
         const response = await axiosInstance.get('/getcorral');
@@ -34,6 +36,18 @@ const LoteForm = ({ loteData, razas, lotes, isEditing, onCancel, onSubmit }) => 
       }
     };
 
+    // Función para obtener las razas activas
+    const fetchRazas = async () => {
+      try {
+        const response = await axiosInstance.get('/api/razaG/getrazaG');
+        const razasActivas = response.data.filter(raza => raza.estado);  // Filtra razas activas
+        setRazas(razasActivas);
+      } catch (error) {
+        console.error('Error al obtener razas:', error);
+      }
+    };
+
+    // Función para obtener el estado del lote
     const fetchEstadoLote = async () => {
       if (loteData && loteData.idLote) {  // Solo se ejecuta si estamos editando un lote existente
         try {
@@ -52,7 +66,8 @@ const LoteForm = ({ loteData, razas, lotes, isEditing, onCancel, onSubmit }) => 
       }
     };
 
-    fetchCorrales();
+    fetchCorrales(); // Llama a la función para obtener corrales
+    fetchRazas(); // Llama a la función para obtener razas
 
     if (loteData && loteData.idLote) {
       fetchEstadoLote();
@@ -175,6 +190,7 @@ const LoteForm = ({ loteData, razas, lotes, isEditing, onCancel, onSubmit }) => 
             </select>
             {errors.idRaza && <p className="text-red-500 text-xs mt-1">{errors.idRaza}</p>}
           </div>
+
           <div className="col-span-1">
             <label className="block text-sm font-semibold text-gray-700 mb-1">Fecha de Adquisición</label>
             <input

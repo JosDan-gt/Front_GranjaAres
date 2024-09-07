@@ -32,7 +32,7 @@ const Corral = () => {
 
         const fetchLotes = async () => {
             try {
-                const response = await axiosInstance.get('/getlotes');
+                const response = await axiosInstance.get('/api/lotes');
                 setLotes(response.data);
             } catch (error) {
                 console.error('Error fetching lotes:', error);

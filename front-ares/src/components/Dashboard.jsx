@@ -29,7 +29,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchLotes = async () => {
       try {
-        const response = await axiosInstance.get('/getlotes');
+        const response = await axiosInstance.get('/api/lotes');
         setLotes(response.data);
 
         if (response.data.length > 0) {

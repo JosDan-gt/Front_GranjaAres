@@ -18,6 +18,7 @@ import Cliente from './components/Ventas/Cliente.jsx';
 import Producto from './components/Ventas/Producto.jsx';
 import Ventas from './components/Ventas/Ventas.jsx';
 import DetalleVentas from './components/Ventas/DetalleVentas.jsx';
+import RazaG from './components/Razas/RazasG.jsx';
 
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
                           <Route path="/clasificacion/:id" element={<ClasificacionH />} />
                           <Route path="/estado/:idLote" element={<EstadoLote />} />
                           <Route path="/corrales" element={<Corral />} />
+                          <Route path="/razasg" element={<RazaG />} />
                           <Route path="/gestion" element={<GestionLote />} />
                           <Route path="/cliente" element={<Cliente />} />
                           <Route path="/producto" element={<Producto />} />

@@ -35,6 +35,9 @@ const Sidebar = () => {
             <Link to="/corrales" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Corrales</Link>
           </li>
           <li>
+            <Link to="/razasg" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Raza de Gallina</Link>
+          </li>
+          <li>
             <Link to="/gestion" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Gestión de Lotes</Link>
           </li>
           <li>
