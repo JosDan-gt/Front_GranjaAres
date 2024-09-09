@@ -47,7 +47,7 @@ const Sidebar = () => {
             <Link to="/producto" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Productos</Link>
           </li>
           <li>
-            <Link to="/detalleventa" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Detalle Ventas</Link>
+            <Link to="/venta" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Ventas</Link>
           </li>
         </ul>
       </nav>

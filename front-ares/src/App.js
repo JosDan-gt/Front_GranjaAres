@@ -17,7 +17,6 @@ import ProduccionG from './components/Produccion/ProduccionG.jsx';
 import Cliente from './components/Ventas/Cliente.jsx';
 import Producto from './components/Ventas/Producto.jsx';
 import Ventas from './components/Ventas/Ventas.jsx';
-import DetalleVentas from './components/Ventas/DetalleVentas.jsx';
 import RazaG from './components/Razas/RazasG.jsx';
 
 
@@ -52,7 +51,6 @@ function App() {
                           <Route path="/cliente" element={<Cliente />} />
                           <Route path="/producto" element={<Producto />} />
                           <Route path="/venta" element={<Ventas />} />
-                          <Route path="/detalleventa" element={<DetalleVentas />} />
                         </Routes>
                       </main>
                     </div>
