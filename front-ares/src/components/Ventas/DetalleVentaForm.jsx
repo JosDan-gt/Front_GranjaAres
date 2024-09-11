@@ -4,6 +4,8 @@ import axiosInstance from '../axiosInstance';
 const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
   const [clientes, setClientes] = useState([]);
   const [productos, setProductos] = useState([]);
+  const [direccionCliente, setDireccionCliente] = useState('');
+  const [stockHuevos, setStockHuevos] = useState([]);
   const [formData, setFormData] = useState({
     clienteId: '',
     fechaVenta: '',
@@ -11,27 +13,47 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
   });
 
   useEffect(() => {
-    const fetchClientesYProductos = async () => {
+    const fetchClientesYProductosYStock = async () => {
       try {
         const clientesResponse = await axiosInstance.get('/api/Ventas/ClientesActivos');
         const productosResponse = await axiosInstance.get('/api/Ventas/ProductosActivos');
+        const stockResponse = await axiosInstance.get('/api/Ventas/stockhuevos');
         setClientes(clientesResponse.data);
         setProductos(productosResponse.data);
+        setStockHuevos(stockResponse.data);
       } catch (error) {
-        console.error('Error fetching clientes o productos:', error);
+        console.error('Error fetching clientes, productos o stock:', error);
       }
     };
 
-    fetchClientesYProductos();
+    fetchClientesYProductosYStock();
+  }, []);
 
+  useEffect(() => {
     if (isEditing && venta) {
       setFormData({
         clienteId: venta.clienteId,
         fechaVenta: venta.fechaVenta,
         detallesVenta: venta.detallesVenta || [{ productoId: '', tipoEmpaque: 'Cartón', tamanoHuevo: 'Pequeño', cantidadVendida: 1, precioUnitario: 0 }],
       });
+      const clienteSeleccionado = clientes.find(cliente => cliente.clienteId === venta.clienteId);
+      if (clienteSeleccionado) {
+        setDireccionCliente(clienteSeleccionado.direccion);
+      }
     }
-  }, [venta, isEditing]);
+  }, [venta, isEditing, clientes]);
+
+  const handleClienteChange = (e) => {
+    const clienteId = e.target.value;
+    setFormData({ ...formData, clienteId });
+
+    const clienteSeleccionado = clientes.find(cliente => cliente.clienteId === parseInt(clienteId));
+    if (clienteSeleccionado) {
+      setDireccionCliente(clienteSeleccionado.direccion);
+    } else {
+      setDireccionCliente('');
+    }
+  };
 
   const handleDetailChange = (index, field, value) => {
     const newDetallesVenta = [...formData.detallesVenta];
@@ -51,20 +73,26 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
     setFormData({ ...formData, detallesVenta: newDetallesVenta });
   };
 
+  const handleClearForm = () => {
+    setFormData({
+      clienteId: '',
+      fechaVenta: '',
+      detallesVenta: [{ productoId: '', tipoEmpaque: 'Cartón', tamanoHuevo: 'Pequeño', cantidadVendida: 1, precioUnitario: 0 }],
+    });
+    setDireccionCliente('');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validación simple
     if (!formData.clienteId || !formData.fechaVenta || formData.detallesVenta.length === 0) {
       alert('Por favor, complete todos los campos requeridos.');
       return;
     }
 
     const ventaData = {
-      venta: {
-        clienteId: parseInt(formData.clienteId),
-        fechaVenta: formData.fechaVenta,
-      },
+      ventaId: venta?.ventaId || 0,
+      clienteId: parseInt(formData.clienteId),
       detallesVenta: formData.detallesVenta.map(detalle => ({
         productoId: parseInt(detalle.productoId),
         tipoEmpaque: detalle.tipoEmpaque,
@@ -76,13 +104,11 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
 
     try {
       if (isEditing) {
-        // Lógica de actualización
-        await axiosInstance.put(`/api/Ventas/ActualizarVenta/${venta.ventaId}`, ventaData);
+        await axiosInstance.put(`/api/Ventas/ActualizarVenta`, ventaData);
       } else {
-        // Lógica de inserción
         await axiosInstance.post('/api/Ventas/InsertarDetallesVenta', ventaData);
       }
-      onSubmit(); // Llamar al método onSubmit del componente padre
+      onSubmit();
     } catch (error) {
       console.error('Error al guardar la venta:', error);
       alert('Error al guardar la venta. Revisa la consola para más detalles.');
@@ -96,7 +122,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
         <select
           className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600"
           value={formData.clienteId}
-          onChange={(e) => setFormData({ ...formData, clienteId: e.target.value })}
+          onChange={handleClienteChange}
         >
           <option value="">Seleccione un cliente</option>
           {clientes.map((cliente) => (
@@ -107,6 +133,18 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
         </select>
       </div>
 
+      {direccionCliente && (
+        <div>
+          <label className="block text-sm font-semibold text-green-900">Dirección</label>
+          <input
+            type="text"
+            className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg bg-gray-200 cursor-not-allowed"
+            value={direccionCliente}
+            readOnly
+          />
+        </div>
+      )}
+
       <div>
         <label className="block text-sm font-semibold text-green-900">Fecha de Venta</label>
         <input
@@ -116,6 +154,38 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
           onChange={(e) => setFormData({ ...formData, fechaVenta: e.target.value })}
         />
       </div>
+
+      {/* Mostrar stock disponible */}
+      <div className="bg-white p-4 rounded-lg shadow-md">
+        <h3 className="text-lg font-semibold text-green-900 mb-2 text-center">Stock Disponible</h3>
+        <table className="table-auto w-full bg-gray-50 border border-gray-300 rounded-lg">
+          <thead>
+            <tr className="bg-green-700 text-white">
+              <th className="px-4 py-2 text-center">Tamaño</th>
+              <th className="px-4 py-2 text-center">Cajas</th>
+              <th className="px-4 py-2 text-center">Cartones Extras</th>
+              <th className="px-4 py-2 text-center">Huevos Sueltos</th>
+            </tr>
+          </thead>
+          <tbody>
+            {stockHuevos.map((stock, index) => (
+              <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}>
+                <td className="px-4 py-2 text-center">{stock.tamano}</td>
+                <td className={`px-4 py-2 text-center ${stock.cajas === 0 ? 'text-red-500' : ''}`}>
+                  {stock.cajas}
+                </td>
+                <td className={`px-4 py-2 text-center ${stock.cartonesExtras === 0 ? 'text-red-500' : ''}`}>
+                  {stock.cartonesExtras}
+                </td>
+                <td className={`px-4 py-2 text-center ${stock.huevosSueltos === 0 ? 'text-red-500' : ''}`}>
+                  {stock.huevosSueltos}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
 
       <div className="space-y-4">
         {formData.detallesVenta.map((detalle, index) => (
@@ -201,13 +271,18 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
         </button>
       </div>
 
-      <div className="flex justify-between mt-4">
-        <button type="button" onClick={onCancel} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-          Cancelar
+      <div className="flex justify-between mt-4 space-x-4">
+        <button type="button" onClick={handleClearForm} className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
+          Limpiar
         </button>
-        <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-          {isEditing ? 'Actualizar Venta' : 'Agregar Venta'}
-        </button>
+        <div className="flex space-x-4">
+          <button type="button" onClick={onCancel} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+            Cancelar
+          </button>
+          <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+            {isEditing ? 'Actualizar Venta' : 'Agregar Venta'}
+          </button>
+        </div>
       </div>
     </form>
   );

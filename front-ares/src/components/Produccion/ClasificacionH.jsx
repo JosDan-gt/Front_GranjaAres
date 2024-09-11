@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { FaSortUp, FaSortDown } from 'react-icons/fa';
 import ClasificacionForm from './ClasificacionForm';
 import DatePicker from 'react-datepicker';
@@ -106,6 +106,23 @@ const ClasificacionH = () => {
 
   return (
     <div className="p-4 sm:p-6 bg-yellow-50 shadow-lg rounded-lg max-w-full w-full ">
+      <div className="flex justify-start mb-6 text-lg">
+        <Link
+          to={`/produccionG/${id}`}
+          className="text-green-700 hover:text-green-900 transition duration-300"
+        >
+          Produccion
+        </Link>
+        <span className="mx-2 text-green-700">/</span>
+        <Link
+          to={`/estado/${id}`}
+          className="text-green-700 hover:text-green-900 transition duration-300"
+        >
+          Estado Lote
+        </Link>
+      </div>
+
+      
       <h2 className="text-2xl md:text-3xl font-bold text-green-900 mb-4 md:mb-6 text-center md:text-left">
         Clasificación de Huevos
       </h2>

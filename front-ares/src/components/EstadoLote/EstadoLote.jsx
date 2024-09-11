@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../axiosInstance'; // Importa la instancia de axios configurada
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import EstadoLoteForm from './EstadoLoteForm'; // Importa el formulario
 import { useLocation } from 'react-router-dom';
 
@@ -146,6 +146,21 @@ const EstadoLote = () => {
 
     return (
         <div className="p-6 bg-yellow-50 shadow-lg rounded-lg max-w-full w-full">
+            <div className="flex justify-start mb-6 text-lg">
+                <Link
+                    to={`/produccionG/${idLote}`}
+                    className="text-green-700 hover:text-green-900 transition duration-300"
+                >
+                    Produccion
+                </Link>
+                <span className="mx-2 text-green-700">/</span>
+                <Link
+                    to={`/clasificacion/${idLote}`}
+                    className="text-green-700 hover:text-green-900 transition duration-300"
+                >
+                    Clasificacion
+                </Link>
+            </div>
             <h2 className="text-3xl font-bold text-green-900 mb-6">Estado del Lote {idLote}</h2>
 
             {!isLoteBaja && (

@@ -8,8 +8,13 @@ const VentasActivas = () => {
   const [detallesVisibles, setDetallesVisibles] = useState({});
   const [ventaSeleccionada, setVentaSeleccionada] = useState(null);
   const [clientes, setClientes] = useState([]);
+  const [productos, setProductos] = useState([]); // Aquí obtenemos los productos activos
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+
+  // Paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   // Obtener ventas activas
   const fetchVentas = async () => {
@@ -21,31 +26,35 @@ const VentasActivas = () => {
     }
   };
 
-  // Obtener clientes para asociar con sus nombres
-  const fetchClientes = async () => {
+  // Obtener clientes y productos para asociar con sus nombres
+  const fetchClientesYProductos = async () => {
     try {
-      const response = await axiosInstance.get('/api/Ventas/ClientesActivos');
-      setClientes(response.data);
+      const clientesResponse = await axiosInstance.get('/api/Ventas/ClientesActivos');
+      const productosResponse = await axiosInstance.get('/api/Ventas/ProductosActivos');
+      setClientes(clientesResponse.data);
+      setProductos(productosResponse.data); // Guardamos los productos en el estado
     } catch (error) {
-      console.error('Error fetching clientes:', error);
+      console.error('Error fetching clientes o productos:', error);
     }
   };
 
   useEffect(() => {
     fetchVentas();
-    fetchClientes();
+    fetchClientesYProductos();
   }, []);
 
-  // Manejar cuando se quiere agregar una nueva venta
   const handleAdd = () => {
     setVentaSeleccionada(null);
     setIsEditing(false);
     setMostrarFormulario(true);
   };
 
-  // Manejar cuando se quiere editar una venta
-  const handleEdit = (venta) => {
-    setVentaSeleccionada(venta);
+  const handleEdit = async (venta) => {
+    await fetchDetallesVenta(venta.ventaId);
+    setVentaSeleccionada({
+      ...venta,
+      detallesVenta: detallesVentas[venta.ventaId] || [],
+    });
     setIsEditing(true);
     setMostrarFormulario(true);
   };
@@ -61,10 +70,14 @@ const VentasActivas = () => {
     fetchVentas();
   };
 
-  // Encontrar el nombre del cliente en base al clienteId
   const getClienteNombre = (clienteId) => {
     const cliente = clientes.find((cliente) => cliente.clienteId === clienteId);
     return cliente ? cliente.nombreCliente : 'Desconocido';
+  };
+
+  const getProductoNombre = (productoId) => {
+    const producto = productos.find((producto) => producto.productoId === productoId);
+    return producto ? producto.nombreProducto : 'Desconocido';
   };
 
   const toggleDetalles = (ventaId) => {
@@ -73,7 +86,7 @@ const VentasActivas = () => {
       [ventaId]: !prev[ventaId],
     }));
     if (!detallesVentas[ventaId]) {
-      fetchDetallesVenta(ventaId); // Cargar los detalles si no están cargados
+      fetchDetallesVenta(ventaId);
     }
   };
 
@@ -86,6 +99,18 @@ const VentasActivas = () => {
       }));
     } catch (error) {
       console.error(`Error fetching detalles venta for ventaId ${ventaId}:`, error);
+    }
+  };
+
+  // Paginación: calcular ventas a mostrar
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentVentas = ventas.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(ventas.length / itemsPerPage);
+
+  const goToPage = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
     }
   };
 
@@ -105,12 +130,11 @@ const VentasActivas = () => {
         </button>
       </div>
 
-      {/* Mostrar formulario de nueva venta o edición si es necesario */}
       {mostrarFormulario && (
         <div className="mb-6">
           <DetalleVentaForm
-            venta={ventaSeleccionada} // Si es null, el formulario está vacío para una nueva venta
-            isEditing={isEditing} // Indica si estamos en modo edición o agregando
+            venta={ventaSeleccionada}
+            isEditing={isEditing}
             onCancel={handleFormCancel}
             onSubmit={handleFormSubmit}
           />
@@ -131,19 +155,17 @@ const VentasActivas = () => {
                 Total Venta
               </th>
               <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
-                Estado
-              </th>
-              <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
                 Acciones
               </th>
             </tr>
           </thead>
           <tbody className="text-gray-700 text-xs md:text-sm">
-            {ventas.map((venta, index) => (
+            {currentVentas.map((venta, index) => (
               <React.Fragment key={venta.ventaId}>
                 <tr
-                  className={`border-b border-gray-200 hover:bg-yellow-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                    }`}
+                  className={`border-b border-gray-200 hover:bg-yellow-50 ${
+                    index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                  }`}
                 >
                   <td className="py-3 px-4 md:px-6 whitespace-nowrap">
                     {new Date(venta.fechaVenta).toLocaleDateString()}
@@ -152,9 +174,6 @@ const VentasActivas = () => {
                     {getClienteNombre(venta.clienteId)}
                   </td>
                   <td className="py-3 px-4 md:px-6 whitespace-nowrap">{venta.totalVenta}</td>
-                  <td className="py-3 px-4 md:px-6 whitespace-nowrap">
-                    {venta.estado ? 'Activo' : 'Inactivo'}
-                  </td>
                   <td className="py-3 px-4 md:px-6 whitespace-nowrap flex space-x-2">
                     <button
                       onClick={() => toggleDetalles(venta.ventaId)}
@@ -172,9 +191,9 @@ const VentasActivas = () => {
                 </tr>
                 {detallesVisibles[venta.ventaId] && detallesVentas[venta.ventaId] && (
                   <tr>
-                    <td colSpan="5" className="px-4 py-2 bg-gray-50">
-                      <table className="table-auto w-full">
-                        <thead className="bg-gray-200">
+                    <td colSpan="4" className="px-4 py-2 bg-gray-100">
+                      <table className="table-auto w-full bg-gray-50">
+                        <thead className="bg-gray-300">
                           <tr>
                             <th className="px-4 py-2">Producto</th>
                             <th className="px-4 py-2">Tipo Empaque</th>
@@ -186,8 +205,8 @@ const VentasActivas = () => {
                         </thead>
                         <tbody>
                           {detallesVentas[venta.ventaId].map((detalle, index) => (
-                            <tr key={index}>
-                              <td className="px-4 py-2">{detalle.productoId}</td>
+                            <tr key={index} className="bg-gray-200">
+                              <td className="px-4 py-2">{getProductoNombre(detalle.productoId)}</td>
                               <td className="px-4 py-2">{detalle.tipoEmpaque}</td>
                               <td className="px-4 py-2">{detalle.tamanoHuevo}</td>
                               <td className="px-4 py-2">{detalle.cantidadVendida}</td>
@@ -204,6 +223,31 @@ const VentasActivas = () => {
             ))}
           </tbody>
         </table>
+
+        {/* Paginación */}
+        <div className="flex justify-between items-center mt-4">
+          <button
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`px-3 py-1 rounded-lg bg-green-600 text-white ${
+              currentPage === 1 ? 'cursor-not-allowed opacity-50' : 'hover:bg-green-700'
+            }`}
+          >
+            Anterior
+          </button>
+          <span className="text-gray-700">
+            Página {currentPage} de {totalPages}
+          </span>
+          <button
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={`px-3 py-1 rounded-lg bg-green-600 text-white ${
+              currentPage === totalPages ? 'cursor-not-allowed opacity-50' : 'hover:bg-green-700'
+            }`}
+          >
+            Siguiente
+          </button>
+        </div>
       </div>
     </div>
   );

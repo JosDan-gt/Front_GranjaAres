@@ -3,6 +3,8 @@ import axiosInstance from '../axiosInstance'; // Importa la instancia de Axios c
 import { useParams } from 'react-router-dom';
 import ProduccionForm from './ProduccionForm';
 import { useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
 
 
 const ProduccionG = () => {
@@ -87,8 +89,25 @@ const ProduccionG = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   return (
     <div className="p-4 sm:p-6 bg-yellow-50 shadow-lg rounded-lg">
+      <div className="flex justify-start mb-6 text-lg">
+        <Link
+          to={`/clasificacion/${idLote}`}
+          className="text-green-700 hover:text-green-900 transition duration-300"
+        >
+          Clasificación
+        </Link>
+        <span className="mx-2 text-green-700">/</span>
+        <Link
+          to={`/estado/${idLote}`}
+          className="text-green-700 hover:text-green-900 transition duration-300"
+        >
+          Estado Lote
+        </Link>
+      </div>
+
+
       <h2 className="text-2xl sm:text-3xl font-bold text-green-900 mb-4 sm:mb-6 text-center">Historial de Producción</h2>
-  
+
       <div className="flex justify-end mb-4">
         <button
           disabled={isDisabled}
@@ -98,7 +117,7 @@ const ProduccionG = () => {
           + Agregar Producción
         </button>
       </div>
-  
+
       {showForm && (
         <ProduccionForm
           item={currentItem}
@@ -111,7 +130,7 @@ const ProduccionG = () => {
           refreshData={refreshData}
         />
       )}
-  
+
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm text-left text-gray-700 bg-white shadow-md rounded-lg">
           <thead className="text-xs text-white uppercase bg-green-700">
@@ -157,7 +176,7 @@ const ProduccionG = () => {
           </tbody>
         </table>
       </div>
-  
+
       <div className="flex justify-between items-center mt-4">
         <button
           onClick={() => paginate(currentPage - 1)}
@@ -179,7 +198,7 @@ const ProduccionG = () => {
       </div>
     </div>
   );
-  
+
 
 
 };

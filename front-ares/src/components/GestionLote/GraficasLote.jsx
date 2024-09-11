@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
     },
 });
 
+const ITEMS_PER_PAGE = 5;
 // Componente de PDF para Producción
 const ProductionPDFDocument = ({ productionData, productionImage }) => (
     <Document>
@@ -197,6 +198,10 @@ const GraficasLote = ({ idLote }) => {
     const [estadoLoteImage, setEstadoLoteImage] = useState(null);
     const [period, setPeriod] = useState('diario');
 
+    const [currentPageProd, setCurrentPageProd] = useState(1);
+    const [currentPageClass, setCurrentPageClass] = useState(1);
+    const [currentPageEstado, setCurrentPageEstado] = useState(1);
+
     const productionChartRef = useRef(null);
     const classificationChartRef = useRef(null);
     const estadoLoteChartRef = useRef(null);
@@ -307,6 +312,15 @@ const GraficasLote = ({ idLote }) => {
         ],
     };
 
+    const handlePageClickProd = (pageNumber) => setCurrentPageProd(pageNumber);
+    const handlePageClickClass = (pageNumber) => setCurrentPageClass(pageNumber);
+    const handlePageClickEstado = (pageNumber) => setCurrentPageEstado(pageNumber);
+
+    const paginatedProductionData = productionData.slice((currentPageProd - 1) * ITEMS_PER_PAGE, currentPageProd * ITEMS_PER_PAGE);
+    const paginatedClassificationData = classificationData.slice((currentPageClass - 1) * ITEMS_PER_PAGE, currentPageClass * ITEMS_PER_PAGE);
+    const paginatedEstadoLoteData = estadoLoteData.slice((currentPageEstado - 1) * ITEMS_PER_PAGE, currentPageEstado * ITEMS_PER_PAGE);
+
+
     return (
         <div className="container mx-auto p-4">
             <div className="flex justify-center space-x-2 mb-6">
@@ -335,7 +349,7 @@ const GraficasLote = ({ idLote }) => {
                 </div>
 
                 {/* Tabla de Producción */}
-                <div className="bg-white p-4 rounded-lg shadow-lg border border-orange-300">
+                <div className="bg-white p-4 rounded-lg shadow-lg border border-orange-300 mt-4">
                     <h2 className="text-lg font-bold mb-4 text-center text-orange-800">Producción Detallada</h2>
                     <div className="overflow-x-auto">
                         <table className="min-w-full text-sm text-left text-gray-500">
@@ -347,7 +361,7 @@ const GraficasLote = ({ idLote }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {productionData.map((d, index) => (
+                                {paginatedProductionData.map((d, index) => (
                                     <tr key={index} className="bg-white border-b hover:bg-orange-50">
                                         <td className="px-6 py-4 text-center">{d.fechaRegistro}</td>
                                         <td className="px-6 py-4 text-center">{d.produccion}</td>
@@ -356,6 +370,25 @@ const GraficasLote = ({ idLote }) => {
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+                    <div className="flex justify-between items-center mt-4">
+                        <button
+                            onClick={() => handlePageClickProd(currentPageProd - 1)}
+                            disabled={currentPageProd === 1}
+                            className="px-3 py-2 bg-yellow-700 text-white text-sm rounded-md hover:bg-yellow-800 transition duration-300 disabled:opacity-50"
+                        >
+                            Anterior
+                        </button>
+                        <span className="text-sm text-yellow-700">
+                            Página {currentPageProd} de {Math.ceil(productionData.length / ITEMS_PER_PAGE)}
+                        </span>
+                        <button
+                            onClick={() => handlePageClickProd(currentPageProd + 1)}
+                            disabled={currentPageProd * ITEMS_PER_PAGE >= productionData.length}
+                            className="px-3 py-2 bg-yellow-700 text-white text-sm rounded-md hover:bg-yellow-800 transition duration-300 disabled:opacity-50"
+                        >
+                            Siguiente
+                        </button>
                     </div>
                 </div>
 
@@ -378,7 +411,7 @@ const GraficasLote = ({ idLote }) => {
                 </div>
 
                 {/* Tabla de Clasificación */}
-                <div className="bg-white p-4 rounded-lg shadow-lg border border-red-300">
+                <div className="bg-white p-4 rounded-lg shadow-lg border border-red-300 mt-4">
                     <h2 className="text-lg font-bold mb-4 text-center text-red-800">Clasificación Detallada</h2>
                     <div className="overflow-x-auto">
                         <table className="min-w-full text-sm text-left text-gray-500">
@@ -390,7 +423,7 @@ const GraficasLote = ({ idLote }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {classificationData.map((d, index) => (
+                                {paginatedClassificationData.map((d, index) => (
                                     <tr key={index} className="bg-white border-b hover:bg-red-50">
                                         <td className="px-6 py-4 text-center">{d.fechaRegistro}</td>
                                         <td className="px-6 py-4 text-center">{d.tamano}</td>
@@ -400,8 +433,26 @@ const GraficasLote = ({ idLote }) => {
                             </tbody>
                         </table>
                     </div>
+                    <div className="flex justify-between items-center mt-4">
+                        <button
+                            onClick={() => handlePageClickClass(currentPageClass - 1)}
+                            disabled={currentPageClass === 1}
+                            className="px-3 py-2 bg-green-700 text-white text-sm rounded-md hover:bg-green-800 transition duration-300 disabled:opacity-50"
+                        >
+                            Anterior
+                        </button>
+                        <span className="text-sm text-green-700">
+                            Página {currentPageClass} de {Math.ceil(classificationData.length / ITEMS_PER_PAGE)}
+                        </span>
+                        <button
+                            onClick={() => handlePageClickClass(currentPageClass + 1)}
+                            disabled={currentPageClass * ITEMS_PER_PAGE >= classificationData.length}
+                            className="px-3 py-2 bg-green-700 text-white text-sm rounded-md hover:bg-green-800 transition duration-300 disabled:opacity-50"
+                        >
+                            Siguiente
+                        </button>
+                    </div>
                 </div>
-
                 {/* Gráfica de Estado del Lote */}
                 <div className="bg-white p-4 rounded-lg shadow-lg border border-brown-300">
                     <h2 className="text-lg font-bold mb-4 text-center text-brown-800">Estado del Lote</h2>
@@ -421,7 +472,7 @@ const GraficasLote = ({ idLote }) => {
                 </div>
 
                 {/* Tabla de Estado del Lote */}
-                <div className="bg-white p-4 rounded-lg shadow-lg border border-yellow-300">
+                <div className="bg-white p-4 rounded-lg shadow-lg border border-yellow-300 mt-4">
                     <h2 className="text-lg font-bold mb-4 text-center text-yellow-800">Estado del Lote Detallado</h2>
                     <div className="overflow-x-auto">
                         <table className="min-w-full text-sm text-left text-gray-500">
@@ -433,7 +484,7 @@ const GraficasLote = ({ idLote }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {estadoLoteData.map((d, index) => (
+                                {paginatedEstadoLoteData.map((d, index) => (
                                     <tr key={index} className="bg-white border-b hover:bg-yellow-50">
                                         <td className="px-6 py-4 text-center">{d.fechaRegistro}</td>
                                         <td className="px-6 py-4 text-center">{d.cantidadG}</td>
@@ -442,6 +493,25 @@ const GraficasLote = ({ idLote }) => {
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+                    <div className="flex justify-between items-center mt-4">
+                        <button
+                            onClick={() => handlePageClickEstado(currentPageEstado - 1)}
+                            disabled={currentPageEstado === 1}
+                            className="px-3 py-2 bg-yellow-700 text-white text-sm rounded-md hover:bg-yellow-800 transition duration-300 disabled:opacity-50"
+                        >
+                            Anterior
+                        </button>
+                        <span className="text-sm text-yellow-700">
+                            Página {currentPageEstado} de {Math.ceil(estadoLoteData.length / ITEMS_PER_PAGE)}
+                        </span>
+                        <button
+                            onClick={() => handlePageClickEstado(currentPageEstado + 1)}
+                            disabled={currentPageEstado * ITEMS_PER_PAGE >= estadoLoteData.length}
+                            className="px-3 py-2 bg-yellow-700 text-white text-sm rounded-md hover:bg-yellow-800 transition duration-300 disabled:opacity-50"
+                        >
+                            Siguiente
+                        </button>
                     </div>
                 </div>
             </div>

@@ -218,16 +218,23 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div className="col-span-1">
                             <label className="text-sm font-medium text-green-900">Tamaño</label>
-                            <input
-                                type="text"
+                            <select
                                 name="tamano"
                                 value={formData.tamano}
                                 onChange={handleChange}
                                 className="w-full p-2 mt-1 border border-green-700 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                            />
+                            >
+                                <option value="">Seleccione un tamaño</option>
+                                <option value="Extra Grande">Extra Grande</option>
+                                <option value="Grande">Grande</option>
+                                <option value="Mediano">Mediano</option>
+                                <option value="Pequeño">Pequeño</option>
+                                <option value="Pigui">Pigui</option>
+                            </select>
                             {errors.tamano && <p className="text-red-500 text-xs mt-1">{errors.tamano}</p>}
                         </div>
-    
+
+
                         <div className="col-span-1">
                             <label className="text-sm font-medium text-green-900">Cajas</label>
                             <input
@@ -239,7 +246,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                             />
                             {errors.cajas && <p className="text-red-500 text-xs mt-1">{errors.cajas}</p>}
                         </div>
-    
+
                         <div className="col-span-1">
                             <label className="text-sm font-medium text-green-900">Cartones Extras</label>
                             <input
@@ -251,7 +258,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                             />
                             {errors.cartonesExtras && <p className="text-red-500 text-xs mt-1">{errors.cartonesExtras}</p>}
                         </div>
-    
+
                         <div className="col-span-1">
                             <label className="text-sm font-medium text-green-900">Huevos Sueltos</label>
                             <input
@@ -263,7 +270,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                             />
                             {errors.huevosSueltos && <p className="text-red-500 text-xs mt-1">{errors.huevosSueltos}</p>}
                         </div>
-    
+
                         <div className="col-span-1">
                             <label className="text-sm font-medium text-green-900">Fecha Clasificación</label>
                             <input
@@ -275,7 +282,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                             />
                             {errors.fechaClaS && <p className="text-red-500 text-xs mt-1">{errors.fechaClaS}</p>}
                         </div>
-    
+
                         <div className="col-span-1">
                             <label className="text-sm font-medium text-green-900">Fecha Producción</label>
                             <select
@@ -294,7 +301,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                             {errors.fechaProdu && <p className="text-red-500 text-xs mt-1">{errors.fechaProdu}</p>}
                         </div>
                     </div>
-    
+
                     <div className="flex justify-end mt-6 space-x-3">
                         <button
                             type="button"
@@ -320,7 +327,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                     </div>
                 </form>
             </div>
-    
+
             <div className="flex-1 p-6 bg-white rounded-lg shadow-md">
                 <h3 className="text-xl font-bold mb-4 text-green-900">Detalles de Producción</h3>
                 {selectedProduccion ? (
@@ -356,7 +363,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
             </div>
         </div>
     );
-    
+
 
 };
 

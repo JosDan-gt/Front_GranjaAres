@@ -10,15 +10,15 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const token = Cookies.get('token') || localStorage.getItem('token');
         if (token) {
-            setIsAuthenticated(true);
+            setIsAuthenticated(true); // Si hay token, el usuario está autenticado
         } else {
-            setIsAuthenticated(false);
+            setIsAuthenticated(false); // Si no hay token, no está autenticado
         }
-        setLoading(false); // Termina la carga después de verificar el token
+        setLoading(false); // Termina la carga
     }, []);
 
     if (loading) {
-        return <div>Cargando...</div>; // Puedes mostrar un spinner u otro indicador de carga
+        return <div>Cargando...</div>; // Indicador de carga inicial
     }
 
     return (

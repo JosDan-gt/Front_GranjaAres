@@ -19,7 +19,6 @@ import Producto from './components/Ventas/Producto.jsx';
 import Ventas from './components/Ventas/Ventas.jsx';
 import RazaG from './components/Razas/RazasG.jsx';
 
-
 function App() {
   console.log('App rendered');  // Diagnóstico: cuándo se renderiza la App
 
@@ -28,7 +27,10 @@ function App() {
       <ErrorProvider>
         <Router>
           <Routes>
+            {/* Ruta de login accesible sin autenticación */}
             <Route path="/login" element={<Login />} />
+
+            {/* Ruta protegida para todo lo demás */}
             <Route
               path="*"
               element={
@@ -39,7 +41,10 @@ function App() {
                       <Sidebar />
                       <main className="flex-1 p-4 bg-gray-100">
                         <Routes>
+                          {/* Redirige al dashboard si accede a la raíz */}
                           <Route path="/" element={<Navigate to="/dashboard" />} />
+
+                          {/* Rutas protegidas */}
                           <Route path="/dashboard" element={<Dashboard />} />
                           <Route path="/lotes" element={<Lote />} />
                           <Route path="/produccionG/:idLote" element={<ProduccionG />} />

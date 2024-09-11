@@ -4,19 +4,25 @@ import axiosInstance from '../axiosInstance';
 const LoteSelector = ({ onSelectLote }) => {
   const [lotes, setLotes] = useState([]);
   const [selectedLote, setSelectedLote] = useState('');
+  const [dadosDeBaja, setDadosDeBaja] = useState(false); // Para manejar el estado de lotes dados de baja o no
 
   useEffect(() => {
-    axiosInstance.get('/getlotes')
-      .then(response => {
+    const fetchLotes = async () => {
+      try {
+        const response = await axiosInstance.get(`/api/lotes?dadosDeBaja=${dadosDeBaja}`);
         setLotes(response.data);
         if (response.data.length > 0) {
           const firstLote = response.data[0].idLote;
           setSelectedLote(firstLote); // Establece el primer lote en el estado
           onSelectLote(firstLote); // Selecciona el primer lote automáticamente
         }
-      })
-      .catch(error => console.error('Error fetching lotes:', error));
-  }, [onSelectLote]);
+      } catch (error) {
+        console.error('Error fetching lotes:', error);
+      }
+    };
+
+    fetchLotes();
+  }, [dadosDeBaja, onSelectLote]);
 
   const handleSelectChange = (event) => {
     const selectedValue = event.target.value;
@@ -24,8 +30,12 @@ const LoteSelector = ({ onSelectLote }) => {
     onSelectLote(selectedValue);
   };
 
+  const toggleLotes = () => {
+    setDadosDeBaja(prevState => !prevState); // Cambia entre lotes activos y dados de baja
+  };
+
   return (
-    <div className="mb-4 flex justify-center">
+    <div className="mb-4 flex flex-col items-center">
       <div className="w-64">
         <label htmlFor="loteSelect" className="block text-2xl font-bold text-green-800 text-center">Selecciona un Lote</label>
         <select 
@@ -37,11 +47,16 @@ const LoteSelector = ({ onSelectLote }) => {
           <option value="">Seleccione un lote...</option>
           {lotes.map(lote => (
             <option key={lote.idLote} value={lote.idLote}>
-              {lote.numLote} (Cantidad Actual: {lote.cantidadGctual})
+              {lote.numLote} (Cantidad Actual: {lote.cantidadActual})
             </option>
           ))}
         </select>
       </div>
+      <button 
+        onClick={toggleLotes} 
+        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+        {dadosDeBaja ? 'Mostrar Activos' : 'Mostrar Dados de Baja'}
+      </button>
     </div>
   );
 };
