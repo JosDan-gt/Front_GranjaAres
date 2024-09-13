@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axiosInstance from '../axiosInstance';
 import { useNavigate } from 'react-router-dom';
 import LoteForm from './LoteForm';
+import { AuthContext } from '../Context/AuthContext';
 
 const LotesActivos = ({ reloadFlag, triggerReload }) => {
     const [lotes, setLotes] = useState([]);
@@ -10,6 +11,11 @@ const LotesActivos = ({ reloadFlag, triggerReload }) => {
     const [selectedLote, setSelectedLote] = useState(null);
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
+
+
+    const { roles } = useContext(AuthContext); // Obtiene los roles del contexto de autenticación
+    const isAdmin = roles.includes('Admin');
+    const isUser = roles.includes('User');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -117,12 +123,14 @@ const LotesActivos = ({ reloadFlag, triggerReload }) => {
         <div className="p-4 sm:p-6 bg-yellow-50 shadow-lg rounded-lg">
             <h2 className="text-2xl sm:text-3xl font-bold text-green-900 mb-4 sm:mb-6">Lotes Activos</h2>
 
-            <button
-                onClick={handleAddNew}
-                className="px-4 py-2 mb-4 bg-green-700 text-white rounded hover:bg-green-800 transition duration-300"
-            >
-                {showForm ? 'Ocultar Formulario' : 'Agregar Nuevo Lote'}
-            </button>
+            {isAdmin && (
+                <button
+                    onClick={handleAddNew}
+                    className="px-4 py-2 mb-4 bg-green-700 text-white rounded hover:bg-green-800 transition duration-300"
+                >
+                    {showForm ? 'Ocultar Formulario' : 'Agregar Nuevo Lote'}
+                </button>
+            )}
 
             {showForm && (
                 <LoteForm
@@ -153,31 +161,34 @@ const LotesActivos = ({ reloadFlag, triggerReload }) => {
                             defaultValue=""
                         >
                             <option value="" disabled>Selecciona una opción</option>
-                            <option value="produccionG">Producción</option>
-                            <option value="clasificacion">Clasificación</option>
-                            <option value="estado">Estado</option>
+                            {(isAdmin || isUser) && <option value="produccionG">Producción</option>}
+                            {isAdmin && <option value="clasificacion">Clasificación</option>}
+                            {isAdmin && <option value="estado">Estado</option>}
                         </select>
 
-                        <div className="flex flex-col sm:flex-row justify-between mt-2 sm:mt-4">
-                            <button
-                                onClick={() => handleEdit(lote)}
-                                className="px-4 py-2 mb-2 sm:mb-0 sm:mr-2 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition duration-300"
-                            >
-                                Editar
-                            </button>
-                            <button
-                                onClick={() => handleDelete(lote.idLote)}
-                                className="px-4 py-2 mb-2 sm:mb-0 sm:mr-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition duration-300"
-                            >
-                                Eliminar
-                            </button>
-                            <button
-                                onClick={() => handleDarDeBaja(lote.idLote)}
-                                className="px-4 py-2 bg-gray-500 text-white font-semibold rounded-lg shadow-md hover:bg-gray-600 transition duration-300"
-                            >
-                                Dar de Baja
-                            </button>
-                        </div>
+                        {isAdmin && (
+                            <div className="flex flex-col sm:flex-row justify-between mt-2 sm:mt-4">
+                                <button
+                                    onClick={() => handleEdit(lote)}
+                                    className="px-4 py-2 mb-2 sm:mb-0 sm:mr-2 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition duration-300"
+                                >
+                                    Editar
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(lote.idLote)}
+                                    className="px-4 py-2 mb-2 sm:mb-0 sm:mr-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition duration-300"
+                                >
+                                    Eliminar
+                                </button>
+                                <button
+                                    onClick={() => handleDarDeBaja(lote.idLote)}
+                                    className="px-4 py-2 bg-gray-500 text-white font-semibold rounded-lg shadow-md hover:bg-gray-600 transition duration-300"
+                                >
+                                    Dar de Baja
+                                </button>
+
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>

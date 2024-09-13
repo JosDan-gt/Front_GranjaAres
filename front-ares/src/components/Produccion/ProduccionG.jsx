@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axiosInstance from '../axiosInstance'; // Importa la instancia de Axios configurada
 import { useParams } from 'react-router-dom';
 import ProduccionForm from './ProduccionForm';
 import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../Context/AuthContext';
 
 
 
@@ -20,6 +21,9 @@ const ProduccionG = () => {
   const { estadoBaja } = location.state || {};
 
   const isDisabled = estadoBaja !== undefined ? estadoBaja : false;
+  const { roles } = useContext(AuthContext); // Obtiene los roles del contexto de autenticación
+  const isAdmin = roles.includes('Admin');
+  const isUser = roles.includes('User');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -90,19 +94,19 @@ const ProduccionG = () => {
   return (
     <div className="p-4 sm:p-6 bg-yellow-50 shadow-lg rounded-lg">
       <div className="flex justify-start mb-6 text-lg">
-        <Link
+        {isAdmin && <Link
           to={`/clasificacion/${idLote}`}
           className="text-green-700 hover:text-green-900 transition duration-300"
         >
           Clasificación
-        </Link>
+        </Link>}
         <span className="mx-2 text-green-700">/</span>
-        <Link
+        {isAdmin && <Link
           to={`/estado/${idLote}`}
           className="text-green-700 hover:text-green-900 transition duration-300"
         >
           Estado Lote
-        </Link>
+        </Link>}
       </div>
 
 

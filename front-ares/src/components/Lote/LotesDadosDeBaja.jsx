@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axiosInstance from '../axiosInstance';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../Context/AuthContext';
 
 const LotesDadosDeBaja = ({ reloadFlag, triggerReload }) => {
     const [lotesDadosDeBaja, setLotesDadosDeBaja] = useState([]);
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
+    const { roles } = useContext(AuthContext); // Obtiene los roles del contexto de autenticación
+    const isAdmin = roles.includes('Admin');
+    const isUser = roles.includes('User');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -74,20 +78,19 @@ const LotesDadosDeBaja = ({ reloadFlag, triggerReload }) => {
                             className="w-full px-2 sm:px-3 py-1 sm:py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-green-900"
                             defaultValue=""
                         >
-                            <option value="" disabled>Selecciona una opción</option>
-                            <option value="produccionG">Producción</option>
-                            <option value="clasificacion">Clasificación</option>
-                            <option value="estado">Estado</option>
+                            {(isAdmin || isUser) && <option value="produccionG">Producción</option>}
+                            {isAdmin && <option value="clasificacion">Clasificación</option>}
+                            {isAdmin && <option value="estado">Estado</option>}
                         </select>
 
-                        <div className="flex justify-between mt-2 sm:mt-4">
+                        {isAdmin && <div className="flex justify-between mt-2 sm:mt-4">
                             <button
                                 onClick={() => handleDarDeAlta(lote.idLote)}
                                 className="px-4 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition duration-300"
                             >
                                 Dar de Alta
                             </button>
-                        </div>
+                        </div>}
                     </div>
                 ))}
             </div>

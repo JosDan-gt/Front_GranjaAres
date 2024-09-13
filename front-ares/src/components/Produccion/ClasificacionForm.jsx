@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import axiosInstance from '../axiosInstance'; // Importa la instancia de axios configurada
+import React, { useState, useEffect, useContext } from 'react';
+import axiosInstance from '../axiosInstance';
+import { AuthContext } from '../Context/AuthContext'; // Importa el contexto de autenticación
 
 const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData }) => {
+    const { roles } = useContext(AuthContext); // Obtén los roles del contexto de autenticación
+    const isAdminOrGestor = roles.includes('Admin') || roles.includes('Gestor'); // Verifica si el usuario tiene el rol adecuado
+
     const [formData, setFormData] = useState({
         tamano: '',
         cajas: '',
@@ -223,6 +227,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                                 value={formData.tamano}
                                 onChange={handleChange}
                                 className="w-full p-2 mt-1 border border-green-700 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                disabled={!isAdminOrGestor} // Deshabilitar si el rol no es Admin o Gestor
                             >
                                 <option value="">Seleccione un tamaño</option>
                                 <option value="Extra Grande">Extra Grande</option>
@@ -234,7 +239,6 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                             {errors.tamano && <p className="text-red-500 text-xs mt-1">{errors.tamano}</p>}
                         </div>
 
-
                         <div className="col-span-1">
                             <label className="text-sm font-medium text-green-900">Cajas</label>
                             <input
@@ -243,6 +247,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                                 value={formData.cajas}
                                 onChange={handleChange}
                                 className="w-full p-2 mt-1 border border-green-700 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                disabled={!isAdminOrGestor} // Deshabilitar si el rol no es Admin o Gestor
                             />
                             {errors.cajas && <p className="text-red-500 text-xs mt-1">{errors.cajas}</p>}
                         </div>
@@ -255,6 +260,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                                 value={formData.cartonesExtras}
                                 onChange={handleChange}
                                 className="w-full p-2 mt-1 border border-green-700 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                disabled={!isAdminOrGestor} // Deshabilitar si el rol no es Admin o Gestor
                             />
                             {errors.cartonesExtras && <p className="text-red-500 text-xs mt-1">{errors.cartonesExtras}</p>}
                         </div>
@@ -267,6 +273,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                                 value={formData.huevosSueltos}
                                 onChange={handleChange}
                                 className="w-full p-2 mt-1 border border-green-700 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                disabled={!isAdminOrGestor} // Deshabilitar si el rol no es Admin o Gestor
                             />
                             {errors.huevosSueltos && <p className="text-red-500 text-xs mt-1">{errors.huevosSueltos}</p>}
                         </div>
@@ -279,6 +286,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                                 value={formData.fechaClaS}
                                 onChange={handleChange}
                                 className="w-full p-2 mt-1 border border-green-700 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                disabled={!isAdminOrGestor} // Deshabilitar si el rol no es Admin o Gestor
                             />
                             {errors.fechaClaS && <p className="text-red-500 text-xs mt-1">{errors.fechaClaS}</p>}
                         </div>
@@ -290,6 +298,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                                 value={formData.fechaProdu}
                                 onChange={handleFechaProduChange}
                                 className="w-full p-2 mt-1 border border-green-700 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                disabled={!isAdminOrGestor} // Deshabilitar si el rol no es Admin o Gestor
                             >
                                 <option value="">Seleccione una fecha</option>
                                 {fechasProduccion.map((fecha) => (
@@ -302,29 +311,31 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                         </div>
                     </div>
 
-                    <div className="flex justify-end mt-6 space-x-3">
-                        <button
-                            type="button"
-                            onClick={handleReset}
-                            className="px-4 py-2 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50"
-                        >
-                            Limpiar
-                        </button>
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="px-4 py-2 bg-gray-500 text-white font-semibold rounded-lg shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="px-4 py-2 bg-green-700 text-white font-semibold rounded-lg shadow-md hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
-                        >
-                            {loading ? 'Guardando...' : isUpdateMode ? 'Actualizar' : 'Guardar'}
-                        </button>
-                    </div>
+                    {isAdminOrGestor && ( // Solo permitir el envío si el usuario tiene el rol adecuado
+                        <div className="flex justify-end mt-6 space-x-3">
+                            <button
+                                type="button"
+                                onClick={handleReset}
+                                className="px-4 py-2 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50"
+                            >
+                                Limpiar
+                            </button>
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="px-4 py-2 bg-gray-500 text-white font-semibold rounded-lg shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="px-4 py-2 bg-green-700 text-white font-semibold rounded-lg shadow-md hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                            >
+                                {loading ? 'Guardando...' : isUpdateMode ? 'Actualizar' : 'Guardar'}
+                            </button>
+                        </div>
+                    )}
                 </form>
             </div>
 
@@ -363,8 +374,6 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
             </div>
         </div>
     );
-
-
 };
 
 export default ClasificacionForm;

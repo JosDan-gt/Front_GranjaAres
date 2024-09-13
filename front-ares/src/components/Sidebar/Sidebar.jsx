@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { FiMenu, FiX } from 'react-icons/fi';
+import { AuthContext } from '../Context/AuthContext';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { roles } = useContext(AuthContext); // Obtén los roles del usuario
+  const isUser = roles.includes('User');
+  const isAdmin = roles.includes('Admin');
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -32,22 +36,22 @@ const Sidebar = () => {
             <Link to="/lotes" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Lotes</Link>
           </li>
           <li>
-            <Link to="/corrales" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Corrales</Link>
+            {isAdmin && <Link to="/corrales" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Corrales</Link>}
           </li>
           <li>
-            <Link to="/razasg" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Raza de Gallina</Link>
+            {isAdmin && <Link to="/razasg" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Raza de Gallina</Link>}
           </li>
           <li>
-            <Link to="/gestion" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Gestión de Lotes</Link>
+            {isAdmin && <Link to="/gestion" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Gestión de Lotes</Link>}
           </li>
           <li>
-            <Link to="/cliente" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Clientes</Link>
+            {isAdmin && <Link to="/cliente" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Clientes</Link>}
           </li>
           <li>
-            <Link to="/producto" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Productos</Link>
+            {isAdmin && <Link to="/producto" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Productos</Link>}
           </li>
           <li>
-            <Link to="/venta" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Ventas</Link>
+            {isAdmin && <Link to="/venta" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Ventas</Link>}
           </li>
         </ul>
       </nav>

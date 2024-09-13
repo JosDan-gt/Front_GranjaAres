@@ -92,60 +92,61 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="bg-white shadow-lg rounded-lg p-6 mb-8">
-        <h3 className="text-2xl font-bold text-yellow-700 mb-6">Detalles del Lote</h3>
-        <h2 className="text-2xl font-semibold mb-4 text-green-700">
-          Lote Actual: {lotes.find((lote) => lote.idLote === loteActual)?.numLote || 'No disponible'}
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-green-50 p-4 rounded-lg shadow">
-            <h4 className="font-semibold text-green-800 mb-2">Producción Total</h4>
-            <p className="text-green-900">{datosLote?.produccionTotal || 0} huevos</p>
-          </div>
-          <div className="bg-green-50 p-4 rounded-lg shadow">
-            <h4 className="font-semibold text-green-800 mb-2">Cantidad de Gallinas Inicial</h4>
-            <p className="text-green-900">{datosLote?.cantidadGallinasActual || 'No disponible'}</p>
-          </div>
-          <div className="bg-green-50 p-4 rounded-lg shadow">
-            <h4 className="font-semibold text-green-800 mb-2">Cantidad de Gallinas Actual</h4>
-            <p className="text-green-900">{datosLote?.cantidadGallinas || 'No disponible'}</p>
-          </div>
-          <div className="bg-green-50 p-4 rounded-lg shadow">
-            <h4 className="font-semibold text-green-800 mb-2">Bajas</h4>
-            <p className="text-green-900">{datosLote?.bajas != null ? datosLote.bajas : 'No disponible'}</p>
-          </div>
-          <div className="bg-green-50 p-4 rounded-lg shadow">
-            <h4 className="font-semibold text-green-800 mb-2">Raza</h4>
-            <p className="text-green-900">{datosLote?.raza || 'No disponible'}</p>
-          </div>
+      {/* Detalles del Lote */}
+      <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white shadow-lg rounded-lg p-6">
+          <h4 className="font-semibold text-green-800 mb-2">Producción Total</h4>
+          <p className="text-green-900">{datosLote?.produccionTotal || 0} huevos</p>
+        </div>
+        <div className="bg-white shadow-lg rounded-lg p-6">
+          <h4 className="font-semibold text-green-800 mb-2">Cantidad de Gallinas Inicial</h4>
+          <p className="text-green-900">{datosLote?.cantidadGallinasActual || 'No disponible'}</p>
+        </div>
+        <div className="bg-white shadow-lg rounded-lg p-6">
+          <h4 className="font-semibold text-green-800 mb-2">Cantidad de Gallinas Actual</h4>
+          <p className="text-green-900">{datosLote?.cantidadGallinas || 'No disponible'}</p>
+        </div>
+
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="bg-white shadow-lg rounded-lg p-6">
+          <h4 className="font-semibold text-green-800 mb-2">Bajas Totales</h4>
+          <p className="text-green-900">{datosLote?.bajas != null ? datosLote.bajas : 'No disponible'}</p>
+        </div>
+        <div className="bg-white shadow-lg rounded-lg p-6">
+          <h4 className="font-semibold text-green-800 mb-2">Raza</h4>
+          <p className="text-green-900">{datosLote?.raza || 'No disponible'}</p>
         </div>
       </div>
 
-      <div>
-        <div className="flex justify-center space-x-2 mb-6">
-          <button
-            onClick={() => setPeriod('diario')}
-            className={`px-4 py-2 rounded-lg ${period === 'diario' ? 'bg-blue-700' : 'bg-blue-600'} text-white hover:bg-blue-700`}
-          >
-            Diario
-          </button>
-          <button
-            onClick={() => setPeriod('semanal')}
-            className={`px-4 py-2 rounded-lg ${period === 'semanal' ? 'bg-green-700' : 'bg-green-600'} text-white hover:bg-green-700`}
-          >
-            Semanal
-          </button>
-          <button
-            onClick={() => setPeriod('mensual')}
-            className={`px-4 py-2 rounded-lg ${period === 'mensual' ? 'bg-purple-700' : 'bg-purple-600'} text-white hover:bg-purple-700`}
-          >
-            Mensual
-          </button>
-        </div>
-        <div className="mb-4">
+      {/* Botones para seleccionar el periodo */}
+      <div className="flex justify-center space-x-2 mb-6">
+        <button
+          onClick={() => setPeriod('diario')}
+          className={`px-4 py-2 rounded-lg ${period === 'diario' ? 'bg-blue-700' : 'bg-blue-600'} text-white hover:bg-blue-700`}
+        >
+          Diario
+        </button>
+        <button
+          onClick={() => setPeriod('semanal')}
+          className={`px-4 py-2 rounded-lg ${period === 'semanal' ? 'bg-green-700' : 'bg-green-600'} text-white hover:bg-green-700`}
+        >
+          Semanal
+        </button>
+        <button
+          onClick={() => setPeriod('mensual')}
+          className={`px-4 py-2 rounded-lg ${period === 'mensual' ? 'bg-purple-700' : 'bg-purple-600'} text-white hover:bg-purple-700`}
+        >
+          Mensual
+        </button>
+      </div>
+
+      {/* Gráficas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white shadow-lg rounded-lg p-6">
           <ProduccionGrafica idLote={loteActual} period={period} />
         </div>
-        <div>
+        <div className="bg-white shadow-lg rounded-lg p-6">
           <ClasificacionGrafica idLote={loteActual} period={period} />
         </div>
       </div>
