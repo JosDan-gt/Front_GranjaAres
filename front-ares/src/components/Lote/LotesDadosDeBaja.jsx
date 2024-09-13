@@ -34,10 +34,21 @@ const LotesDadosDeBaja = ({ reloadFlag, triggerReload }) => {
             return;
         }
 
-        navigate(`/${value}/${idLote}`, { state: { estadoBaja: selectedLote.estadoBaja } });
+        // Manejar la opción seleccionada
+        switch (value) {
+            case 'produccionG':
+                navigate(`/produccionG/${idLote}`, { state: { estadoBaja: selectedLote.estadoBaja } });
+                break;
+            case 'clasificacion':
+                navigate(`/clasificacion/${idLote}`, { state: { estadoBaja: selectedLote.estadoBaja } });
+                break;
+            case 'estado':
+                navigate(`/estado/${idLote}`, { state: { estadoBaja: selectedLote.estadoBaja } });
+                break;
+            default:
+                break;
+        }
     };
-
-    
 
     const handleDarDeAlta = async (idLote) => {
         if (window.confirm("¿Estás seguro de que deseas dar de alta este lote?")) {
@@ -78,6 +89,7 @@ const LotesDadosDeBaja = ({ reloadFlag, triggerReload }) => {
                             className="w-full px-2 sm:px-3 py-1 sm:py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-green-900"
                             defaultValue=""
                         >
+                            <option value="" disabled>Selecciona una opción</option>
                             {(isAdmin || isUser) && <option value="produccionG">Producción</option>}
                             {isAdmin && <option value="clasificacion">Clasificación</option>}
                             {isAdmin && <option value="estado">Estado</option>}

@@ -75,16 +75,43 @@ const ClientesActivos = () => {
     }
   };
 
+  const Pagination = ({ totalPages, currentPage, paginate }) => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(i);
+    }
+
+    return (
+      <div className="flex justify-center mt-4">
+        {pageNumbers.map((number) => (
+          <button
+            key={number}
+            onClick={() => paginate(number)}
+            className={`px-3 py-1 mx-1 border border-gray-300 rounded-md ${currentPage === number
+                ? 'bg-green-700 text-white'
+                : 'bg-white text-green-700 hover:bg-green-200'
+              }`}
+          >
+            {number}
+          </button>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="p-6 bg-yellow-50 shadow-lg rounded-lg max-w-full w-full">
-      <h2 className="text-3xl font-bold text-green-900 mb-6">Clientes Activos</h2>
+      <h2 className="text-3xl font-bold text-green-900 mb-6 text-center">Clientes Activos</h2>
 
-      <button
-        onClick={() => { setShowForm(!showForm); setEditingCliente(null); }}
-        className="mb-6 px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors duration-300"
-      >
-        {showForm ? 'Ocultar Formulario' : 'Agregar Nuevo Cliente'}
-      </button>
+      <div className="flex justify-center mb-6">
+        <button
+          onClick={() => { setShowForm(!showForm); setEditingCliente(null); }}
+          className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors duration-300"
+        >
+          {showForm ? 'Ocultar Formulario' : 'Agregar Nuevo Cliente'}
+        </button>
+      </div>
+
 
       {showForm && (
         <ClienteForm
@@ -153,27 +180,8 @@ const ClientesActivos = () => {
               </tbody>
             </table>
           </div>
-          <div className="flex justify-between items-center mt-6">
-            <button
-              onClick={handlePrevPage}
-              className="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-800 transition-colors duration-300"
-              disabled={currentPage === 1}
-            >
-              Anterior
-            </button>
 
-            <span className="text-lg text-green-900">
-              Página {currentPage} de {totalPages}
-            </span>
-
-            <button
-              onClick={handleNextPage}
-              className="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-800 transition-colors duration-300"
-              disabled={currentPage >= totalPages}
-            >
-              Siguiente
-            </button>
-          </div>
+          <Pagination totalPages={totalPages} currentPage={currentPage} paginate={setCurrentPage} />
         </>
       ) : (
         <p className="text-gray-700 text-lg">No hay clientes activos disponibles.</p>

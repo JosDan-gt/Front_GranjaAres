@@ -6,14 +6,12 @@ import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../Context/AuthContext';
 
-
-
 const ProduccionG = () => {
   const { idLote } = useParams();
   const [historial, setHistorial] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(10); // Elementos por página
   const [sortOrder, setSortOrder] = useState('desc');
   const [showForm, setShowForm] = useState(false);
   const [currentItem, setCurrentItem] = useState(null);
@@ -23,7 +21,6 @@ const ProduccionG = () => {
   const isDisabled = estadoBaja !== undefined ? estadoBaja : false;
   const { roles } = useContext(AuthContext); // Obtiene los roles del contexto de autenticación
   const isAdmin = roles.includes('Admin');
-  const isUser = roles.includes('User');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -91,36 +88,74 @@ const ProduccionG = () => {
 
   // Cambio de página
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const totalPages = Math.ceil(historial.length / itemsPerPage);
+
+  const Pagination = ({ totalPages, currentPage, paginate }) => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(i);
+    }
+
+    return (
+      <div className="flex justify-center mt-4">
+        {pageNumbers.map((number) => (
+          <button
+            key={number}
+            onClick={() => paginate(number)}
+            className={`px-3 py-1 mx-1 border border-gray-300 rounded-md ${currentPage === number
+              ? 'bg-green-700 text-white'
+              : 'bg-white text-green-700 hover:bg-green-200'
+              }`}
+          >
+            {number}
+          </button>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="p-4 sm:p-6 bg-yellow-50 shadow-lg rounded-lg">
       <div className="flex justify-start mb-6 text-lg">
-        {isAdmin && <Link
-          to={`/clasificacion/${idLote}`}
-          className="text-green-700 hover:text-green-900 transition duration-300"
-        >
-          Clasificación
-        </Link>}
+        {isAdmin && (
+          <Link
+            to={`/clasificacion/${idLote}`}
+            state={{ estadoBaja }}
+            className="text-green-700 hover:text-green-900 transition duration-300"
+          >
+            Clasificación
+          </Link>
+        )}
         <span className="mx-2 text-green-700">/</span>
-        {isAdmin && <Link
-          to={`/estado/${idLote}`}
-          className="text-green-700 hover:text-green-900 transition duration-300"
-        >
-          Estado Lote
-        </Link>}
+        {isAdmin && (
+          <Link
+            to={`/estado/${idLote}`}
+            state={{ estadoBaja }}
+            className="text-green-700 hover:text-green-900 transition duration-300"
+          >
+            Estado Lote
+          </Link>
+        )}
       </div>
 
+      <h2 className="text-2xl sm:text-3xl font-bold text-green-900 mb-4 sm:mb-6 text-center">
+        Historial de Producción
+      </h2>
 
-      <h2 className="text-2xl sm:text-3xl font-bold text-green-900 mb-4 sm:mb-6 text-center">Historial de Producción</h2>
-
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-center mb-4">
         <button
           disabled={isDisabled}
           onClick={handleAddClick}
-          className={`px-4 py-2 mb-4 ${isDisabled ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-green-700 text-white rounded hover:bg-green-800 transition duration-300'}`}
+          className={`px-6 py-3 text-white font-semibold rounded-lg transition-colors duration-300 ${isDisabled
+            ? 'bg-gray-400 text-gray-500 cursor-not-allowed'
+            : 'bg-green-700 hover:bg-green-800'
+            } mb-6`}
         >
-          + Agregar Producción
+          Agregar Producción
         </button>
       </div>
+
 
       {showForm && (
         <ProduccionForm
@@ -151,7 +186,9 @@ const ProduccionG = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="7" className="py-4 text-center text-gray-500">Cargando...</td>
+                <td colSpan="7" className="py-4 text-center text-gray-500">
+                  Cargando...
+                </td>
               </tr>
             ) : currentItems.length ? (
               currentItems.map((item) => (
@@ -174,37 +211,19 @@ const ProduccionG = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="py-4 text-center text-gray-500">No hay registros de producción disponibles.</td>
+                <td colSpan="7" className="py-4 text-center text-gray-500">
+                  No hay registros de producción disponibles.
+                </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
 
-      <div className="flex justify-between items-center mt-4">
-        <button
-          onClick={() => paginate(currentPage - 1)}
-          disabled={currentPage === 1}
-          className="px-3 py-2 bg-green-700 text-white text-sm rounded-md hover:bg-green-800 transition duration-300 disabled:opacity-50"
-        >
-          Anterior
-        </button>
-        <span className="text-sm text-green-700">
-          Página {currentPage} de {Math.ceil(historial.length / itemsPerPage)}
-        </span>
-        <button
-          onClick={() => paginate(currentPage + 1)}
-          disabled={currentPage * itemsPerPage >= historial.length}
-          className="px-3 py-2 bg-green-700 text-white text-sm rounded-md hover:bg-green-800 transition duration-300 disabled:opacity-50"
-        >
-          Siguiente
-        </button>
-      </div>
+      {/* Agregar el componente de paginación aquí */}
+      <Pagination totalPages={totalPages} currentPage={currentPage} paginate={paginate} />
     </div>
   );
-
-
-
 };
 
 export default ProduccionG;

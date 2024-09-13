@@ -8,7 +8,7 @@ const VentasActivas = () => {
   const [detallesVisibles, setDetallesVisibles] = useState({});
   const [ventaSeleccionada, setVentaSeleccionada] = useState(null);
   const [clientes, setClientes] = useState([]);
-  const [productos, setProductos] = useState([]); // Aquí obtenemos los productos activos
+  const [productos, setProductos] = useState([]);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -26,13 +26,13 @@ const VentasActivas = () => {
     }
   };
 
-  // Obtener clientes y productos para asociar con sus nombres
+  // Obtener clientes y productos
   const fetchClientesYProductos = async () => {
     try {
       const clientesResponse = await axiosInstance.get('/api/Ventas/ClientesActivos');
       const productosResponse = await axiosInstance.get('/api/Ventas/ProductosActivos');
       setClientes(clientesResponse.data);
-      setProductos(productosResponse.data); // Guardamos los productos en el estado
+      setProductos(productosResponse.data);
     } catch (error) {
       console.error('Error fetching clientes o productos:', error);
     }
@@ -114,21 +114,47 @@ const VentasActivas = () => {
     }
   };
 
+  // Componente de paginación (similar al de ClientesActivos)
+  const Pagination = ({ totalPages, currentPage, paginate }) => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(i);
+    }
+
+    return (
+      <div className="flex justify-center mt-4">
+        {pageNumbers.map((number) => (
+          <button
+            key={number}
+            onClick={() => paginate(number)}
+            className={`px-3 py-1 mx-1 border border-gray-300 rounded-md ${currentPage === number
+              ? 'bg-green-700 text-white'
+              : 'bg-white text-green-700 hover:bg-green-200'
+              }`}
+          >
+            {number}
+          </button>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="p-4 sm:p-6 bg-yellow-50 shadow-lg rounded-lg max-w-full w-full">
-      <h1 className="text-2xl md:text-3xl font-bold text-green-900 mb-4 md:mb-6 text-center md:text-left">
+      <h1 className="text-2xl sm:text-3xl font-bold text-green-900 mb-4 sm:mb-6 text-center">
         Ventas Activas
       </h1>
 
       {/* Botón para agregar nueva venta */}
-      <div className="flex flex-col md:flex-row justify-between items-center mb-4 md:mb-6">
+      <div className="flex justify-center mb-4 md:mb-6">
         <button
           onClick={handleAdd}
-          className="w-full md:w-auto px-4 md:px-6 py-2 md:py-3 font-semibold rounded-lg transition-colors duration-300 bg-green-700 text-white hover:bg-green-800"
+          className="w-full md:w-auto px-6 py-3 font-semibold rounded-lg transition-colors duration-300 bg-green-700 text-white hover:bg-green-800"
         >
           Agregar Nueva Venta
         </button>
       </div>
+
 
       {mostrarFormulario && (
         <div className="mb-6">
@@ -163,9 +189,8 @@ const VentasActivas = () => {
             {currentVentas.map((venta, index) => (
               <React.Fragment key={venta.ventaId}>
                 <tr
-                  className={`border-b border-gray-200 hover:bg-yellow-50 ${
-                    index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                  }`}
+                  className={`border-b border-gray-200 hover:bg-yellow-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                    }`}
                 >
                   <td className="py-3 px-4 md:px-6 whitespace-nowrap">
                     {new Date(venta.fechaVenta).toLocaleDateString()}
@@ -225,29 +250,7 @@ const VentasActivas = () => {
         </table>
 
         {/* Paginación */}
-        <div className="flex justify-between items-center mt-4">
-          <button
-            onClick={() => goToPage(currentPage - 1)}
-            disabled={currentPage === 1}
-            className={`px-3 py-1 rounded-lg bg-green-600 text-white ${
-              currentPage === 1 ? 'cursor-not-allowed opacity-50' : 'hover:bg-green-700'
-            }`}
-          >
-            Anterior
-          </button>
-          <span className="text-gray-700">
-            Página {currentPage} de {totalPages}
-          </span>
-          <button
-            onClick={() => goToPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className={`px-3 py-1 rounded-lg bg-green-600 text-white ${
-              currentPage === totalPages ? 'cursor-not-allowed opacity-50' : 'hover:bg-green-700'
-            }`}
-          >
-            Siguiente
-          </button>
-        </div>
+        <Pagination totalPages={totalPages} currentPage={currentPage} paginate={goToPage} />
       </div>
     </div>
   );

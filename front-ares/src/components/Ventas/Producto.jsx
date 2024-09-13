@@ -8,6 +8,7 @@ const ProductosActivos = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingProducto, setEditingProducto] = useState(null);
+  const [expanded, setExpanded] = useState(null); // Controla qué fila está expandida
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -56,32 +57,56 @@ const ProductosActivos = () => {
     }
   };
 
+  const handleToggleExpand = (id) => {
+    setExpanded(expanded === id ? null : id); // Alternar la expansión de la descripción
+  };
+
+  const truncateText = (text, maxLength) => {
+    if (text.length <= maxLength) return text;
+    return text.substr(0, text.lastIndexOf(' ', maxLength)) + '...'; // Corta hasta la última palabra completa
+  };
+
   const totalPages = Math.ceil(productos.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = productos.slice(startIndex, startIndex + itemsPerPage);
 
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
+  const Pagination = ({ totalPages, currentPage, paginate }) => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(i);
     }
-  };
 
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
+    return (
+      <div className="flex justify-center mt-4">
+        {pageNumbers.map((number) => (
+          <button
+            key={number}
+            onClick={() => paginate(number)}
+            className={`px-3 py-1 mx-1 border border-gray-300 rounded-md ${currentPage === number
+              ? 'bg-green-700 text-white'
+              : 'bg-white text-green-700 hover:bg-green-200'
+              }`}
+          >
+            {number}
+          </button>
+        ))}
+      </div>
+    );
   };
 
   return (
     <div className="p-6 bg-yellow-50 shadow-lg rounded-lg max-w-full w-full">
-      <h2 className="text-3xl font-bold text-green-900 mb-6">Productos Activos</h2>
+      <h2 className="text-3xl font-bold text-green-900 mb-6 text-center">Productos Activos</h2>
 
-      <button
-        onClick={() => { setShowForm(!showForm); setEditingProducto(null); }}
-        className="mb-6 px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors duration-300"
-      >
-        {showForm ? 'Ocultar Formulario' : 'Agregar Nuevo Producto'}
-      </button>
+      <div className="flex justify-center mb-6">
+        <button
+          onClick={() => { setShowForm(!showForm); setEditingProducto(null); }}
+          className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors duration-300"
+        >
+          {showForm ? 'Ocultar Formulario' : 'Agregar Nuevo Producto'}
+        </button>
+      </div>
+
 
       {showForm && (
         <ProductoForm
@@ -114,13 +139,30 @@ const ProductosActivos = () => {
                     className="border-b border-gray-200 hover:bg-yellow-50"
                   >
                     <td className="py-3 px-6 whitespace-nowrap">{producto.nombreProducto}</td>
-                    <td className="py-3 px-6 max-w-xs whitespace-nowrap overflow-hidden text-ellipsis">
+                    <td className="py-3 px-6 max-w-xs whitespace-nowrap overflow-hidden text-ellipsis" style={{ minHeight: '50px' }}>
                       <div
-                        style={{ maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                        style={{
+                          maxWidth: '200px',
+                          whiteSpace: expanded === producto.productoId ? 'normal' : 'nowrap',
+                          overflow: expanded === producto.productoId ? 'visible' : 'hidden',
+                          textOverflow: 'ellipsis',
+                          minHeight: '20px',
+                        }}
                       >
-                        {producto.descripcion}
+                        {expanded === producto.productoId
+                          ? producto.descripcion // Mostrar toda la descripción si está expandida
+                          : truncateText(producto.descripcion, 30)} {/* Truncar sin cortar palabras */}
                       </div>
+                      {producto.descripcion.length > 30 && (  // Mostrar "Ver más" si la descripción supera los 30 caracteres
+                        <button
+                          onClick={() => handleToggleExpand(producto.productoId)}
+                          className="ml-2 text-blue-600 hover:underline"
+                        >
+                          {expanded === producto.productoId ? 'Ver menos' : 'Ver más'}
+                        </button>
+                      )}
                     </td>
+
                     <td className="py-3 px-6 whitespace-nowrap flex space-x-2">
                       <button
                         onClick={() => handleEditProducto(producto)}
@@ -140,27 +182,8 @@ const ProductosActivos = () => {
               </tbody>
             </table>
           </div>
-          <div className="flex justify-between items-center mt-6">
-            <button
-              onClick={handlePrevPage}
-              className="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-800 transition-colors duration-300"
-              disabled={currentPage === 1}
-            >
-              Anterior
-            </button>
 
-            <span className="text-lg text-green-900">
-              Página {currentPage} de {totalPages}
-            </span>
-
-            <button
-              onClick={handleNextPage}
-              className="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-800 transition-colors duration-300"
-              disabled={currentPage >= totalPages}
-            >
-              Siguiente
-            </button>
-          </div>
+          <Pagination totalPages={totalPages} currentPage={currentPage} paginate={setCurrentPage} />
         </>
       ) : (
         <p className="text-gray-700 text-lg">No hay productos activos disponibles.</p>

@@ -21,7 +21,6 @@ const ClasificacionH = () => {
   const location = useLocation();
   const { estadoBaja } = location.state || {};
 
-
   const [dateRange, setDateRange] = useState([null, null]);
   const [selectedDateType, setSelectedDateType] = useState('fechaClaS');
 
@@ -63,7 +62,6 @@ const ClasificacionH = () => {
       const rangeStart = dateRange[0] ? dateRange[0].getTime() : null;
       const rangeEnd = dateRange[1] ? dateRange[1].getTime() : null;
 
-
       return (
         item.tamano.toLowerCase().includes(term) &&
         (!rangeStart || !rangeEnd || (itemFecha >= rangeStart && itemFecha <= rangeEnd))
@@ -75,6 +73,7 @@ const ClasificacionH = () => {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -98,10 +97,32 @@ const ClasificacionH = () => {
     setDateRange([start, end]);
   };
 
-
-
   const handleDateTypeChange = (e) => {
     setSelectedDateType(e.target.value);
+  };
+
+  const Pagination = ({ totalPages, currentPage, paginate }) => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(i);
+    }
+
+    return (
+      <div className="flex justify-center mt-4">
+        {pageNumbers.map((number) => (
+          <button
+            key={number}
+            onClick={() => paginate(number)}
+            className={`px-3 py-1 mx-1 border border-gray-300 rounded-md ${currentPage === number
+              ? 'bg-green-700 text-white'
+              : 'bg-white text-green-700 hover:bg-green-200'
+              }`}
+          >
+            {number}
+          </button>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -109,25 +130,27 @@ const ClasificacionH = () => {
       <div className="flex justify-start mb-6 text-lg">
         <Link
           to={`/produccionG/${id}`}
+          state={{ estadoBaja }} // Pasar el estado
           className="text-green-700 hover:text-green-900 transition duration-300"
         >
-          Produccion
+          Producción
         </Link>
         <span className="mx-2 text-green-700">/</span>
         <Link
           to={`/estado/${id}`}
+          state={{ estadoBaja }} // Pasar el estado
           className="text-green-700 hover:text-green-900 transition duration-300"
         >
           Estado Lote
         </Link>
       </div>
 
-      
-      <h2 className="text-2xl md:text-3xl font-bold text-green-900 mb-4 md:mb-6 text-center md:text-left">
+
+      <h2 className="text-2xl sm:text-3xl font-bold text-green-900 mb-4 sm:mb-6 text-center">
         Clasificación de Huevos
       </h2>
 
-      <div className="flex flex-col md:flex-row justify-between items-center mb-4 md:mb-6">
+      <div className="flex flex-col justify-center items-center mb-4 md:mb-6">
         <button
           disabled={isDisabled}
           onClick={handleAddClick}
@@ -137,6 +160,7 @@ const ClasificacionH = () => {
           {showForm ? 'Ocultar Formulario' : 'Agregar Nueva Clasificación'}
         </button>
       </div>
+
 
       {showForm && (
         <ClasificacionForm
@@ -237,27 +261,32 @@ const ClasificacionH = () => {
                     {item.fechaClaS ? new Date(item.fechaClaS).toLocaleDateString() : 'Sin fecha'}
                   </td>
                   <td className="py-3 px-4 md:px-6 whitespace-nowrap">
-                    {item.fechaRegistroP ? new Date(item.fechaRegistroP).toLocaleDateString() : 'Sin fecha'}
+                    {item.fechaRegistroP
+                      ? new Date(item.fechaRegistroP).toLocaleDateString()
+                      : 'Sin fecha'}
                   </td>
                   <td className="py-3 px-4 md:px-6 whitespace-nowrap">
                     <button
                       onClick={() => handleEditClick(item)}
-                      className="px-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition-colors duration-300"
+                      disabled={isDisabled} // Deshabilitar el botón si el lote está dado de baja
+                      className={`px-4 py-2 font-semibold rounded-lg transition-colors duration-300 text-white ${isDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'
+                        }`}
                     >
                       Editar
                     </button>
                   </td>
+
                 </tr>
               ))}
             </tbody>
           </table>
+          <Pagination totalPages={totalPages} currentPage={currentPage} paginate={paginate} />
         </div>
       ) : (
         <p className="text-gray-600 text-lg">No hay datos disponibles.</p>
       )}
     </div>
   );
-
 };
 
 export default ClasificacionH;

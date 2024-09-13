@@ -121,36 +121,40 @@ const LotesActivos = ({ reloadFlag, triggerReload }) => {
 
     return (
         <div className="p-4 sm:p-6 bg-yellow-50 shadow-lg rounded-lg">
-            <h2 className="text-2xl sm:text-3xl font-bold text-green-900 mb-4 sm:mb-6">Lotes Activos</h2>
-
-            {isAdmin && (
-                <button
-                    onClick={handleAddNew}
-                    className="px-4 py-2 mb-4 bg-green-700 text-white rounded hover:bg-green-800 transition duration-300"
-                >
-                    {showForm ? 'Ocultar Formulario' : 'Agregar Nuevo Lote'}
-                </button>
-            )}
-
-            {showForm && (
-                <LoteForm
-                    loteData={selectedLote}
-                    lotes={lotes}
-                    isEditing={isEditing}
-                    onCancel={handleFormClose}
-                    onSubmit={handleSubmit}
-                />
-            )}
-
+            {/* Contenedor centrado para el título */}
+            <div className="flex flex-col items-center">
+                <h2 className="text-2xl sm:text-3xl font-bold text-green-900 mb-4 sm:mb-6 text-center">Lotes Activos</h2>
+    
+                {isAdmin && (
+                    <button
+                        onClick={handleAddNew}
+                        className="px-4 py-2 mb-4 bg-green-700 text-white rounded hover:bg-green-800 transition duration-300"
+                    >
+                        {showForm ? 'Ocultar Formulario' : 'Agregar Nuevo Lote'}
+                    </button>
+                )}
+    
+                {showForm && (
+                    <LoteForm
+                        loteData={selectedLote}
+                        lotes={lotes}
+                        isEditing={isEditing}
+                        onCancel={handleFormClose}
+                        onSubmit={handleSubmit}
+                    />
+                )}
+            </div>
+    
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {lotes.map((lote) => (
                     <div key={lote.idLote} className="border border-green-300 rounded-lg p-4 sm:p-6 bg-white shadow-sm hover:shadow-lg transition-shadow duration-300">
                         <h3 className="text-lg sm:text-xl font-semibold text-green-900 mb-2 sm:mb-4">Lote {lote.numLote}</h3>
-
+    
                         <p className="text-green-700"><span className="font-medium text-green-900">Cantidad Inicial:</span> {lote.cantidadGctual}</p>
                         <p className="text-green-700"><span className="font-medium text-green-900">Cantidad Actual:</span> {lote.cantidadG}</p>
                         <p className="text-green-700"><span className="font-medium text-green-900">Fecha de Adquisición:</span> {new Date(lote.fechaAdq).toLocaleDateString()}</p>
-
+    
+                        {/* Mantengo el combobox para cada lote */}
                         <label htmlFor={`select-${lote.idLote}`} className="block text-sm font-medium text-green-900 mt-2 sm:mt-4 mb-2">
                             Acciones
                         </label>
@@ -165,18 +169,18 @@ const LotesActivos = ({ reloadFlag, triggerReload }) => {
                             {isAdmin && <option value="clasificacion">Clasificación</option>}
                             {isAdmin && <option value="estado">Estado</option>}
                         </select>
-
+    
                         {isAdmin && (
-                            <div className="flex flex-col sm:flex-row justify-between mt-2 sm:mt-4">
+                            <div className="flex flex-col custom-lg:flex-row justify-between mt-2 sm:mt-4">
                                 <button
                                     onClick={() => handleEdit(lote)}
-                                    className="px-4 py-2 mb-2 sm:mb-0 sm:mr-2 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition duration-300"
+                                    className="px-4 py-2 mb-2 custom-lg:mb-0 custom-lg:mr-2 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition duration-300"
                                 >
                                     Editar
                                 </button>
                                 <button
                                     onClick={() => handleDelete(lote.idLote)}
-                                    className="px-4 py-2 mb-2 sm:mb-0 sm:mr-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition duration-300"
+                                    className="px-4 py-2 mb-2 custom-lg:mb-0 custom-lg:mr-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition duration-300"
                                 >
                                     Eliminar
                                 </button>
@@ -186,7 +190,6 @@ const LotesActivos = ({ reloadFlag, triggerReload }) => {
                                 >
                                     Dar de Baja
                                 </button>
-
                             </div>
                         )}
                     </div>
@@ -194,6 +197,8 @@ const LotesActivos = ({ reloadFlag, triggerReload }) => {
             </div>
         </div>
     );
+    
+
 };
 
 export default LotesActivos;
