@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
-import Sidebar from './components/Sidebar/Sidebar.jsx';
+import Sidebar from './components/Sidebar/Sidebar.jsx'; // Ajustar si es Sidebar horizontal
 import Dashboard from './components/Dashboard.jsx';
 import Lote from './components/Lote/Lote.jsx';
 import ClasificacionH from './components/Produccion/ClasificacionH.jsx';
@@ -13,11 +13,11 @@ import GestionLote from './components/GestionLote.jsx';
 import Login from './components/Login/Login.jsx';
 import ProtectedRoute from './components/Login/ProtectedRoute.jsx';
 import { AuthProvider } from './components/Context/AuthContext.jsx';
-import ProduccionG from './components/Produccion/ProduccionG.jsx';
 import Cliente from './components/Ventas/Cliente.jsx';
 import Producto from './components/Ventas/Producto.jsx';
 import Ventas from './components/Ventas/Ventas.jsx';
 import RazaG from './components/Razas/RazasG.jsx';
+import ProduccionG from './components/Produccion/ProduccionG.jsx';
 
 // Componente para mostrar errores globalmente
 const ErrorDisplay = () => {
@@ -35,15 +35,12 @@ const ErrorDisplay = () => {
   );
 };
 
-// Layout para las rutas protegidas que comparten la misma estructura (Header, Sidebar, Footer)
+// Layout para las rutas protegidas que comparten la misma estructura (Header, Footer)
 const ProtectedLayout = ({ children }) => (
   <div className="flex flex-col min-h-screen">
     <Header />
-    <div className="flex flex-1">
-      <Sidebar />
-      <main className="flex-1 p-4 bg-gray-100">
-        {children}
-      </main>
+    <div className="flex-1 p-4 bg-gray-100">
+      {children}
     </div>
     <Footer />
   </div>
@@ -58,9 +55,6 @@ function App() {
           <Routes>
             {/* Ruta de login accesible sin autenticación */}
             <Route path="/login" element={<Login />} />
-
-            {/* Redirigir desde la raíz al dashboard */}
-            <Route path="/" element={<Navigate to="/dashboard" />} />
 
             {/* Rutas protegidas */}
             <Route
@@ -87,7 +81,7 @@ function App() {
             />
 
             {/* Ruta por defecto para manejar páginas no encontradas (404) */}
-            <Route path="*" element={<Navigate to="/dashboard" />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </Router>
       </ErrorProvider>

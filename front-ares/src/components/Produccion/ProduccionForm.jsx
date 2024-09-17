@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axiosInstance from '../axiosInstance'; // Importa la instancia de axios configurada
+import axiosInstance from '../axiosInstance';
+import { FaSave, FaTimes, FaBroom } from 'react-icons/fa'; // Importar iconos
 
 const ProduccionForm = ({ item, idLote, onClose, refreshData }) => {
   const [formData, setFormData] = useState({
@@ -94,101 +95,102 @@ const ProduccionForm = ({ item, idLote, onClose, refreshData }) => {
   };
 
   return (
-    <div className="p-4 md:p-6 rounded-lg shadow-md mb-6" style={{ backgroundColor: '#F5F5DC' }}>
-      <h3 className="text-lg md:text-xl font-bold mb-4" style={{ color: '#8B4513' }}>
+    <div className="p-6 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 rounded-lg shadow-lg">
+      <h3 className="text-xl font-bold mb-4 text-blue-900">
         {formData.idProd ? 'Actualizar Producción' : 'Agregar Producción'}
       </h3>
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {/* Input de Cajas */}
           <div>
-            <label className="block text-sm font-semibold mb-1" style={{ color: '#8B4513' }}>Cajas</label>
+            <label className="block text-sm font-semibold mb-1 text-blue-900">Cajas</label>
             <input
               type="number"
               name="cantCajas"
               value={formData.cantCajas}
               onChange={handleChange}
               placeholder="Cajas"
-              className="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2"
-              style={{ borderColor: '#8B4513', focusRingColor: '#6B8E23' }}
+              className="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
               min="0"
             />
-            {errors.cantCajas && <p className="text-xs mt-1" style={{ color: '#B22222' }}>{errors.cantCajas}</p>}
+            {errors.cantCajas && <p className="text-xs mt-1 text-red-600">{errors.cantCajas}</p>}
           </div>
 
+          {/* Input de Cartones */}
           <div>
-            <label className="block text-sm font-semibold mb-1" style={{ color: '#8B4513' }}>Cartones</label>
+            <label className="block text-sm font-semibold mb-1 text-blue-900">Cartones</label>
             <input
               type="number"
               name="cantCartones"
               value={formData.cantCartones}
               onChange={handleChange}
               placeholder="Cartones"
-              className="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2"
-              style={{ borderColor: '#8B4513', focusRingColor: '#6B8E23' }}
+              className="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
               min="0"
             />
-            {errors.cantCartones && <p className="text-xs mt-1" style={{ color: '#B22222' }}>{errors.cantCartones}</p>}
+            {errors.cantCartones && <p className="text-xs mt-1 text-red-600">{errors.cantCartones}</p>}
           </div>
 
+          {/* Input de Sueltos */}
           <div>
-            <label className="block text-sm font-semibold mb-1" style={{ color: '#8B4513' }}>Sueltos</label>
+            <label className="block text-sm font-semibold mb-1 text-blue-900">Sueltos</label>
             <input
               type="number"
               name="cantSueltos"
               value={formData.cantSueltos}
               onChange={handleChange}
               placeholder="Sueltos"
-              className="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2"
-              style={{ borderColor: '#8B4513', focusRingColor: '#6B8E23' }}
+              className="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
               min="0"
             />
-            {errors.cantSueltos && <p className="text-xs mt-1" style={{ color: '#B22222' }}>{errors.cantSueltos}</p>}
+            {errors.cantSueltos && <p className="text-xs mt-1 text-red-600">{errors.cantSueltos}</p>}
           </div>
 
+          {/* Input de Defectuosos */}
           <div>
-            <label className="block text-sm font-semibold mb-1" style={{ color: '#8B4513' }}>Defectuosos</label>
+            <label className="block text-sm font-semibold mb-1 text-blue-900">Defectuosos</label>
             <input
               type="number"
               name="defectuosos"
               value={formData.defectuosos}
               onChange={handleChange}
               placeholder="Defectuosos"
-              className="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2"
-              style={{ borderColor: '#8B4513', focusRingColor: '#6B8E23' }}
+              className="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
               min="0"
             />
-            {errors.defectuosos && <p className="text-xs mt-1" style={{ color: '#B22222' }}>{errors.defectuosos}</p>}
+            {errors.defectuosos && <p className="text-xs mt-1 text-red-600">{errors.defectuosos}</p>}
           </div>
 
+          {/* Input de Fecha de Registro */}
           <div>
-            <label className="block text-sm font-semibold mb-1" style={{ color: '#8B4513' }}>Fecha de Registro</label>
+            <label className="block text-sm font-semibold mb-1 text-blue-900">Fecha de Registro</label>
             <input
               type="date"
               name="fechaRegistroP"
               value={formData.fechaRegistroP}
               onChange={handleChange}
-              className="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2"
-              style={{ borderColor: '#8B4513', focusRingColor: '#6B8E23' }}
+              className="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
             />
-            {errors.fechaRegistroP && <p className="text-xs mt-1" style={{ color: '#B22222' }}>{errors.fechaRegistroP}</p>}
+            {errors.fechaRegistroP && <p className="text-xs mt-1 text-red-600">{errors.fechaRegistroP}</p>}
           </div>
         </div>
 
-        <div className="flex justify-end mt-4">
+        {/* Botones de Acción */}
+        <div className="flex justify-end mt-6">
           <button
             type="submit"
-            className="px-4 py-2 font-semibold rounded-md focus:outline-none focus:ring-2"
-            style={{ backgroundColor: '#6B8E23', color: '#FFFFFF', hoverBackgroundColor: '#5A7A1B', focusRingColor: '#6B8E23' }}
+            className="px-4 py-2 font-semibold bg-green-600 text-white rounded-md shadow-md hover:bg-green-700 transition-all duration-300 flex items-center"
             disabled={loading}
           >
+            <FaSave className="mr-2" /> {/* Ícono de guardar */}
             {formData.idProd ? 'Actualizar' : 'Agregar'}
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="ml-2 px-4 py-2 font-semibold rounded-md focus:outline-none focus:ring-2"
-            style={{ backgroundColor: '#FFD700', color: '#FFFFFF', hoverBackgroundColor: '#E6C200', focusRingColor: '#FFD700' }}
+            className="ml-2 px-4 py-2 font-semibold bg-yellow-500 text-white rounded-md shadow-md hover:bg-yellow-600 transition-all duration-300 flex items-center"
           >
+            <FaTimes className="mr-2" /> {/* Ícono de cancelar */}
             Cancelar
           </button>
           <button
@@ -200,18 +202,15 @@ const ProduccionForm = ({ item, idLote, onClose, refreshData }) => {
               defectuosos: '',
               fechaRegistroP: ''
             })}
-            className="ml-2 px-4 py-2 font-semibold rounded-md focus:outline-none focus:ring-2"
-            style={{ backgroundColor: '#808080', color: '#FFFFFF', hoverBackgroundColor: '#696969', focusRingColor: '#808080' }}
+            className="ml-2 px-4 py-2 font-semibold bg-gray-500 text-white rounded-md shadow-md hover:bg-gray-600 transition-all duration-300 flex items-center"
           >
+            <FaBroom className="mr-2" /> {/* Ícono de limpiar */}
             Limpiar
           </button>
         </div>
       </form>
     </div>
   );
-
-
-
 };
 
 export default ProduccionForm;

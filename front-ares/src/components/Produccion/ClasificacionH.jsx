@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { FaBox, FaEgg, FaLayerGroup, FaSortUp, FaSortDown, FaEdit } from 'react-icons/fa';
+import axiosInstance from '../axiosInstance';
 import { useParams, Link } from 'react-router-dom';
-import { FaSortUp, FaSortDown } from 'react-icons/fa';
-import ClasificacionForm from './ClasificacionForm';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import ClasificacionForm from './ClasificacionForm';
 import { useLocation } from 'react-router-dom';
-import axiosInstance from '../axiosInstance';
 
 const ClasificacionH = () => {
   const { id } = useParams();
@@ -20,7 +19,6 @@ const ClasificacionH = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const location = useLocation();
   const { estadoBaja } = location.state || {};
-
   const [dateRange, setDateRange] = useState([null, null]);
   const [selectedDateType, setSelectedDateType] = useState('fechaClaS');
 
@@ -108,15 +106,16 @@ const ClasificacionH = () => {
     }
 
     return (
-      <div className="flex justify-center mt-4">
+      <div className="flex justify-center mt-4 space-x-2">
         {pageNumbers.map((number) => (
           <button
             key={number}
             onClick={() => paginate(number)}
-            className={`px-3 py-1 mx-1 border border-gray-300 rounded-md ${currentPage === number
-              ? 'bg-green-700 text-white'
-              : 'bg-white text-green-700 hover:bg-green-200'
-              }`}
+            className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-all duration-300 focus:outline-none ${
+              currentPage === number
+                ? 'bg-gradient-to-r from-blue-600 to-blue-800 text-white'
+                : 'bg-white text-blue-700 border border-gray-300 hover:bg-blue-100 hover:text-blue-900'
+            }`}
           >
             {number}
           </button>
@@ -126,45 +125,49 @@ const ClasificacionH = () => {
   };
 
   return (
-    <div className="p-4 sm:p-6 bg-yellow-50 shadow-lg rounded-lg max-w-full w-full ">
-      <div className="flex justify-start mb-6 text-lg">
+    <div className="p-6 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 shadow-xl rounded-xl">
+      <div className="flex justify-start mb-6 text-lg items-center">
         <Link
           to={`/produccionG/${id}`}
-          state={{ estadoBaja }} // Pasar el estado
-          className="text-green-700 hover:text-green-900 transition duration-300"
+          state={{ estadoBaja }}
+          className="text-blue-700 hover:text-blue-900 transition duration-300 flex items-center space-x-2"
         >
-          Producción
+          <FaBox className="text-blue-700" /> {/* Ícono de caja */}
+          <span>Producción</span>
         </Link>
-        <span className="mx-2 text-green-700">/</span>
+        <span className="mx-2 text-blue-700">/</span>
         <Link
           to={`/estado/${id}`}
-          state={{ estadoBaja }} // Pasar el estado
-          className="text-green-700 hover:text-green-900 transition duration-300"
+          state={{ estadoBaja }}
+          className="text-blue-700 hover:text-blue-900 transition duration-300 flex items-center space-x-2"
         >
-          Estado Lote
+          <FaBox className="text-blue-700" /> {/* Ícono de caja */}
+          <span>Estado Lote</span>
         </Link>
       </div>
 
-
-      <h2 className="text-2xl sm:text-3xl font-bold text-green-900 mb-4 sm:mb-6 text-center">
+      <h2 className="text-3xl font-extrabold text-gray-800 mb-6 text-center tracking-wider">
+        <FaBox className="inline-block mb-2 text-blue-700" /> {/* Icono en el título */}
         Clasificación de Huevos
       </h2>
 
-      <div className="flex flex-col justify-center items-center mb-4 md:mb-6">
+      <div className="flex justify-center mb-4">
         <button
           disabled={isDisabled}
           onClick={handleAddClick}
-          className={`w-full md:w-auto px-4 md:px-6 py-2 md:py-3 font-semibold rounded-lg transition-colors duration-300 ${isDisabled ? 'bg-gray-400 cursor-not-allowed text-gray-500' : 'bg-green-700 text-white hover:bg-green-800'
-            } mb-4 md:mb-0`}
+          className={`px-6 py-3 text-white font-semibold rounded-full shadow-lg transition-all duration-300 ${
+            isDisabled
+              ? 'bg-gray-400 text-gray-500 cursor-not-allowed'
+              : 'bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700'
+          }`}
         >
-          {showForm ? 'Ocultar Formulario' : 'Agregar Nueva Clasificación'}
+          <FaBox className="inline-block mr-2" /> {/* Ícono en el botón */}
+          Agregar Clasificación
         </button>
       </div>
 
-
       {showForm && (
         <ClasificacionForm
-          key={selectedItem ? selectedItem.id : 'new'}
           item={selectedItem}
           idLote={id}
           onClose={handleCloseForm}
@@ -173,118 +176,88 @@ const ClasificacionH = () => {
         />
       )}
 
-      <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 mb-4 md:mb-6">
-        <input
-          type="text"
-          placeholder="Buscar por tamaño..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-md w-full md:w-auto"
-        />
-
-        <select
-          value={selectedDateType}
-          onChange={handleDateTypeChange}
-          className="px-4 py-2 border border-gray-300 rounded-md w-full md:w-auto"
-        >
-          <option value="fechaClaS">Fecha de Clasificación</option>
-          <option value="fechaRegistroP">Fecha de Producción</option>
-        </select>
-
-        <div className="w-full md:w-auto">
-          <DatePicker
-            selectsRange
-            startDate={dateRange[0]}
-            endDate={dateRange[1]}
-            onChange={handleDateRangeChange}
-            className="px-4 py-2 border border-gray-300 rounded-md w-full md:w-auto"
-            isClearable={true}
-            placeholderText="Seleccionar rango de fechas"
-          />
-        </div>
-      </div>
-
-      {loading ? (
-        <p className="text-gray-700">Cargando datos...</p>
-      ) : filteredData.length > 0 ? (
-        <div className="w-full overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
-            <thead className="bg-green-700 text-white">
+      <div className="overflow-x-auto max-w-full rounded-lg shadow-lg">
+        <table className="w-full text-sm text-left text-gray-700 bg-white rounded-lg">
+          <thead className="text-xs text-white uppercase bg-gradient-to-r from-blue-600 to-blue-800">
+            <tr>
+              <th className="px-6 py-3 text-center">Tamaño</th>
+              <th className="px-6 py-3 text-center">
+                <FaBox className="inline-block mr-1" /> Cajas
+              </th>
+              <th className="px-6 py-3 text-center">
+                <FaLayerGroup className="inline-block mr-1" /> Cartones Extra
+              </th>
+              <th className="px-6 py-3 text-center">
+                <FaEgg className="inline-block mr-1" /> Huevos Sueltos
+              </th>
+              <th className="px-6 py-3 text-center">Cantidad Total</th>
+              <th className="px-6 py-3 text-center">
+                <div className="flex items-center justify-center">
+                  Fecha de Clasificación
+                  <button
+                    onClick={handleSortChange}
+                    className="ml-2 text-gray-200 flex items-center"
+                  >
+                    {sortOrder === 'asc' ? <FaSortUp /> : <FaSortDown />}
+                  </button>
+                </div>
+              </th>
+              <th className="px-6 py-3 text-center">Fecha de Producción</th>
+              <th className="px-6 py-3 text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
               <tr>
-                <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
-                  Tamaño
-                </th>
-                <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
-                  Cajas
-                </th>
-                <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
-                  Cartones Extra
-                </th>
-                <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
-                  Huevos Sueltos
-                </th>
-                <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
-                  Cantidad Total
-                </th>
-                <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
-                  <div className="flex items-center">
-                    Fecha de Clasificación
-                    <button
-                      onClick={handleSortChange}
-                      className="ml-2 text-gray-200 flex items-center"
-                    >
-                      {sortOrder === 'asc' ? '▲' : '▼'}
-                    </button>
-                  </div>
-                </th>
-                <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
-                  Fecha de Producción
-                </th>
-                <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
-                  Acciones
-                </th>
+                <td colSpan="8" className="py-4 text-center text-gray-500">
+                  Cargando datos...
+                </td>
               </tr>
-            </thead>
-            <tbody className="text-gray-700 text-xs md:text-sm">
-              {currentItems.map((item, index) => (
+            ) : currentItems.length ? (
+              currentItems.map((item, index) => (
                 <tr
                   key={index}
-                  className={`border-b border-gray-200 hover:bg-yellow-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                    }`}
+                  className={`bg-white border-b hover:bg-gray-50 ${
+                    index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                  }`}
                 >
-                  <td className="py-3 px-4 md:px-6 whitespace-nowrap">{item.tamano}</td>
-                  <td className="py-3 px-4 md:px-6 whitespace-nowrap">{item.cajas}</td>
-                  <td className="py-3 px-4 md:px-6 whitespace-nowrap">{item.cartonesExtras}</td>
-                  <td className="py-3 px-4 md:px-6 whitespace-nowrap">{item.huevosSueltos}</td>
-                  <td className="py-3 px-4 md:px-6 whitespace-nowrap">{item.totalUnitaria}</td>
-                  <td className="py-3 px-4 md:px-6 whitespace-nowrap">
-                    {item.fechaClaS ? new Date(item.fechaClaS).toLocaleDateString() : 'Sin fecha'}
+                  <td className="px-6 py-4 text-center">{item.tamano}</td>
+                  <td className="px-6 py-4 text-center">{item.cajas}</td>
+                  <td className="px-6 py-4 text-center">{item.cartonesExtras}</td>
+                  <td className="px-6 py-4 text-center">{item.huevosSueltos}</td>
+                  <td className="px-6 py-4 text-center">{item.totalUnitaria}</td>
+                  <td className="px-6 py-4 text-center">
+                    {item.fechaClaS
+                      ? new Date(item.fechaClaS).toLocaleDateString()
+                      : 'Sin fecha'}
                   </td>
-                  <td className="py-3 px-4 md:px-6 whitespace-nowrap">
+                  <td className="px-6 py-4 text-center">
                     {item.fechaRegistroP
                       ? new Date(item.fechaRegistroP).toLocaleDateString()
                       : 'Sin fecha'}
                   </td>
-                  <td className="py-3 px-4 md:px-6 whitespace-nowrap">
+                  <td className="px-6 py-4 text-center">
                     <button
                       onClick={() => handleEditClick(item)}
-                      disabled={isDisabled} // Deshabilitar el botón si el lote está dado de baja
-                      className={`px-4 py-2 font-semibold rounded-lg transition-colors duration-300 text-white ${isDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'
-                        }`}
+                      className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-semibold rounded-lg shadow-md hover:from-yellow-400 hover:to-yellow-500 transition-all duration-300"
                     >
+                      <FaEdit className="inline-block mr-2" /> {/* Ícono de editar */}
                       Editar
                     </button>
                   </td>
-
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          <Pagination totalPages={totalPages} currentPage={currentPage} paginate={paginate} />
-        </div>
-      ) : (
-        <p className="text-gray-600 text-lg">No hay datos disponibles.</p>
-      )}
+              ))
+            ) : (
+              <tr>
+                <td colSpan="8" className="py-4 text-center text-gray-500">
+                  No hay registros disponibles.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+        <Pagination totalPages={totalPages} currentPage={currentPage} paginate={paginate} />
+      </div>
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axiosInstance from '../axiosInstance';
 import { Line } from 'react-chartjs-2';
 import { Document, Page, Text, View, StyleSheet, PDFDownloadLink, Image } from '@react-pdf/renderer';
+import { FaDownload, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 // Estilos para el PDF
 const styles = StyleSheet.create({
@@ -324,9 +325,24 @@ const GraficasLote = ({ idLote }) => {
     return (
         <div className="container mx-auto p-4">
             <div className="flex justify-center space-x-2 mb-6">
-                <button onClick={() => setPeriod('diario')} className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition duration-200">Diario</button>
-                <button onClick={() => setPeriod('semanal')} className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition duration-200">Semanal</button>
-                <button onClick={() => setPeriod('mensual')} className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-200">Mensual</button>
+                <button
+                    onClick={() => setPeriod('diario')}
+                    className="bg-gradient-to-r from-yellow-600 to-yellow-700 text-white px-4 py-2 rounded-lg hover:from-yellow-500 hover:to-yellow-600 transition duration-200 flex items-center"
+                >
+                    Diario
+                </button>
+                <button
+                    onClick={() => setPeriod('semanal')}
+                    className="bg-gradient-to-r from-orange-600 to-orange-700 text-white px-4 py-2 rounded-lg hover:from-orange-500 hover:to-orange-600 transition duration-200 flex items-center"
+                >
+                    Semanal
+                </button>
+                <button
+                    onClick={() => setPeriod('mensual')}
+                    className="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-lg hover:from-red-500 hover:to-red-600 transition duration-200 flex items-center"
+                >
+                    Mensual
+                </button>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -340,10 +356,12 @@ const GraficasLote = ({ idLote }) => {
                         <PDFDownloadLink
                             document={<ProductionPDFDocument productionData={productionData} productionImage={productionImage} />}
                             fileName="produccion.pdf"
-                            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-200"
+                            className="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-lg hover:from-red-500 hover:to-red-600 transition duration-200 flex items-center"
                             disabled={!productionImage}
                         >
-                            {({ loading }) => (loading ? 'Generando PDF...' : 'Descargar PDF de Producción')}
+                            {({ loading }) => (loading ? 'Generando PDF...' : <>
+                                <FaDownload className="mr-2" /> Descargar PDF de Producción
+                            </>)}
                         </PDFDownloadLink>
                     </div>
                 </div>
@@ -375,9 +393,9 @@ const GraficasLote = ({ idLote }) => {
                         <button
                             onClick={() => handlePageClickProd(currentPageProd - 1)}
                             disabled={currentPageProd === 1}
-                            className="px-3 py-2 bg-yellow-700 text-white text-sm rounded-md hover:bg-yellow-800 transition duration-300 disabled:opacity-50"
+                            className="px-3 py-2 bg-yellow-700 text-white text-sm rounded-md hover:bg-yellow-800 transition duration-300 disabled:opacity-50 flex items-center"
                         >
-                            Anterior
+                            <FaArrowLeft className="mr-2" /> Anterior
                         </button>
                         <span className="text-sm text-yellow-700">
                             Página {currentPageProd} de {Math.ceil(productionData.length / ITEMS_PER_PAGE)}
@@ -385,9 +403,9 @@ const GraficasLote = ({ idLote }) => {
                         <button
                             onClick={() => handlePageClickProd(currentPageProd + 1)}
                             disabled={currentPageProd * ITEMS_PER_PAGE >= productionData.length}
-                            className="px-3 py-2 bg-yellow-700 text-white text-sm rounded-md hover:bg-yellow-800 transition duration-300 disabled:opacity-50"
+                            className="px-3 py-2 bg-yellow-700 text-white text-sm rounded-md hover:bg-yellow-800 transition duration-300 disabled:opacity-50 flex items-center"
                         >
-                            Siguiente
+                            Siguiente <FaArrowRight className="ml-2" />
                         </button>
                     </div>
                 </div>
@@ -402,10 +420,12 @@ const GraficasLote = ({ idLote }) => {
                         <PDFDownloadLink
                             document={<ClassificationPDFDocument classificationData={classificationData} classificationImage={classificationImage} />}
                             fileName="clasificacion.pdf"
-                            className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition duration-200"
+                            className="bg-gradient-to-r from-yellow-600 to-yellow-700 text-white px-4 py-2 rounded-lg hover:from-yellow-500 hover:to-yellow-600 transition duration-200 flex items-center"
                             disabled={!classificationImage}
                         >
-                            {({ loading }) => (loading ? 'Generando PDF...' : 'Descargar PDF de Clasificación')}
+                            {({ loading }) => (loading ? 'Generando PDF...' : <>
+                                <FaDownload className="mr-2" /> Descargar PDF de Clasificación
+                            </>)}
                         </PDFDownloadLink>
                     </div>
                 </div>
@@ -437,9 +457,9 @@ const GraficasLote = ({ idLote }) => {
                         <button
                             onClick={() => handlePageClickClass(currentPageClass - 1)}
                             disabled={currentPageClass === 1}
-                            className="px-3 py-2 bg-green-700 text-white text-sm rounded-md hover:bg-green-800 transition duration-300 disabled:opacity-50"
+                            className="px-3 py-2 bg-green-700 text-white text-sm rounded-md hover:bg-green-800 transition duration-300 disabled:opacity-50 flex items-center"
                         >
-                            Anterior
+                            <FaArrowLeft className="mr-2" /> Anterior
                         </button>
                         <span className="text-sm text-green-700">
                             Página {currentPageClass} de {Math.ceil(classificationData.length / ITEMS_PER_PAGE)}
@@ -447,12 +467,13 @@ const GraficasLote = ({ idLote }) => {
                         <button
                             onClick={() => handlePageClickClass(currentPageClass + 1)}
                             disabled={currentPageClass * ITEMS_PER_PAGE >= classificationData.length}
-                            className="px-3 py-2 bg-green-700 text-white text-sm rounded-md hover:bg-green-800 transition duration-300 disabled:opacity-50"
+                            className="px-3 py-2 bg-green-700 text-white text-sm rounded-md hover:bg-green-800 transition duration-300 disabled:opacity-50 flex items-center"
                         >
-                            Siguiente
+                            Siguiente <FaArrowRight className="ml-2" />
                         </button>
                     </div>
                 </div>
+
                 {/* Gráfica de Estado del Lote */}
                 <div className="bg-white p-4 rounded-lg shadow-lg border border-brown-300">
                     <h2 className="text-lg font-bold mb-4 text-center text-brown-800">Estado del Lote</h2>
@@ -463,10 +484,12 @@ const GraficasLote = ({ idLote }) => {
                         <PDFDownloadLink
                             document={<EstadoLotePDFDocument estadoLoteData={estadoLoteData} estadoLoteImage={estadoLoteImage} />}
                             fileName="estado_lote.pdf"
-                            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-200"
+                            className="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-lg hover:from-green-500 hover:to-green-600 transition duration-200 flex items-center"
                             disabled={!estadoLoteImage}
                         >
-                            {({ loading }) => (loading ? 'Generando PDF...' : 'Descargar PDF de Estado del Lote')}
+                            {({ loading }) => (loading ? 'Generando PDF...' : <>
+                                <FaDownload className="mr-2" /> Descargar PDF de Estado del Lote
+                            </>)}
                         </PDFDownloadLink>
                     </div>
                 </div>
@@ -498,9 +521,9 @@ const GraficasLote = ({ idLote }) => {
                         <button
                             onClick={() => handlePageClickEstado(currentPageEstado - 1)}
                             disabled={currentPageEstado === 1}
-                            className="px-3 py-2 bg-yellow-700 text-white text-sm rounded-md hover:bg-yellow-800 transition duration-300 disabled:opacity-50"
+                            className="px-3 py-2 bg-yellow-700 text-white text-sm rounded-md hover:bg-yellow-800 transition duration-300 disabled:opacity-50 flex items-center"
                         >
-                            Anterior
+                            <FaArrowLeft className="mr-2" /> Anterior
                         </button>
                         <span className="text-sm text-yellow-700">
                             Página {currentPageEstado} de {Math.ceil(estadoLoteData.length / ITEMS_PER_PAGE)}
@@ -508,9 +531,9 @@ const GraficasLote = ({ idLote }) => {
                         <button
                             onClick={() => handlePageClickEstado(currentPageEstado + 1)}
                             disabled={currentPageEstado * ITEMS_PER_PAGE >= estadoLoteData.length}
-                            className="px-3 py-2 bg-yellow-700 text-white text-sm rounded-md hover:bg-yellow-800 transition duration-300 disabled:opacity-50"
+                            className="px-3 py-2 bg-yellow-700 text-white text-sm rounded-md hover:bg-yellow-800 transition duration-300 disabled:opacity-50 flex items-center"
                         >
-                            Siguiente
+                            Siguiente <FaArrowRight className="ml-2" />
                         </button>
                     </div>
                 </div>
@@ -529,14 +552,17 @@ const GraficasLote = ({ idLote }) => {
                         />
                     }
                     fileName="reporte_completo.pdf"
-                    className="bg-brown-600 text-white px-4 py-2 rounded-lg hover:bg-brown-700 transition duration-200"
+                    className="bg-gradient-to-r from-brown-600 to-brown-700 text-white px-4 py-2 rounded-lg hover:from-brown-500 hover:to-brown-600 transition duration-200 flex items-center"
                     disabled={!productionImage || !classificationImage || !estadoLoteImage}
                 >
-                    {({ loading }) => (loading ? 'Generando PDF...' : 'Descargar PDF Completo')}
+                    {({ loading }) => (loading ? 'Generando PDF...' : <>
+                        <FaDownload className="mr-2" /> Descargar PDF Completo
+                    </>)}
                 </PDFDownloadLink>
             </div>
         </div>
     );
+
 };
 
 export default GraficasLote;

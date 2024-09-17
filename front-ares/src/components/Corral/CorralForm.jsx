@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../axiosInstance.jsx';
+import { FaTimes, FaSave, FaBroom } from 'react-icons/fa';
 
 const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
     const [formData, setFormData] = useState({
@@ -73,10 +74,9 @@ const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
         e.preventDefault();
         if (validateForm()) {
             try {
-                const url = isEditing ? `/putcorral` : `/postcorral`; // Usando la instancia de axios
+                const url = isEditing ? `/putcorral` : `/postcorral`;
                 const method = isEditing ? 'put' : 'post';
 
-                // Construye el payload sin incluir `idCorral` si no está definido o es una cadena vacía
                 const payload = {
                     numCorral: formData.numCorral,
                     capacidad: parseInt(formData.capacidad, 10),
@@ -90,14 +90,11 @@ const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
                     estado: formData.estado
                 };
 
-                // Solo agrega `idCorral` si se está actualizando un corral existente y `idCorral` tiene un valor
                 if (isEditing && formData.idCorral) {
                     payload.idCorral = formData.idCorral;
                 }
 
-                console.log('Datos enviados:', payload);
-
-                await axiosInstance[method](url, payload); // Usando la instancia de axios
+                await axiosInstance[method](url, payload);
 
                 alert(`Corral ${isEditing ? 'actualizado' : 'creado'} exitosamente`);
 
@@ -129,7 +126,7 @@ const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6 p-6 bg-white shadow-lg rounded-lg">
+        <form onSubmit={handleSubmit} className="p-6 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 shadow-xl rounded-xl">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div className="col-span-1">
                     <label className="block text-sm font-semibold text-gray-700">Número de Corral</label>
@@ -242,21 +239,24 @@ const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
                 <button
                     type="button"
                     onClick={handleClear}
-                    className="px-4 py-2 bg-yellow-500 text-white font-semibold rounded-lg hover:bg-yellow-600 transition duration-300"
+                    className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-semibold rounded-lg hover:from-yellow-400 hover:to-yellow-500 transition-all duration-300 flex items-center"
                 >
+                    <FaBroom className="mr-2" /> {/* Ícono de Limpiar */}
                     Limpiar
                 </button>
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition duration-300"
+                    className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-lg hover:from-red-400 hover:to-red-500 transition-all duration-300 flex items-center"
                 >
+                    <FaTimes className="mr-2" /> {/* Ícono de Cancelar */}
                     Cancelar
                 </button>
                 <button
                     type="submit"
-                    className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300"
+                    className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold rounded-lg hover:from-blue-500 hover:to-blue-700 transition-all duration-300 flex items-center"
                 >
+                    <FaSave className="mr-2" /> {/* Ícono de Guardar/Actualizar */}
                     {isEditing ? 'Actualizar' : 'Guardar'}
                 </button>
             </div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../axiosInstance';
+import { FaArrowDown, FaArrowUp } from 'react-icons/fa'; // Importar íconos
 
 const LoteSelector = ({ onSelectLote }) => {
   const [lotes, setLotes] = useState([]);
@@ -35,26 +36,28 @@ const LoteSelector = ({ onSelectLote }) => {
   };
 
   return (
-    <div className="mb-4 flex flex-col items-center">
-      <div className="w-64">
-        <label htmlFor="loteSelect" className="block text-2xl font-bold text-green-800 text-center">Selecciona un Lote</label>
+    <div className="mb-8 flex flex-col items-center p-6 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 shadow-xl rounded-xl">
+      <div className="w-full md:w-1/2">
+        <label htmlFor="loteSelect" className="block text-3xl font-extrabold text-blue-700 text-center mb-4">Selecciona un Lote</label>
         <select 
           id="loteSelect" 
           value={selectedLote}
           onChange={handleSelectChange} 
-          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-yellow-600 bg-yellow-100 text-yellow-800 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm rounded-md"
+          className="mt-1 block w-full px-4 py-3 text-base border border-blue-500 bg-yellow-100 text-yellow-800 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-lg shadow-md transition duration-300"
         >
           <option value="">Seleccione un lote...</option>
           {lotes.map(lote => (
             <option key={lote.idLote} value={lote.idLote}>
-              {lote.numLote} (Cantidad Actual: {lote.cantidadActual})
+              {lote.numLote}
             </option>
           ))}
         </select>
       </div>
       <button 
         onClick={toggleLotes} 
-        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+        className="mt-6 px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white font-semibold rounded-full shadow-lg hover:from-green-500 hover:to-green-600 transition-all duration-300 flex items-center space-x-2"
+      >
+        {dadosDeBaja ? <FaArrowUp className="mr-2" /> : <FaArrowDown className="mr-2" />}
         {dadosDeBaja ? 'Mostrar Activos' : 'Mostrar Dados de Baja'}
       </button>
     </div>

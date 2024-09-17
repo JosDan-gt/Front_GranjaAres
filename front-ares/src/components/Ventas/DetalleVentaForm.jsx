@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../axiosInstance';
 import { useError } from '../Error/ErrorContext'; // Importar el contexto de error
+import { FaTrashAlt, FaPlus, FaSave, FaTimes, FaBroom } from 'react-icons/fa'; // Íconos de FontAwesome
 
 const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
   const [clientes, setClientes] = useState([]);
@@ -13,8 +14,8 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
     detallesVenta: [{ productoId: '', tipoEmpaque: 'Cartón', tamanoHuevo: 'Pequeño', cantidadVendida: 1, precioUnitario: 0 }],
   });
 
-  const [fieldErrors, setFieldErrors] = useState({}); // Estado para los errores de validación de frontend
-  const { handleError, clearError } = useError(); // Usar el contexto de error
+  const [fieldErrors, setFieldErrors] = useState({});
+  const { handleError, clearError } = useError();
 
   useEffect(() => {
     const fetchClientesYProductosYStock = async () => {
@@ -26,7 +27,6 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
         setProductos(productosResponse.data);
         setStockHuevos(stockResponse.data);
       } catch (error) {
-        console.error('Error fetching clientes, productos o stock:', error);
         handleError('Error al obtener los datos de clientes, productos o stock.');
       }
     };
@@ -51,7 +51,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
   const handleClienteChange = (e) => {
     const clienteId = e.target.value;
     setFormData({ ...formData, clienteId });
-    setFieldErrors({ ...fieldErrors, clienteId: '' }); // Limpiar error del campo cliente
+    setFieldErrors({ ...fieldErrors, clienteId: '' });
 
     const clienteSeleccionado = clientes.find(cliente => cliente.clienteId === parseInt(clienteId));
     if (clienteSeleccionado) {
@@ -86,7 +86,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
       detallesVenta: [{ productoId: '', tipoEmpaque: 'Cartón', tamanoHuevo: 'Pequeño', cantidadVendida: 1, precioUnitario: 0 }],
     });
     setDireccionCliente('');
-    setFieldErrors({}); // Limpiar errores de validación
+    setFieldErrors({});
   };
 
   const validateFields = () => {
@@ -95,20 +95,20 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
     if (!formData.fechaVenta) errors.fechaVenta = 'Por favor, seleccione una fecha de venta.';
     if (formData.detallesVenta.length === 0) errors.detallesVenta = 'Debe agregar al menos un detalle de venta.';
     setFieldErrors(errors);
-    return Object.keys(errors).length === 0; // Retornar true si no hay errores
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    clearError(); // Limpiar errores previos
+    clearError();
 
     if (!validateFields()) {
-      return; // Detener si hay errores de validación
+      return;
     }
 
     try {
-      if (isEditing) {
-        const ventaData = {
+      const ventaData = isEditing
+        ? {
           ventaId: venta?.ventaId || 0,
           clienteId: parseInt(formData.clienteId),
           detallesVenta: formData.detallesVenta.map(detalle => ({
@@ -118,13 +118,8 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
             cantidadVendida: parseInt(detalle.cantidadVendida),
             precioUnitario: parseFloat(detalle.precioUnitario),
           })),
-        };
-
-        await axiosInstance.put(`/api/Ventas/ActualizarVenta`, ventaData);
-        onSubmit();
-        window.location.reload();
-      } else {
-        const ventaData = {
+        }
+        : {
           venta: {
             clienteId: parseInt(formData.clienteId),
             fechaVenta: formData.fechaVenta,
@@ -138,74 +133,67 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
           })),
         };
 
-        await axiosInstance.post('/api/Ventas/InsertarDetallesVenta', ventaData);
-        onSubmit();
-        window.location.reload();
-      }
+      const url = isEditing ? '/api/Ventas/ActualizarVenta' : '/api/Ventas/InsertarDetallesVenta';
+      const method = isEditing ? 'put' : 'post';
+      await axiosInstance[method](url, ventaData);
+      onSubmit();
     } catch (error) {
-      // Manejo de errores que provienen del servidor
-      if (error.response && error.response.data && error.response.data.message) {
-        let errorMessage = error.response.data.message;
-
-
-        // Mostrar el mensaje ajustado
-        alert(errorMessage);
-      } else {
-        alert('Error al procesar la venta. Revisa la consola para más detalles.');
-      }
       console.error('Error al procesar la venta:', error);
+      handleError('Error al procesar la venta.');
     }
   };
 
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 bg-yellow-50 p-6 rounded-lg shadow-lg">
-      <div>
-        <label className="block text-sm font-semibold text-green-900">Cliente</label>
-        <select
-          className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600"
-          value={formData.clienteId}
-          onChange={handleClienteChange}
-        >
-          <option value="">Seleccione un cliente</option>
-          {clientes.map((cliente) => (
-            <option key={cliente.clienteId} value={cliente.clienteId}>
-              {cliente.nombreCliente}
-            </option>
-          ))}
-        </select>
-        {fieldErrors.clienteId && <p className="text-xs mt-1 text-red-500">{fieldErrors.clienteId}</p>}
-      </div>
-
-      {direccionCliente && (
+    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto">
+      {/* Cliente y Fecha de Venta */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-semibold text-green-900">Dirección</label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg bg-gray-200 cursor-not-allowed"
-            value={direccionCliente}
-            readOnly
-          />
+          <label className="block text-sm font-medium text-gray-700">Cliente</label>
+          <select
+            className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+            value={formData.clienteId}
+            onChange={handleClienteChange}
+          >
+            <option value="">Seleccione un cliente</option>
+            {clientes.map((cliente) => (
+              <option key={cliente.clienteId} value={cliente.clienteId}>
+                {cliente.nombreCliente}
+              </option>
+            ))}
+          </select>
+          {fieldErrors.clienteId && <p className="text-xs mt-1 text-red-500">{fieldErrors.clienteId}</p>}
         </div>
-      )}
 
-      <div>
-        <label className="block text-sm font-semibold text-green-900">Fecha de Venta</label>
-        <input
-          type="datetime-local"
-          className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600"
-          value={formData.fechaVenta}
-          onChange={(e) => setFormData({ ...formData, fechaVenta: e.target.value })}
-        />
-        {fieldErrors.fechaVenta && <p className="text-xs mt-1 text-red-500">{fieldErrors.fechaVenta}</p>}
+        {direccionCliente && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Dirección</label>
+            <input
+              type="text"
+              className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg bg-gray-200 cursor-not-allowed"
+              value={direccionCliente}
+              readOnly
+            />
+          </div>
+        )}
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Fecha de Venta</label>
+          <input
+            type="datetime-local"
+            className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+            value={formData.fechaVenta}
+            onChange={(e) => setFormData({ ...formData, fechaVenta: e.target.value })}
+          />
+          {fieldErrors.fechaVenta && <p className="text-xs mt-1 text-red-500">{fieldErrors.fechaVenta}</p>}
+        </div>
       </div>
 
-      {/* Mostrar stock disponible */}
-      <div className="bg-white p-4 rounded-lg shadow-md">
-        <h3 className="text-lg font-semibold text-green-900 mb-2 text-center">Stock Disponible</h3>
-        <table className="table-auto w-full bg-gray-50 border border-gray-300 rounded-lg">
+      {/* Stock Disponible */}
+      <div className="bg-gray-100 p-4 rounded-lg shadow-sm overflow-x-auto">
+        <h3 className="text-lg font-semibold text-center text-gray-700 mb-2">Stock Disponible</h3>
+        <table className="table-auto w-full text-sm">
           <thead>
-            <tr className="bg-green-700 text-white">
+            <tr className="bg-gray-300 text-gray-700">
               <th className="px-4 py-2 text-center">Tamaño</th>
               <th className="px-4 py-2 text-center">Cajas</th>
               <th className="px-4 py-2 text-center">Cartones Extras</th>
@@ -214,7 +202,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
           </thead>
           <tbody>
             {stockHuevos.map((stock, index) => (
-              <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}>
+              <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-100'}>
                 <td className="px-4 py-2 text-center">{stock.tamano}</td>
                 <td className={`px-4 py-2 text-center ${stock.cajas === 0 ? 'text-red-500' : ''}`}>
                   {stock.cajas}
@@ -231,14 +219,15 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
         </table>
       </div>
 
+      {/* Detalles de Venta */}
       <div className="space-y-4">
         {formData.detallesVenta.map((detalle, index) => (
-          <div key={index} className="p-4 bg-gray-100 rounded-lg shadow-md">
-            <div className="grid grid-cols-6 gap-4">
+          <div key={index} className="p-4 bg-gray-50 rounded-lg shadow-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-green-900">Producto</label>
+                <label className="block text-sm font-medium text-gray-700">Producto</label>
                 <select
-                  className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600"
+                  className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
                   value={detalle.productoId}
                   onChange={(e) => handleDetailChange(index, 'productoId', e.target.value)}
                 >
@@ -252,9 +241,9 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-green-900">Tipo Empaque</label>
+                <label className="block text-sm font-medium text-gray-700">Tipo Empaque</label>
                 <select
-                  className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600"
+                  className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
                   value={detalle.tipoEmpaque}
                   onChange={(e) => handleDetailChange(index, 'tipoEmpaque', e.target.value)}
                 >
@@ -265,9 +254,9 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-green-900">Tamaño Huevo</label>
+                <label className="block text-sm font-medium text-gray-700">Tamaño Huevo</label>
                 <select
-                  className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600"
+                  className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
                   value={detalle.tamanoHuevo}
                   onChange={(e) => handleDetailChange(index, 'tamanoHuevo', e.target.value)}
                 >
@@ -280,28 +269,28 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-green-900">Cantidad Vendida</label>
+                <label className="block text-sm font-medium text-gray-700">Cantidad Vendida</label>
                 <input
                   type="number"
-                  className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600"
+                  className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
                   value={detalle.cantidadVendida}
                   onChange={(e) => handleDetailChange(index, 'cantidadVendida', e.target.value)}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-green-900">Precio Unitario (Q)</label>
+                <label className="block text-sm font-medium text-gray-700">Precio Unitario (Q)</label>
                 <input
                   type="number"
-                  className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600"
+                  className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
                   value={detalle.precioUnitario}
                   onChange={(e) => handleDetailChange(index, 'precioUnitario', e.target.value)}
                 />
               </div>
 
               <div className="flex items-center">
-                <button type="button" onClick={() => handleRemoveDetail(index)} className="text-red-600 mt-6">
-                  Eliminar
+                <button type="button" onClick={() => handleRemoveDetail(index)} className="text-red-600">
+                  <FaTrashAlt className="inline-block mr-2" /> Eliminar
                 </button>
               </div>
             </div>
@@ -311,22 +300,31 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
         <button
           type="button"
           onClick={handleAddDetail}
-          className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600"
+          className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
-          Agregar Detalle
+          <FaPlus className="inline-block mr-2" /> Agregar Detalle
         </button>
       </div>
 
-      <div className="flex justify-between mt-4 space-x-4">
-        <button type="button" onClick={handleClearForm} className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
-          Limpiar
+      {/* Acciones del Formulario */}
+      <div className="flex flex-col sm:flex-row justify-between mt-6 space-y-4 sm:space-y-0 sm:space-x-4">
+        <button
+          type="button"
+          onClick={handleClearForm}
+          className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+        >
+          <FaBroom className="inline-block mr-2" /> Limpiar
         </button>
         <div className="flex space-x-4">
-          <button type="button" onClick={onCancel} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-            Cancelar
+          <button
+            type="button"
+            onClick={onCancel}
+            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          >
+            <FaTimes className="inline-block mr-2" /> Cancelar
           </button>
           <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-            {isEditing ? 'Actualizar Venta' : 'Agregar Venta'}
+            <FaSave className="inline-block mr-2" /> {isEditing ? 'Actualizar Venta' : 'Agregar Venta'}
           </button>
         </div>
       </div>

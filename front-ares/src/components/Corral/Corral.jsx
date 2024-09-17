@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
-
-import axios from 'axios';
 import CorralForm from './CorralForm'; // Importa el formulario
 import axiosInstance from '../axiosInstance.jsx';
 import { AuthContext } from '../Context/AuthContext'; // Importa el AuthContext
-
+import { FaEdit, FaWater, FaRulerVertical, FaRulerHorizontal, FaUtensils, FaTint, FaLayerGroup, FaArrowLeft, FaArrowRight, FaHome, FaCheck } from 'react-icons/fa';
 
 const Corral = () => {
     const [corrales, setCorrales] = useState([]);
@@ -18,12 +16,9 @@ const Corral = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [lotes, setLotes] = useState([]);
 
-
-
     const { roles } = useContext(AuthContext); // Obtén los roles del usuario
     const isUser = roles.includes('User');
     const isAdmin = roles.includes('Admin');
-
 
     useEffect(() => {
         const fetchCorrales = async () => {
@@ -143,27 +138,30 @@ const Corral = () => {
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     return (
-        <div className="p-4 sm:p-6 bg-[rgba(245,245,220,0.9)] shadow-lg rounded-lg max-w-full w-full">
-            <h2 className="text-2xl sm:text-3xl font-bold text-[rgba(139,69,19)] mb-4 sm:mb-6">Lista de Corrales</h2>
+        <div className="p-6 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 shadow-xl rounded-xl">
+            <h2 className="text-3xl font-extrabold text-gray-800 mb-6 text-center tracking-wider">
+                <FaHome className="inline-block mb-2 text-blue-700" /> {/* Icono en el título */}
+                Lista de Corrales
+            </h2>
 
             <div className="flex flex-col sm:flex-row sm:justify-between mb-4">
                 <input
                     type="text"
                     value={searchTerm}
                     onChange={handleSearchChange}
-                    className="px-3 py-2 sm:px-4 sm:py-2 border border-[rgba(139,69,19)] rounded-lg focus:ring-2 focus:ring-[rgba(255,165,0)] focus:border-[rgba(139,69,19)] mb-4 sm:mb-0"
+                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4 sm:mb-0"
                     placeholder="Buscar corral"
                     style={{ width: '100%', maxWidth: '300px' }}
                 />
                 {isAdmin && (
                     <button
                         onClick={handleAddNew}
-                        className="px-4 py-2 bg-[rgba(139,69,19)] text-white rounded-lg hover:bg-[rgba(160,82,45)] transition duration-300 w-full sm:w-auto"
+                        className="px-6 py-3 text-white font-semibold rounded-full shadow-lg transition-all duration-300 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700"
                     >
+                        <FaHome className="mr-2" />
                         Agregar Nuevo Corral
                     </button>
                 )}
-
             </div>
 
             {showForm && (
@@ -176,31 +174,31 @@ const Corral = () => {
             )}
 
             <div className="w-full overflow-x-auto">
-                <h3 className="text-xl sm:text-2xl font-bold text-[rgba(139,69,19)] mb-4">Corrales Activos</h3>
-                <table className="min-w-full bg-white border border-[rgba(139,69,19)] rounded-lg overflow-hidden text-center">
-                    <thead className="bg-[rgba(245,245,220,0.7)]">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Corrales Activos</h3>
+                <table className="min-w-full bg-white border border-gray-300 rounded-lg overflow-hidden text-center">
+                    <thead className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
                         <tr>
                             <th
-                                className="py-3 px-4 sm:px-6 text-left text-sm sm:text-base font-semibold text-[rgba(139,69,19)] cursor-pointer hover:bg-[rgba(245,245,220,0.9)]"
+                                className="py-3 px-4 text-left text-sm font-semibold cursor-pointer hover:bg-blue-700"
                                 onClick={handleSortChange}
                             >
                                 Corral {sortOrder === 'asc' ? '▲' : '▼'}
                             </th>
-                            <th className="py-3 px-4 sm:px-6 text-left text-sm sm:text-base font-semibold text-[rgba(139,69,19)]">Capacidad</th>
-                            <th className="py-3 px-4 sm:px-6 text-left text-sm sm:text-base font-semibold text-[rgba(139,69,19)]">Alto (m)</th>
-                            <th className="py-3 px-4 sm:px-6 text-left text-sm sm:text-base font-semibold text-[rgba(139,69,19)]">Ancho (m)</th>
-                            <th className="py-3 px-4 sm:px-6 text-left text-sm sm:text-base font-semibold text-[rgba(139,69,19)]">Largo (m)</th>
-                            <th className="py-3 px-4 sm:px-6 text-left text-sm sm:text-base font-semibold text-[rgba(139,69,19)]">Agua</th>
-                            <th className="py-3 px-4 sm:px-6 text-left text-sm sm:text-base font-semibold text-[rgba(139,69,19)]">Comederos</th>
-                            <th className="py-3 px-4 sm:px-6 text-left text-sm sm:text-base font-semibold text-[rgba(139,69,19)]">Bebederos</th>
-                            <th className="py-3 px-4 sm:px-6 text-left text-sm sm:text-base font-semibold text-[rgba(139,69,19)]">Ponederos</th>
-                            <th className="py-3 px-4 sm:px-6 text-left text-sm sm:text-base font-semibold text-[rgba(139,69,19)]">Acciones</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold"><FaLayerGroup className="inline mr-2" />Capacidad</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold"><FaRulerVertical className="inline mr-2" />Alto (m)</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold"><FaRulerHorizontal className="inline mr-2" />Ancho (m)</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold"><FaRulerHorizontal className="inline mr-2" />Largo (m)</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold"><FaTint className="inline mr-2" />Agua</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold"><FaUtensils className="inline mr-2" />Comederos</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold"><FaWater className="inline mr-2" />Bebederos</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold"><FaCheck className="inline mr-2" />Ponederos</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody className="text-[rgba(85,107,47)]">
+                    <tbody className="text-gray-700">
                         {loading ? (
                             <tr>
-                                <td colSpan="10" className="py-3 px-4 sm:px-6 text-center">Cargando...</td>
+                                <td colSpan="10" className="py-3 px-4 text-center">Cargando...</td>
                             </tr>
                         ) : currentItems.length ? (
                             currentItems.map((corral) => {
@@ -208,28 +206,29 @@ const Corral = () => {
                                 return (
                                     <tr
                                         key={corral.idCorral}
-                                        className={`border-b border-[rgba(139,69,19)] ${inUse ? 'bg-[rgba(255,250,205)]' : ''}`}
+                                        className={`border-b border-gray-300 ${inUse ? 'bg-blue-50' : ''}`}
                                     >
-                                        <td className="py-3 px-4 sm:px-6 whitespace-nowrap">{corral.numCorral}</td>
-                                        <td className="py-3 px-4 sm:px-6 whitespace-nowrap">{corral.capacidad}</td>
-                                        <td className="py-3 px-4 sm:px-6 whitespace-nowrap">{corral.alto}</td>
-                                        <td className="py-3 px-4 sm:px-6 whitespace-nowrap">{corral.ancho}</td>
-                                        <td className="py-3 px-4 sm:px-6 whitespace-nowrap">{corral.largo}</td>
-                                        <td className="py-3 px-4 sm:px-6 whitespace-nowrap">{formatBoolean(corral.agua)}</td>
-                                        <td className="py-3 px-4 sm:px-6 whitespace-nowrap">{corral.comederos}</td>
-                                        <td className="py-3 px-4 sm:px-6 whitespace-nowrap">{corral.bebederos}</td>
-                                        <td className="py-3 px-4 sm:px-6 whitespace-nowrap">{corral.ponederos}</td>
-                                        <td className="py-3 px-4 sm:px-6 whitespace-nowrap">
+                                        <td className="py-3 px-4">{corral.numCorral}</td>
+                                        <td className="py-3 px-4">{corral.capacidad}</td>
+                                        <td className="py-3 px-4">{corral.alto}</td>
+                                        <td className="py-3 px-4">{corral.ancho}</td>
+                                        <td className="py-3 px-4">{corral.largo}</td>
+                                        <td className="py-3 px-4">{formatBoolean(corral.agua)}</td>
+                                        <td className="py-3 px-4">{corral.comederos}</td>
+                                        <td className="py-3 px-4">{corral.bebederos}</td>
+                                        <td className="py-3 px-4">{corral.ponederos}</td>
+                                        <td className="py-3 px-4">
                                             <button
                                                 onClick={() => handleUpdate(corral)}
-                                                className="mr-2 px-4 py-2 bg-[rgba(85,107,47)] text-white font-semibold rounded-lg hover:bg-[rgba(107,142,35)] transition-colors duration-300"
+                                                className="mr-2 px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-semibold rounded-lg shadow-md hover:from-yellow-400 hover:to-yellow-500 transition-all duration-300"
                                             >
+                                                <FaEdit className="mr-2" />
                                                 Actualizar
                                             </button>
                                             <select
                                                 onChange={(e) => handleStatusChange(corral, e.target.value === 'habilitar')}
                                                 value={corral.estado ? 'habilitar' : 'inhabilitar'}
-                                                className="px-4 py-2 bg-[rgba(160,82,45)] text-white font-semibold rounded-lg hover:bg-[rgba(139,69,19)] transition-colors duration-300"
+                                                className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-lg shadow-md hover:from-red-400 hover:to-red-500 transition-all duration-300"
                                                 disabled={inUse}
                                             >
                                                 <option value="habilitar">Habilitar</option>
@@ -241,7 +240,7 @@ const Corral = () => {
                             })
                         ) : (
                             <tr>
-                                <td colSpan="10" className="py-3 px-4 sm:px-6 text-center">No hay corrales disponibles.</td>
+                                <td colSpan="10" className="py-3 px-4 text-center">No hay corrales disponibles.</td>
                             </tr>
                         )}
                     </tbody>
@@ -249,40 +248,43 @@ const Corral = () => {
             </div>
 
             <div className="w-full overflow-x-auto mt-8">
-                <h3 className="text-xl sm:text-2xl font-bold text-[rgba(139,69,19)] mb-4">Corrales Inhabilitados</h3>
-                <table className="min-w-full bg-white border border-[rgba(139,69,19)] rounded-lg overflow-hidden text-center">
-                    <thead className="bg-[rgba(245,245,220,0.7)]">
+                <h3 className="text-3xl font-extrabold text-gray-800 mb-6 text-center tracking-wider">
+                    <FaHome className="inline-block mb-2 text-blue-700" /> {/* Icono en el título */}
+                    Corrales Inhabilitados
+                </h3>
+                <table className="min-w-full bg-white border border-gray-300 rounded-lg overflow-hidden text-center">
+                    <thead className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
                         <tr>
-                            <th className="py-3 px-4 sm:px-6 text-left text-sm sm:text-base font-semibold text-[rgba(139,69,19)]">Corral</th>
-                            <th className="py-3 px-4 sm:px-6 text-left text-sm sm:text-base font-semibold text-[rgba(139,69,19)]">Capacidad</th>
-                            <th className="py-3 px-4 sm:px-6 text-left text-sm sm:text-base font-semibold text-[rgba(139,69,19)]">Alto (m)</th>
-                            <th className="py-3 px-4 sm:px-6 text-left text-sm sm:text-base font-semibold text-[rgba(139,69,19)]">Ancho (m)</th>
-                            <th className="py-3 px-4 sm:px-6 text-left text-sm sm:text-base font-semibold text-[rgba(139,69,19)]">Largo (m)</th>
-                            <th className="py-3 px-4 sm:px-6 text-left text-sm sm:text-base font-semibold text-[rgba(139,69,19)]">Agua</th>
-                            <th className="py-3 px-4 sm:px-6 text-left text-sm sm:text-base font-semibold text-[rgba(139,69,19)]">Comederos</th>
-                            <th className="py-3 px-4 sm:px-6 text-left text-sm sm:text-base font-semibold text-[rgba(139,69,19)]">Bebederos</th>
-                            <th className="py-3 px-4 sm:px-6 text-left text-sm sm:text-base font-semibold text-[rgba(139,69,19)]">Ponederos</th>
-                            <th className="py-3 px-4 sm:px-6 text-left text-sm sm:text-base font-semibold text-[rgba(139,69,19)]">Acciones</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold">Corral</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold"><FaLayerGroup className="inline mr-2" />Capacidad</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold"><FaRulerVertical className="inline mr-2" />Alto (m)</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold"><FaRulerHorizontal className="inline mr-2" />Ancho (m)</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold"><FaRulerHorizontal className="inline mr-2" />Largo (m)</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold"><FaTint className="inline mr-2" />Agua</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold"><FaUtensils className="inline mr-2" />Comederos</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold"><FaWater className="inline mr-2" />Bebederos</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold"><FaCheck className="inline mr-2" />Ponederos</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody className="text-[rgba(85,107,47)]">
+                    <tbody className="text-gray-700">
                         {inactiveCorrales.length ? (
                             inactiveCorrales.map((corral) => (
-                                <tr key={corral.idCorral} className="border-b border-[rgba(139,69,19)] bg-[rgba(255,228,225)]">
-                                    <td className="py-3 px-4 sm:px-6 whitespace-nowrap">{corral.numCorral}</td>
-                                    <td className="py-3 px-4 sm:px-6 whitespace-nowrap">{corral.capacidad}</td>
-                                    <td className="py-3 px-4 sm:px-6 whitespace-nowrap">{corral.alto}</td>
-                                    <td className="py-3 px-4 sm:px-6 whitespace-nowrap">{corral.ancho}</td>
-                                    <td className="py-3 px-4 sm:px-6 whitespace-nowrap">{corral.largo}</td>
-                                    <td className="py-3 px-4 sm:px-6 whitespace-nowrap">{formatBoolean(corral.agua)}</td>
-                                    <td className="py-3 px-4 sm:px-6 whitespace-nowrap">{corral.comederos}</td>
-                                    <td className="py-3 px-4 sm:px-6 whitespace-nowrap">{corral.bebederos}</td>
-                                    <td className="py-3 px-4 sm:px-6 whitespace-nowrap">{corral.ponederos}</td>
-                                    <td className="py-3 px-4 sm:px-6 whitespace-nowrap">
+                                <tr key={corral.idCorral} className="bg-white border-b hover:bg-gray-50">
+                                    <td className="py-3 px-4">{corral.numCorral}</td>
+                                    <td className="py-3 px-4">{corral.capacidad}</td>
+                                    <td className="py-3 px-4">{corral.alto}</td>
+                                    <td className="py-3 px-4">{corral.ancho}</td>
+                                    <td className="py-3 px-4">{corral.largo}</td>
+                                    <td className="py-3 px-4">{formatBoolean(corral.agua)}</td>
+                                    <td className="py-3 px-4">{corral.comederos}</td>
+                                    <td className="py-3 px-4">{corral.bebederos}</td>
+                                    <td className="py-3 px-4">{corral.ponederos}</td>
+                                    <td className="py-3 px-4">
                                         <select
                                             onChange={(e) => handleStatusChange(corral, e.target.value === 'habilitar')}
                                             value="inhabilitar"
-                                            className="px-4 py-2 bg-[rgba(160,82,45)] text-white font-semibold rounded-lg hover:bg-[rgba(139,69,19)] transition-colors duration-300"
+                                            className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-lg shadow-md hover:from-red-400 hover:to-red-500 transition-all duration-300"
                                         >
                                             <option value="habilitar">Habilitar</option>
                                             <option value="inhabilitar" disabled>Inhabilitado</option>
@@ -292,7 +294,9 @@ const Corral = () => {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="10" className="py-3 px-4 sm:px-6 text-center">No hay corrales inhabilitados.</td>
+                                <td colSpan="10" className="py-4 text-center text-gray-500">
+                                    No hay corrales inhabilitados.
+                                </td>
                             </tr>
                         )}
                     </tbody>
@@ -303,26 +307,27 @@ const Corral = () => {
                 <button
                     onClick={() => paginate(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="px-4 py-2 sm:px-6 sm:py-3 bg-[rgba(85,107,47)] text-white font-semibold rounded-lg hover:bg-[rgba(107,142,35)] transition-colors duration-300"
+                    className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold rounded-lg hover:from-blue-500 hover:to-blue-700 transition-all duration-300 flex items-center"
                 >
+                    <FaArrowLeft className="mr-2" />
                     Anterior
                 </button>
 
-                <span className="text-lg sm:text-xl text-[rgba(139,69,19)]">
+                <span className="text-lg text-gray-700">
                     Página {currentPage} de {Math.ceil(activeCorrales.length / itemsPerPage)}
                 </span>
 
                 <button
                     onClick={() => paginate(currentPage + 1)}
                     disabled={currentPage * itemsPerPage >= activeCorrales.length}
-                    className="px-4 py-2 sm:px-6 sm:py-3 bg-[rgba(85,107,47)] text-white font-semibold rounded-lg hover:bg-[rgba(107,142,35)] transition-colors duration-300"
+                    className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold rounded-lg hover:from-blue-500 hover:to-blue-700 transition-all duration-300 flex items-center"
                 >
                     Siguiente
+                    <FaArrowRight className="ml-2" />
                 </button>
             </div>
         </div>
     );
-
 };
 
 export default Corral;

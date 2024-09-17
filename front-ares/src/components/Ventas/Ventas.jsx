@@ -7,9 +7,9 @@ import VentasPorClientePDF from './VentasPorClientePDF';
 import VentasPorFechaPDF from './VentasPorFechaPDF';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { FaEdit, FaFileDownload, FaSearch } from 'react-icons/fa';
 
 const VentasActivas = () => {
-
   const [detallesVentas, setDetallesVentas] = useState({});
   const [detallesVisibles, setDetallesVisibles] = useState({});
   const [ventaSeleccionada, setVentaSeleccionada] = useState(null);
@@ -22,9 +22,8 @@ const VentasActivas = () => {
   const [selectedCliente, setSelectedCliente] = useState('');
   const [dateRange, setDateRange] = useState([null, null]);
   const [startDate, endDate] = dateRange;
-  const [ventas, setVentas] = useState([]);  // Ventas filtradas
-  const [originalVentas, setOriginalVentas] = useState([]);  // Ventas originales sin filtrar
-
+  const [ventas, setVentas] = useState([]);
+  const [originalVentas, setOriginalVentas] = useState([]);
 
   // Paginación
   const [currentPage, setCurrentPage] = useState(1);
@@ -37,11 +36,9 @@ const VentasActivas = () => {
       const ventasData = response.data;
       const detallesData = {};
 
-      // Guardar las ventas originales sin filtrar
       setOriginalVentas(ventasData);
-      setVentas(ventasData); // Mostrar las ventas al cargar por primera vez
+      setVentas(ventasData);
 
-      // Cargar detalles de todas las ventas para el PDF
       await Promise.all(
         ventasData.map(async (venta) => {
           const detallesResponse = await axiosInstance.get(`/api/Ventas/DetallesVentaActivos/${venta.ventaId}`);
@@ -54,7 +51,6 @@ const VentasActivas = () => {
       console.error('Error fetching ventas activas y detalles:', error);
     }
   };
-
 
   // Obtener clientes y productos
   const fetchClientesYProductos = async () => {
@@ -73,13 +69,12 @@ const VentasActivas = () => {
     fetchClientesYProductos();
   }, []);
 
-  // Aplicar filtros automáticamente al cambiar cliente o fecha
   useEffect(() => {
     handleSearch();
   }, [selectedCliente, dateRange]);
 
   const handleSearch = () => {
-    let filteredVentas = [...originalVentas]; // Utilizamos las ventas originales
+    let filteredVentas = [...originalVentas];
 
     if (selectedCliente) {
       filteredVentas = filteredVentas.filter(
@@ -96,10 +91,8 @@ const VentasActivas = () => {
       });
     }
 
-    setVentas(filteredVentas); // Actualizamos las ventas filtradas
+    setVentas(filteredVentas);
   };
-
-
 
   const handleAdd = () => {
     setVentaSeleccionada(null);
@@ -107,7 +100,7 @@ const VentasActivas = () => {
     setMostrarFormulario(true);
   };
 
-  const handleEdit = async (venta) => {
+  const handleEdit = (venta) => {
     setVentaSeleccionada({
       ...venta,
       detallesVenta: detallesVentas[venta.ventaId] || [],
@@ -144,7 +137,7 @@ const VentasActivas = () => {
     }));
   };
 
-  // Paginación: calcular ventas a mostrar
+  // Paginación
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentVentas = ventas.slice(indexOfFirstItem, indexOfLastItem);
@@ -181,10 +174,11 @@ const VentasActivas = () => {
   };
 
   return (
-    <div className="p-4 sm:p-6 bg-yellow-50 shadow-lg rounded-lg max-w-full w-full">
-      <h1 className="text-2xl sm:text-3xl font-bold text-green-900 mb-4 sm:mb-6 text-center">
+    <div className="p-6 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 shadow-xl rounded-xl">
+      <h2 className="text-3xl font-extrabold text-gray-800 mb-6 text-center tracking-wider">
+        <FaSearch className="inline-block mb-2 text-blue-700" /> {/* Icono de búsqueda en el título */}
         Ventas Activas
-      </h1>
+      </h2>
 
       {/* Filtros arriba de la tabla */}
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
@@ -221,11 +215,12 @@ const VentasActivas = () => {
       </div>
 
       {/* Botón para agregar nueva venta */}
-      <div className="flex justify-center mb-4 md:mb-6">
+      <div className="flex justify-center mb-4">
         <button
           onClick={handleAdd}
-          className="w-full md:w-auto px-6 py-3 font-semibold rounded-lg transition-colors duration-300 bg-green-700 text-white hover:bg-green-800"
+          className="px-6 py-3 text-white font-semibold rounded-full shadow-lg transition-all duration-300 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700"
         >
+          <FaEdit className="inline-block mr-2" /> {/* Icono de editar en el botón */}
           Agregar Nueva Venta
         </button>
       </div>
@@ -240,91 +235,87 @@ const VentasActivas = () => {
       )}
 
       {/* Tabla de ventas */}
-      <div className="w-full overflow-x-auto mb-6">
-        <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
-          <thead className="bg-green-700 text-white">
+      <div className="overflow-x-auto max-w-full rounded-lg shadow-lg">
+        <table className="w-full text-sm text-left text-gray-700 bg-white rounded-lg">
+          <thead className="text-xs text-white uppercase bg-gradient-to-r from-blue-600 to-blue-800">
             <tr>
-              <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
-                Fecha de Venta
-              </th>
-              <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
-                Cliente
-              </th>
-              <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
-                Total Venta
-              </th>
-              <th className="py-3 px-4 md:px-6 text-left text-xs md:text-sm font-semibold">
-                Acciones
-              </th>
+              <th className="px-6 py-3 text-center">Fecha de Venta</th>
+              <th className="px-6 py-3 text-center">Cliente</th>
+              <th className="px-6 py-3 text-center">Total Venta</th>
+              <th className="px-6 py-3 text-center">Acciones</th>
             </tr>
           </thead>
-          <tbody className="text-gray-700 text-xs md:text-sm">
-            {currentVentas.map((venta, index) => (
-              <React.Fragment key={venta.ventaId}>
-                <tr
-                  className={`border-b border-gray-200 hover:bg-yellow-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                    }`}
-                >
-                  <td className="py-3 px-4 md:px-6 whitespace-nowrap">
-                    {venta.fechaVenta ? new Date(venta.fechaVenta).toLocaleDateString() : 'Sin fecha'}
-                  </td>
-                  <td className="py-3 px-4 md:px-6 whitespace-nowrap">
-                    {getClienteNombre(venta.clienteId)}
-                  </td>
-                  <td className="py-3 px-4 md:px-6 whitespace-nowrap">{venta.totalVenta}</td>
-                  <td className="py-3 px-4 md:px-6 whitespace-nowrap flex space-x-2">
-                    <button
-                      onClick={() => toggleDetalles(venta.ventaId)}
-                      className="bg-blue-500 text-white px-3 py-1 rounded"
-                    >
-                      {detallesVisibles[venta.ventaId] ? 'Ocultar Detalles' : 'Ver Detalles'}
-                    </button>
-                    <button
-                      onClick={() => handleEdit(venta)}
-                      className="bg-yellow-500 text-white px-3 py-1 rounded"
-                    >
-                      Editar
-                    </button>
-                  </td>
-                </tr>
-                {detallesVisibles[venta.ventaId] && detallesVentas[venta.ventaId] && (
-                  <tr>
-                    <td colSpan="4" className="px-4 py-2 bg-gray-100">
-                      <table className="table-auto w-full bg-gray-50">
-                        <thead className="bg-gray-300">
-                          <tr>
-                            <th className="px-4 py-2">Producto</th>
-                            <th className="px-4 py-2">Tipo Empaque</th>
-                            <th className="px-4 py-2">Tamaño Huevo</th>
-                            <th className="px-4 py-2">Cantidad Vendida</th>
-                            <th className="px-4 py-2">Precio Unitario</th>
-                            <th className="px-4 py-2">Total</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {detallesVentas[venta.ventaId].map((detalle, index) => (
-                            <tr key={index} className="bg-gray-200">
-                              <td className="px-4 py-2">{getProductoNombre(detalle.productoId)}</td>
-                              <td className="px-4 py-2">{detalle.tipoEmpaque}</td>
-                              <td className="px-4 py-2">{detalle.tamanoHuevo}</td>
-                              <td className="px-4 py-2">{detalle.cantidadVendida}</td>
-                              <td className="px-4 py-2">{detalle.precioUnitario}</td>
-                              <td className="px-4 py-2">{detalle.total}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+          <tbody>
+            {currentVentas.length ? (
+              currentVentas.map((venta) => (
+                <React.Fragment key={venta.ventaId}>
+                  <tr className="bg-white border-b hover:bg-gray-50">
+                    <td className="px-6 py-4 text-center">
+                      {venta.fechaVenta ? new Date(venta.fechaVenta).toLocaleDateString() : 'Sin fecha'}
+                    </td>
+                    <td className="px-6 py-4 text-center">{getClienteNombre(venta.clienteId)}</td>
+                    <td className="px-6 py-4 text-center">{venta.totalVenta}</td>
+                    <td className="px-6 py-4 text-center">
+                      <button
+                        onClick={() => toggleDetalles(venta.ventaId)}
+                        className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-lg shadow-md hover:from-green-400 hover:to-green-500 transition-all duration-300"
+                      >
+                        {detallesVisibles[venta.ventaId] ? 'Ocultar Detalles' : 'Ver Detalles'}
+                      </button>
+                      <button
+                        onClick={() => handleEdit(venta)}
+                        className="ml-2 px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-semibold rounded-lg shadow-md hover:from-yellow-400 hover:to-yellow-500 transition-all duration-300"
+                      >
+                        <FaEdit className="inline-block mr-2" />
+                        Editar
+                      </button>
                     </td>
                   </tr>
-                )}
-              </React.Fragment>
-            ))}
+                  {detallesVisibles[venta.ventaId] && detallesVentas[venta.ventaId] && (
+                    <tr>
+                      <td colSpan="4" className="px-4 py-2 bg-gray-100">
+                        <table className="table-auto w-full bg-gray-50">
+                          <thead className="bg-gray-300">
+                            <tr>
+                              <th className="px-4 py-2">Producto</th>
+                              <th className="px-4 py-2">Tipo Empaque</th>
+                              <th className="px-4 py-2">Tamaño Huevo</th>
+                              <th className="px-4 py-2">Cantidad Vendida</th>
+                              <th className="px-4 py-2">Precio Unitario</th>
+                              <th className="px-4 py-2">Total</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {detallesVentas[venta.ventaId].map((detalle, index) => (
+                              <tr key={index} className="bg-gray-200">
+                                <td className="px-4 py-2">{getProductoNombre(detalle.productoId)}</td>
+                                <td className="px-4 py-2">{detalle.tipoEmpaque}</td>
+                                <td className="px-4 py-2">{detalle.tamanoHuevo}</td>
+                                <td className="px-4 py-2">{detalle.cantidadVendida}</td>
+                                <td className="px-4 py-2">{detalle.precioUnitario}</td>
+                                <td className="px-4 py-2">{detalle.total}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" className="py-4 text-center text-gray-500">
+                  No hay registros de ventas disponibles.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
 
-      {/* Botones de descarga de PDF con íconos */}
-      <div className="flex justify-end space-x-4">
+      {/* Botones de descarga de PDF */}
+      <div className="flex justify-end space-x-4 mt-4">
         <PDFDownloadLink
           document={<VentasGeneralesPDF ventas={ventas} detallesVentas={detallesVentas} clientes={clientes} productos={productos} />}
           fileName="reporte_ventas_generales.pdf"
@@ -332,10 +323,8 @@ const VentasActivas = () => {
         >
           {({ loading }) => (
             <>
-              <span className="mr-2">{loading ? 'Generando...' : 'Descargar Generales'}</span>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m6-6H6m18 6l-6 6m0-6l-6-6" />
-              </svg>
+              <FaFileDownload className="inline-block mr-2" />
+              {loading ? 'Generando...' : 'Descargar Generales'}
             </>
           )}
         </PDFDownloadLink>
@@ -347,10 +336,8 @@ const VentasActivas = () => {
         >
           {({ loading }) => (
             <>
-              <span className="mr-2">{loading ? 'Generando...' : 'Descargar por Cliente'}</span>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m6-6H6m18 6l-6 6m0-6l-6-6" />
-              </svg>
+              <FaFileDownload className="inline-block mr-2" />
+              {loading ? 'Generando...' : 'Descargar por Cliente'}
             </>
           )}
         </PDFDownloadLink>
@@ -362,10 +349,8 @@ const VentasActivas = () => {
         >
           {({ loading }) => (
             <>
-              <span className="mr-2">{loading ? 'Generando...' : 'Descargar por Fechas'}</span>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m6-6H6m18 6l-6 6m0-6l-6-6" />
-              </svg>
+              <FaFileDownload className="inline-block mr-2" />
+              {loading ? 'Generando...' : 'Descargar por Fechas'}
             </>
           )}
         </PDFDownloadLink>

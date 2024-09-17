@@ -5,6 +5,7 @@ import ProduccionForm from './ProduccionForm';
 import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../Context/AuthContext';
+import { FaBox, FaCalendarAlt, FaEdit } from 'react-icons/fa';
 
 const ProduccionG = () => {
   const { idLote } = useParams();
@@ -116,47 +117,51 @@ const ProduccionG = () => {
   };
 
   return (
-    <div className="p-4 sm:p-6 bg-yellow-50 shadow-lg rounded-lg">
-      <div className="flex justify-start mb-6 text-lg">
+    <div className="p-6 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 shadow-xl rounded-xl">
+      <div className="flex justify-start mb-6 text-lg items-center">
         {isAdmin && (
           <Link
             to={`/clasificacion/${idLote}`}
             state={{ estadoBaja }}
-            className="text-green-700 hover:text-green-900 transition duration-300"
+            className="text-blue-700 hover:text-blue-900 transition duration-300 flex items-center space-x-2"
           >
-            Clasificación
+            <FaBox className="text-blue-700" />
+            <span>Clasificación</span>
           </Link>
         )}
-        <span className="mx-2 text-green-700">/</span>
+        <span className="mx-2 text-blue-700">/</span>
         {isAdmin && (
           <Link
             to={`/estado/${idLote}`}
             state={{ estadoBaja }}
-            className="text-green-700 hover:text-green-900 transition duration-300"
+            className="text-blue-700 hover:text-blue-900 transition duration-300 flex items-center space-x-2"
           >
-            Estado Lote
+            <FaCalendarAlt className="text-blue-700" /> {/* Ícono de calendario */}
+            <span>Estado Lote</span>
           </Link>
         )}
       </div>
-
-      <h2 className="text-2xl sm:text-3xl font-bold text-green-900 mb-4 sm:mb-6 text-center">
+  
+      <h2 className="text-3xl font-extrabold text-gray-800 mb-6 text-center tracking-wider">
+        <FaCalendarAlt className="inline-block mb-2 text-blue-700" /> {/* Icono en el título */}
         Historial de Producción
       </h2>
-
+  
       <div className="flex justify-center mb-4">
         <button
           disabled={isDisabled}
           onClick={handleAddClick}
-          className={`px-6 py-3 text-white font-semibold rounded-lg transition-colors duration-300 ${isDisabled
-            ? 'bg-gray-400 text-gray-500 cursor-not-allowed'
-            : 'bg-green-700 hover:bg-green-800'
-            } mb-6`}
+          className={`px-6 py-3 text-white font-semibold rounded-full shadow-lg transition-all duration-300 ${
+            isDisabled
+              ? 'bg-gray-400 text-gray-500 cursor-not-allowed'
+              : 'bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700'
+          }`}
         >
+          <FaBox className="inline-block mr-2" /> {/* Ícono en el botón */}
           Agregar Producción
         </button>
       </div>
-
-
+  
       {showForm && (
         <ProduccionForm
           item={currentItem}
@@ -169,10 +174,10 @@ const ProduccionG = () => {
           refreshData={refreshData}
         />
       )}
-
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-sm text-left text-gray-700 bg-white shadow-md rounded-lg">
-          <thead className="text-xs text-white uppercase bg-green-700">
+  
+      <div className="overflow-x-auto max-w-full rounded-lg shadow-lg">
+        <table className="w-full text-sm text-left text-gray-700 bg-white rounded-lg">
+          <thead className="text-xs text-white uppercase bg-gradient-to-r from-blue-600 to-blue-800">
             <tr>
               <th className="px-6 py-3 text-center">Fecha</th>
               <th className="px-6 py-3 text-center">Cajas</th>
@@ -192,7 +197,7 @@ const ProduccionG = () => {
               </tr>
             ) : currentItems.length ? (
               currentItems.map((item) => (
-                <tr key={item.idProd} className="bg-white border-b hover:bg-yellow-50">
+                <tr key={item.idProd} className="bg-white border-b hover:bg-gray-50">
                   <td className="px-6 py-4 text-center">{formatDate(item.fechaRegistroP)}</td>
                   <td className="px-6 py-4 text-center">{item.cantCajas}</td>
                   <td className="px-6 py-4 text-center">{item.cantCartones}</td>
@@ -202,8 +207,9 @@ const ProduccionG = () => {
                   <td className="px-6 py-4 text-center">
                     <button
                       onClick={() => handleEditClick(item)}
-                      className="px-4 py-2 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition duration-300"
+                      className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-semibold rounded-lg shadow-md hover:from-yellow-400 hover:to-yellow-500 transition-all duration-300"
                     >
+                      <FaEdit className="inline-block mr-2" /> {/* Ícono de editar */}
                       Editar
                     </button>
                   </td>
@@ -219,11 +225,9 @@ const ProduccionG = () => {
           </tbody>
         </table>
       </div>
-
-      {/* Agregar el componente de paginación aquí */}
-      <Pagination totalPages={totalPages} currentPage={currentPage} paginate={paginate} />
     </div>
   );
+  
 };
 
 export default ProduccionG;
