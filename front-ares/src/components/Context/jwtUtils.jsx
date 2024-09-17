@@ -1,10 +1,15 @@
-import { jwtDecode } from "jwt-decode"; // Cambiar esto si fuera necesario
+import { jwtDecode } from 'jwt-decode'; // Importación con nombre correcta
 import Cookies from 'js-cookie';
 
 // Función para obtener los roles desde el token
 export const getRolesFromToken = () => {
   const token = Cookies.get('token') || localStorage.getItem('token');
-  if (!token) return [];
+  console.log('Token obtenido:', token); // Verificar el token obtenido
+
+  if (!token || token.split('.').length !== 3) {
+    console.error("Token inválido o malformado");
+    return [];
+  }
 
   try {
     const decodedToken = jwtDecode(token);
@@ -15,4 +20,3 @@ export const getRolesFromToken = () => {
     return [];
   }
 };
-

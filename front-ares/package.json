@@ -2,6 +2,7 @@
   "name": "front-ares",
   "version": "0.1.0",
   "private": true,
+  "proxy": "https://backend20farmares-production.up.railway.app/api",
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
@@ -17,6 +18,7 @@
     "html2canvas": "^1.4.1",
     "js-cookie": "^3.0.5",
     "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.3",
     "jwt-decode": "^4.0.0",
     "rc-slider": "^11.1.5",
     "react": "^18.3.1",

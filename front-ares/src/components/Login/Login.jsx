@@ -18,24 +18,38 @@ function Login() {
         e.preventDefault();
 
         try {
-            const response = await axios.post('https://localhost:7249/api/Auth/login', {
+            const response = await axios.post('https://backend20farmares-production.up.railway.app/api/Auth/login', {
                 username,
                 password,
             });
 
-            // Guardar el token en localStorage y en cookies
-            localStorage.setItem('token', response.data.token);
-            Cookies.set('token', response.data.token, { expires: 1 }); // La cookie expira en 1 día
+            // Imprimir la respuesta completa para ver dónde está el token
+            console.log('Respuesta completa del backend:', response.data);
 
-            // Actualizar el estado de autenticación
-            setIsAuthenticated(true);
+            // Revisa si el token tiene otro nombre, por ejemplo: accessToken
+            const token = response.data.token || response.data.accessToken;
 
-            // Redirigir al dashboard
-            navigate('/dashboard', { replace: true });
+            if (token) {
+                // Guardar el token en localStorage y en cookies
+                localStorage.setItem('token', token);
+                Cookies.set('token', token, { expires: 1 }); // La cookie expira en 1 día
+
+                // Actualizar el estado de autenticación
+                setIsAuthenticated(true);
+
+                // Redirigir al dashboard
+                navigate('/dashboard', { replace: true });
+                
+            } else {
+                console.error('Token no encontrado en la respuesta del backend');
+                setError('Error al iniciar sesión, token no recibido.');
+            }
         } catch (err) {
             setError('Nombre de usuario o contraseña incorrectos. Inténtalo de nuevo.');
         }
     };
+
+
 
     return (
         <div

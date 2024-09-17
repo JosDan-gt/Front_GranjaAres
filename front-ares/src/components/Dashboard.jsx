@@ -18,12 +18,13 @@ const Dashboard = () => {
   useEffect(() => {
     const token = localStorage.getItem('token') || Cookies.get('token');
     if (token) {
-      setIsAuthenticated(true);
+      setIsAuthenticated(true);  // Actualiza el estado de autenticación
     } else {
       setIsAuthenticated(false);
       navigate('/login', { replace: true });
     }
   }, [navigate, setIsAuthenticated]);
+  
 
   // Cargar lotes cuando el componente se monta o cuando se cambia el estado de autenticación
   useEffect(() => {

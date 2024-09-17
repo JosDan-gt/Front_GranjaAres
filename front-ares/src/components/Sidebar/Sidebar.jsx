@@ -1,13 +1,26 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiMenu, FiX } from 'react-icons/fi';
-import { AuthContext } from '../Context/AuthContext';
+import { FiMenu, FiX, FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { AuthContext } from '../Context/AuthContext'; // Asegúrate de que AuthContext esté correctamente definido
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { roles } = useContext(AuthContext); // Obtén los roles del usuario
-  const isUser = roles.includes('User');
-  const isAdmin = roles.includes('Admin');
+  const [openAdmin, setOpenAdmin] = useState(false); // Para el desplegable de "Clientes, Productos y Ventas"
+  const [openRazasCorral, setOpenRazasCorral] = useState(false); // Para el desplegable de "Razas de Gallinas y Corral"
+
+  // Obtenemos los roles desde AuthContext
+  const { roles, isAuthenticated } = useContext(AuthContext); 
+
+  // Validaciones de roles
+  const isAdmin = roles?.includes('Admin'); // Verificamos si existe el rol 'Admin'
+
+  // Efecto para reiniciar el estado del sidebar cuando cambian los roles o el estado de autenticación
+  useEffect(() => {
+    // Reiniciar los estados de los menús desplegables y el sidebar al cambiar roles
+    setOpenAdmin(false);
+    setOpenRazasCorral(false);
+    setIsOpen(false); // Cerrar el menú principal cuando cambian los roles
+  }, [roles, isAuthenticated]);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -35,24 +48,55 @@ const Sidebar = () => {
           <li>
             <Link to="/lotes" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Lotes</Link>
           </li>
-          <li>
-            {isAdmin && <Link to="/corrales" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Corrales</Link>}
-          </li>
-          <li>
-            {isAdmin && <Link to="/razasg" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Raza de Gallina</Link>}
-          </li>
-          <li>
-            {isAdmin && <Link to="/gestion" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Gestión de Lotes</Link>}
-          </li>
-          <li>
-            {isAdmin && <Link to="/cliente" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Clientes</Link>}
-          </li>
-          <li>
-            {isAdmin && <Link to="/producto" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Productos</Link>}
-          </li>
-          <li>
-            {isAdmin && <Link to="/venta" className="block p-3 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Ventas</Link>}
-          </li>
+
+          {/* Desplegable Gestión de Corrales */}
+          {isAdmin && (
+            <li>
+              <button
+                onClick={() => setOpenRazasCorral(!openRazasCorral)}
+                className="block p-3 w-full text-left bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200 flex justify-between items-center"
+              >
+                Gestión de Corrales y Razas
+                {openRazasCorral ? <FiChevronUp /> : <FiChevronDown />}
+              </button>
+              {openRazasCorral && (
+                <ul className="ml-4 mt-2 space-y-2">
+                  <li>
+                    <Link to="/corrales" className="block p-2 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Corrales</Link>
+                  </li>
+                  <li>
+                    <Link to="/razasg" className="block p-2 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Raza de Gallina</Link>
+                  </li>
+                </ul>
+              )}
+            </li>
+          )}
+
+          {/* Desplegable Gestión de Negocio */}
+          {isAdmin && (
+            <li>
+              <button
+                onClick={() => setOpenAdmin(!openAdmin)}
+                className="block p-3 w-full text-left bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200 flex justify-between items-center"
+              >
+                Gestión de Negocio
+                {openAdmin ? <FiChevronUp /> : <FiChevronDown />}
+              </button>
+              {openAdmin && (
+                <ul className="ml-4 mt-2 space-y-2">
+                  <li>
+                    <Link to="/cliente" className="block p-2 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Clientes</Link>
+                  </li>
+                  <li>
+                    <Link to="/producto" className="block p-2 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Productos</Link>
+                  </li>
+                  <li>
+                    <Link to="/venta" className="block p-2 bg-[#5d4037] hover:bg-[#8d6e63] rounded transition-colors duration-200">Ventas</Link>
+                  </li>
+                </ul>
+              )}
+            </li>
+          )}
         </ul>
       </nav>
     </div>

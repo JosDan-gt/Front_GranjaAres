@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../axiosInstance';
+import { useError } from '../Error/ErrorContext'; // Importar el contexto de error
 
 const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
   const [clientes, setClientes] = useState([]);
@@ -12,6 +13,9 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
     detallesVenta: [{ productoId: '', tipoEmpaque: 'Cartón', tamanoHuevo: 'Pequeño', cantidadVendida: 1, precioUnitario: 0 }],
   });
 
+  const [fieldErrors, setFieldErrors] = useState({}); // Estado para los errores de validación de frontend
+  const { handleError, clearError } = useError(); // Usar el contexto de error
+
   useEffect(() => {
     const fetchClientesYProductosYStock = async () => {
       try {
@@ -23,11 +27,12 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
         setStockHuevos(stockResponse.data);
       } catch (error) {
         console.error('Error fetching clientes, productos o stock:', error);
+        handleError('Error al obtener los datos de clientes, productos o stock.');
       }
     };
 
     fetchClientesYProductosYStock();
-  }, []);
+  }, [handleError]);
 
   useEffect(() => {
     if (isEditing && venta) {
@@ -46,6 +51,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
   const handleClienteChange = (e) => {
     const clienteId = e.target.value;
     setFormData({ ...formData, clienteId });
+    setFieldErrors({ ...fieldErrors, clienteId: '' }); // Limpiar error del campo cliente
 
     const clienteSeleccionado = clientes.find(cliente => cliente.clienteId === parseInt(clienteId));
     if (clienteSeleccionado) {
@@ -80,40 +86,77 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
       detallesVenta: [{ productoId: '', tipoEmpaque: 'Cartón', tamanoHuevo: 'Pequeño', cantidadVendida: 1, precioUnitario: 0 }],
     });
     setDireccionCliente('');
+    setFieldErrors({}); // Limpiar errores de validación
+  };
+
+  const validateFields = () => {
+    const errors = {};
+    if (!formData.clienteId) errors.clienteId = 'Por favor, seleccione un cliente.';
+    if (!formData.fechaVenta) errors.fechaVenta = 'Por favor, seleccione una fecha de venta.';
+    if (formData.detallesVenta.length === 0) errors.detallesVenta = 'Debe agregar al menos un detalle de venta.';
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0; // Retornar true si no hay errores
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    clearError(); // Limpiar errores previos
 
-    if (!formData.clienteId || !formData.fechaVenta || formData.detallesVenta.length === 0) {
-      alert('Por favor, complete todos los campos requeridos.');
-      return;
+    if (!validateFields()) {
+      return; // Detener si hay errores de validación
     }
-
-    const ventaData = {
-      ventaId: venta?.ventaId || 0,
-      clienteId: parseInt(formData.clienteId),
-      detallesVenta: formData.detallesVenta.map(detalle => ({
-        productoId: parseInt(detalle.productoId),
-        tipoEmpaque: detalle.tipoEmpaque,
-        tamanoHuevo: detalle.tamanoHuevo,
-        cantidadVendida: parseInt(detalle.cantidadVendida),
-        precioUnitario: parseFloat(detalle.precioUnitario),
-      })),
-    };
 
     try {
       if (isEditing) {
+        const ventaData = {
+          ventaId: venta?.ventaId || 0,
+          clienteId: parseInt(formData.clienteId),
+          detallesVenta: formData.detallesVenta.map(detalle => ({
+            productoId: parseInt(detalle.productoId),
+            tipoEmpaque: detalle.tipoEmpaque,
+            tamanoHuevo: detalle.tamanoHuevo,
+            cantidadVendida: parseInt(detalle.cantidadVendida),
+            precioUnitario: parseFloat(detalle.precioUnitario),
+          })),
+        };
+
         await axiosInstance.put(`/api/Ventas/ActualizarVenta`, ventaData);
+        onSubmit();
+        window.location.reload();
       } else {
+        const ventaData = {
+          venta: {
+            clienteId: parseInt(formData.clienteId),
+            fechaVenta: formData.fechaVenta,
+          },
+          detallesVenta: formData.detallesVenta.map(detalle => ({
+            productoId: parseInt(detalle.productoId),
+            tipoEmpaque: detalle.tipoEmpaque,
+            tamanoHuevo: detalle.tamanoHuevo,
+            cantidadVendida: parseInt(detalle.cantidadVendida),
+            precioUnitario: parseFloat(detalle.precioUnitario),
+          })),
+        };
+
         await axiosInstance.post('/api/Ventas/InsertarDetallesVenta', ventaData);
+        onSubmit();
+        window.location.reload();
       }
-      onSubmit();
     } catch (error) {
-      console.error('Error al guardar la venta:', error);
-      alert('Error al guardar la venta. Revisa la consola para más detalles.');
+      // Manejo de errores que provienen del servidor
+      if (error.response && error.response.data && error.response.data.message) {
+        let errorMessage = error.response.data.message;
+
+
+        // Mostrar el mensaje ajustado
+        alert(errorMessage);
+      } else {
+        alert('Error al procesar la venta. Revisa la consola para más detalles.');
+      }
+      console.error('Error al procesar la venta:', error);
     }
   };
+
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 bg-yellow-50 p-6 rounded-lg shadow-lg">
@@ -131,6 +174,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
             </option>
           ))}
         </select>
+        {fieldErrors.clienteId && <p className="text-xs mt-1 text-red-500">{fieldErrors.clienteId}</p>}
       </div>
 
       {direccionCliente && (
@@ -153,6 +197,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
           value={formData.fechaVenta}
           onChange={(e) => setFormData({ ...formData, fechaVenta: e.target.value })}
         />
+        {fieldErrors.fechaVenta && <p className="text-xs mt-1 text-red-500">{fieldErrors.fechaVenta}</p>}
       </div>
 
       {/* Mostrar stock disponible */}
@@ -185,7 +230,6 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
           </tbody>
         </table>
       </div>
-
 
       <div className="space-y-4">
         {formData.detallesVenta.map((detalle, index) => (
@@ -231,6 +275,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
                   <option value="Grande">Grande</option>
                   <option value="Mediano">Mediano</option>
                   <option value="Pequeño">Pequeño</option>
+                  <option value="Defectuosos">Defectuosos</option>
                 </select>
               </div>
 
@@ -245,7 +290,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-green-900">Precio Unitario</label>
+                <label className="block text-sm font-semibold text-green-900">Precio Unitario (Q)</label>
                 <input
                   type="number"
                   className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600"
@@ -262,6 +307,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
             </div>
           </div>
         ))}
+        {fieldErrors.detallesVenta && <p className="text-xs mt-1 text-red-500">{fieldErrors.detallesVenta}</p>}
         <button
           type="button"
           onClick={handleAddDetail}

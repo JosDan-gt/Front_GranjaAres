@@ -1,9 +1,9 @@
+import { createContext, useState, useEffect } from 'react';
+import Cookies from 'js-cookie'; // Si no has instalado js-cookie, usa: npm install js-cookie
+import { getRolesFromToken } from './jwtUtils'; // Asegúrate de que esta función está definida y funciona correctamente
 
-import React, { createContext, useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
-import { getRolesFromToken } from './jwtUtils'; // Importa la función desde el archivo de utilidades
-
-export const AuthContext = createContext();
+// Crear el contexto de autenticación
+export const AuthContext = createContext(); // Define y exporta el contexto
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -14,23 +14,29 @@ export const AuthProvider = ({ children }) => {
     const token = Cookies.get('token') || localStorage.getItem('token');
     if (token) {
       setIsAuthenticated(true);
-      const roles = getRolesFromToken();
-      setRoles(roles);
-      console.log('Roles obtenidos:', roles); // Verifica los roles obtenidos
+      const userRoles = getRolesFromToken();
+      setRoles(userRoles);
+      console.log('Roles obtenidos:', userRoles); // Verificar los roles obtenidos
     } else {
       setIsAuthenticated(false);
       setRoles([]);
     }
     setLoading(false);
   }, []);
-  
+
+  const logout = () => {
+    Cookies.remove('token');
+    localStorage.removeItem('token');
+    setIsAuthenticated(false);
+    setRoles([]);
+  };
 
   if (loading) {
-    return <div>Cargando...</div>; // Indicador de carga inicial
+    return <div>Cargando...</div>;
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, roles }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, roles, logout }}>
       {children}
     </AuthContext.Provider>
   );

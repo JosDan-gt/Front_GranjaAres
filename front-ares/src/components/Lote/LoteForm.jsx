@@ -103,9 +103,10 @@ const LoteForm = ({ loteData, lotes, isEditing, onCancel, onSubmit }) => {
 
     if (!formData.numLote) {
       newErrors.numLote = 'Este campo es obligatorio.';
-    } else if (!regexLetters.test(formData.numLote)) {
-      newErrors.numLote = 'El campo solo debe contener letras.';
+    } else if (!/^[a-zA-Z0-9]+$/.test(formData.numLote)) {
+      newErrors.numLote = 'El campo solo debe contener letras y números.';
     }
+
 
     if (formData.cantidadG === '' || parseInt(formData.cantidadG) <= 0) {
       newErrors.cantidadG = 'El campo debe ser un número positivo.';
