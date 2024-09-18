@@ -254,7 +254,9 @@ const VentasActivas = () => {
                       {venta.fechaVenta ? new Date(venta.fechaVenta).toLocaleDateString() : 'Sin fecha'}
                     </td>
                     <td className="px-6 py-4 text-center">{getClienteNombre(venta.clienteId)}</td>
-                    <td className="px-6 py-4 text-center">{venta.totalVenta}</td>
+                    <td className="px-6 py-4 text-center">
+                      {new Intl.NumberFormat('es-GT', { style: 'currency', currency: 'GTQ' }).format(venta.totalVenta)}
+                    </td>
                     <td className="px-6 py-4 text-center">
                       <button
                         onClick={() => toggleDetalles(venta.ventaId)}
@@ -274,31 +276,40 @@ const VentasActivas = () => {
                   {detallesVisibles[venta.ventaId] && detallesVentas[venta.ventaId] && (
                     <tr>
                       <td colSpan="4" className="px-4 py-2 bg-gray-100">
-                        <table className="table-auto w-full bg-gray-50">
-                          <thead className="bg-gray-300">
+                        <table className="table-auto w-full bg-gray-50 rounded-lg shadow-md">
+                          <thead className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
                             <tr>
-                              <th className="px-4 py-2">Producto</th>
-                              <th className="px-4 py-2">Tipo Empaque</th>
-                              <th className="px-4 py-2">Tamaño Huevo</th>
-                              <th className="px-4 py-2">Cantidad Vendida</th>
-                              <th className="px-4 py-2">Precio Unitario</th>
-                              <th className="px-4 py-2">Total</th>
+                              <th className="px-4 py-2 text-left">Producto</th>
+                              <th className="px-4 py-2 text-left">Tipo Empaque</th>
+                              <th className="px-4 py-2 text-left">Tamaño Huevo</th>
+                              <th className="px-4 py-2 text-left">Cantidad Vendida</th>
+                              <th className="px-4 py-2 text-left">Precio Unitario</th>
+                              <th className="px-4 py-2 text-left">Total</th>
                             </tr>
                           </thead>
                           <tbody>
                             {detallesVentas[venta.ventaId].map((detalle, index) => (
-                              <tr key={index} className="bg-gray-200">
-                                <td className="px-4 py-2">{getProductoNombre(detalle.productoId)}</td>
-                                <td className="px-4 py-2">{detalle.tipoEmpaque}</td>
-                                <td className="px-4 py-2">{detalle.tamanoHuevo}</td>
-                                <td className="px-4 py-2">{detalle.cantidadVendida}</td>
-                                <td className="px-4 py-2">{detalle.precioUnitario}</td>
-                                <td className="px-4 py-2">{detalle.total}</td>
+                              <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-200'}>
+                                <td className="px-4 py-2 text-left">{getProductoNombre(detalle.productoId)}</td>
+                                <td className="px-4 py-2 text-left">{detalle.tipoEmpaque}</td>
+                                <td className="px-4 py-2 text-left">{detalle.tamanoHuevo}</td>
+                                <td className="px-4 py-2 text-left">{detalle.cantidadVendida}</td>
+
+                                {/* Precio Unitario formateado como dinero */}
+                                <td className="px-4 py-2 text-left">
+                                  {new Intl.NumberFormat('es-GT', { style: 'currency', currency: 'GTQ' }).format(detalle.precioUnitario)}
+                                </td>
+
+                                {/* Total formateado como dinero */}
+                                <td className="px-4 py-2 text-left">
+                                  {new Intl.NumberFormat('es-GT', { style: 'currency', currency: 'GTQ' }).format(detalle.total)}
+                                </td>
                               </tr>
                             ))}
                           </tbody>
                         </table>
                       </td>
+
                     </tr>
                   )}
                 </React.Fragment>

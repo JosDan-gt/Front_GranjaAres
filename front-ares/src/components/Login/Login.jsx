@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie'; // Importa js-cookie
 import { AuthContext } from '../Context/AuthContext'; // Importa AuthContext si lo estás utilizando
-import fondoLogin from '../Img/fondoLogin.jpg';
+import fondoLogin from '../Img/FallGuys.jpg';
 
 function Login() {
     const [username, setUsername] = useState('');

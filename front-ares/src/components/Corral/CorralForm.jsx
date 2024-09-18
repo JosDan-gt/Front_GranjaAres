@@ -127,8 +127,8 @@ const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
 
     return (
         <form onSubmit={handleSubmit} className="p-6 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 shadow-xl rounded-xl">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div className="col-span-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div>
                     <label className="block text-sm font-semibold text-gray-700">Número de Corral</label>
                     <input
                         type="text"
@@ -136,11 +136,11 @@ const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
                         value={formData.numCorral}
                         onChange={handleChange}
                         className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Ingrese el número del corral"
+                        placeholder="Número del corral"
                     />
                     {errors.numCorral && <p className="text-red-500 text-xs mt-2">{errors.numCorral}</p>}
                 </div>
-                <div className="col-span-1">
+                <div>
                     <label className="block text-sm font-semibold text-gray-700">Capacidad</label>
                     <input
                         type="number"
@@ -148,11 +148,11 @@ const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
                         value={formData.capacidad}
                         onChange={handleChange}
                         className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Ingrese la capacidad"
+                        placeholder="Capacidad"
                     />
                     {errors.capacidad && <p className="text-red-500 text-xs mt-2">{errors.capacidad}</p>}
                 </div>
-                <div className="col-span-1">
+                <div>
                     <label className="block text-sm font-semibold text-gray-700">Alto</label>
                     <input
                         type="number"
@@ -160,11 +160,11 @@ const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
                         value={formData.alto}
                         onChange={handleChange}
                         className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Ingrese el alto"
+                        placeholder="Alto (m)"
                     />
                     {errors.alto && <p className="text-red-500 text-xs mt-2">{errors.alto}</p>}
                 </div>
-                <div className="col-span-1">
+                <div>
                     <label className="block text-sm font-semibold text-gray-700">Ancho</label>
                     <input
                         type="number"
@@ -172,11 +172,11 @@ const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
                         value={formData.ancho}
                         onChange={handleChange}
                         className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Ingrese el ancho"
+                        placeholder="Ancho (m)"
                     />
                     {errors.ancho && <p className="text-red-500 text-xs mt-2">{errors.ancho}</p>}
                 </div>
-                <div className="col-span-1">
+                <div>
                     <label className="block text-sm font-semibold text-gray-700">Largo</label>
                     <input
                         type="number"
@@ -184,11 +184,11 @@ const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
                         value={formData.largo}
                         onChange={handleChange}
                         className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Ingrese el largo"
+                        placeholder="Largo (m)"
                     />
                     {errors.largo && <p className="text-red-500 text-xs mt-2">{errors.largo}</p>}
                 </div>
-                <div className="col-span-1">
+                <div>
                     <label className="block text-sm font-semibold text-gray-700">Comederos</label>
                     <input
                         type="number"
@@ -196,11 +196,11 @@ const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
                         value={formData.comederos}
                         onChange={handleChange}
                         className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Ingrese el número de comederos"
+                        placeholder="Comederos"
                     />
                     {errors.comederos && <p className="text-red-500 text-xs mt-2">{errors.comederos}</p>}
                 </div>
-                <div className="col-span-1">
+                <div>
                     <label className="block text-sm font-semibold text-gray-700">Bebederos</label>
                     <input
                         type="number"
@@ -208,11 +208,11 @@ const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
                         value={formData.bebederos}
                         onChange={handleChange}
                         className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Ingrese el número de bebederos"
+                        placeholder="Bebederos"
                     />
                     {errors.bebederos && <p className="text-red-500 text-xs mt-2">{errors.bebederos}</p>}
                 </div>
-                <div className="col-span-1">
+                <div>
                     <label className="block text-sm font-semibold text-gray-700">Ponederos</label>
                     <input
                         type="number"
@@ -220,12 +220,12 @@ const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
                         value={formData.ponederos}
                         onChange={handleChange}
                         className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Ingrese el número de ponederos"
+                        placeholder="Ponederos"
                     />
                     {errors.ponederos && <p className="text-red-500 text-xs mt-2">{errors.ponederos}</p>}
                 </div>
-                <div className="col-span-1">
-                    <label className="block text-sm font-semibold text-gray-700">Agua</label>
+                <div className="flex items-center">
+                    <label className="block text-sm font-semibold text-gray-700 mr-4">Agua</label>
                     <input
                         type="checkbox"
                         name="agua"
@@ -235,29 +235,27 @@ const CorralForm = ({ corralData, isEditing, onSubmit, onCancel }) => {
                     />
                 </div>
             </div>
-            <div className="flex justify-end space-x-4 mt-6">
+
+            <div className="flex flex-col sm:flex-row justify-end space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
                 <button
                     type="button"
                     onClick={handleClear}
-                    className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-semibold rounded-lg hover:from-yellow-400 hover:to-yellow-500 transition-all duration-300 flex items-center"
+                    className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-semibold rounded-lg hover:from-yellow-400 hover:to-yellow-500 transition-all duration-300 flex items-center justify-center"
                 >
-                    <FaBroom className="mr-2" /> {/* Ícono de Limpiar */}
-                    Limpiar
+                    <FaBroom className="mr-2" /> Limpiar
                 </button>
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-lg hover:from-red-400 hover:to-red-500 transition-all duration-300 flex items-center"
+                    className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-lg hover:from-red-400 hover:to-red-500 transition-all duration-300 flex items-center justify-center"
                 >
-                    <FaTimes className="mr-2" /> {/* Ícono de Cancelar */}
-                    Cancelar
+                    <FaTimes className="mr-2" /> Cancelar
                 </button>
                 <button
                     type="submit"
-                    className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold rounded-lg hover:from-blue-500 hover:to-blue-700 transition-all duration-300 flex items-center"
+                    className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold rounded-lg hover:from-blue-500 hover:to-blue-700 transition-all duration-300 flex items-center justify-center"
                 >
-                    <FaSave className="mr-2" /> {/* Ícono de Guardar/Actualizar */}
-                    {isEditing ? 'Actualizar' : 'Guardar'}
+                    <FaSave className="mr-2" /> {isEditing ? 'Actualizar' : 'Guardar'}
                 </button>
             </div>
         </form>

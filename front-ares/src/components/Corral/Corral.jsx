@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import CorralForm from './CorralForm'; // Importa el formulario
 import axiosInstance from '../axiosInstance.jsx';
 import { AuthContext } from '../Context/AuthContext'; // Importa el AuthContext
-import { FaEdit, FaWater, FaRulerVertical, FaRulerHorizontal, FaUtensils, FaTint, FaLayerGroup, FaArrowLeft, FaArrowRight, FaHome, FaCheck } from 'react-icons/fa';
+import { FaEdit, FaWater, FaRulerVertical, FaRulerHorizontal, FaUtensils, FaTint, FaLayerGroup, FaArrowLeft, FaArrowRight, FaHome, FaCheck, FaPlus } from 'react-icons/fa';
 
 const Corral = () => {
     const [corrales, setCorrales] = useState([]);
@@ -86,12 +86,9 @@ const Corral = () => {
     };
 
     const handleFormSubmit = () => {
-        // Oculta el formulario y resetea el estado
         setShowForm(false);
         setSelectedCorral(null);
         setIsEditing(false);
-
-        // Refresca la lista de corrales después de guardar o actualizar un corral
         axiosInstance.get('/getcorral')
             .then(response => {
                 const data = Array.isArray(response.data) ? response.data : [response.data];
@@ -139,29 +136,31 @@ const Corral = () => {
 
     return (
         <div className="p-6 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 shadow-xl rounded-xl">
-            <h2 className="text-3xl font-extrabold text-gray-800 mb-6 text-center tracking-wider">
-                <FaHome className="inline-block mb-2 text-blue-700" /> {/* Icono en el título */}
-                Lista de Corrales
-            </h2>
+            <div className="flex flex-col sm:flex-row sm:justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 tracking-wider text-center sm:text-left">
+                    <FaHome className="inline-block mb-2 text-blue-700 mr-2" />
+                    Lista de Corrales
+                </h2>
 
-            <div className="flex flex-col sm:flex-row sm:justify-between mb-4">
+                {isAdmin && (
+                    <button
+                        onClick={handleAddNew}
+                        className="px-4 py-2 text-white font-semibold rounded-lg shadow-md bg-blue-600 hover:bg-blue-500 flex items-center transition-all duration-300"
+                    >
+                        <FaPlus className="mr-2" />
+                        Agregar Nuevo Corral
+                    </button>
+                )}
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:justify-between items-center mb-4">
                 <input
                     type="text"
                     value={searchTerm}
                     onChange={handleSearchChange}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4 sm:mb-0"
+                    className="px-4 py-2 w-full sm:max-w-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Buscar corral"
-                    style={{ width: '100%', maxWidth: '300px' }}
                 />
-                {isAdmin && (
-                    <button
-                        onClick={handleAddNew}
-                        className="px-6 py-3 text-white font-semibold rounded-full shadow-lg transition-all duration-300 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700"
-                    >
-                        <FaHome className="mr-2" />
-                        Agregar Nuevo Corral
-                    </button>
-                )}
             </div>
 
             {showForm && (
@@ -172,6 +171,7 @@ const Corral = () => {
                     onCancel={handleFormClose}
                 />
             )}
+
 
             <div className="w-full overflow-x-auto">
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Corrales Activos</h3>
@@ -303,29 +303,21 @@ const Corral = () => {
                 </table>
             </div>
 
-            <div className="flex justify-between items-center mt-6">
-                <button
-                    onClick={() => paginate(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold rounded-lg hover:from-blue-500 hover:to-blue-700 transition-all duration-300 flex items-center"
-                >
-                    <FaArrowLeft className="mr-2" />
-                    Anterior
-                </button>
-
-                <span className="text-lg text-gray-700">
-                    Página {currentPage} de {Math.ceil(activeCorrales.length / itemsPerPage)}
-                </span>
-
-                <button
-                    onClick={() => paginate(currentPage + 1)}
-                    disabled={currentPage * itemsPerPage >= activeCorrales.length}
-                    className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold rounded-lg hover:from-blue-500 hover:to-blue-700 transition-all duration-300 flex items-center"
-                >
-                    Siguiente
-                    <FaArrowRight className="ml-2" />
-                </button>
+            <div className="flex justify-center items-center mt-6">
+                {Array.from({ length: Math.ceil(activeCorrales.length / itemsPerPage) }, (_, index) => (
+                    <button
+                        key={index}
+                        onClick={() => paginate(index + 1)}
+                        className={`mx-1 px-4 py-2 text-white font-semibold rounded-lg shadow-md ${currentPage === index + 1
+                                ? 'bg-blue-800'
+                                : 'bg-blue-600 hover:bg-blue-500 transition-all duration-300'
+                            }`}
+                    >
+                        {index + 1}
+                    </button>
+                ))}
             </div>
+
         </div>
     );
 };

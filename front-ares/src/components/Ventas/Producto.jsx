@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../axiosInstance';
 import ProductoForm from './ProductosForm'; // Importa el componente de formulario
+import { FaEdit, FaTrashAlt, FaPlus } from 'react-icons/fa'; // Importando íconos
 
 const ProductosActivos = () => {
   const [productos, setProductos] = useState([]);
@@ -83,8 +84,8 @@ const ProductosActivos = () => {
             key={number}
             onClick={() => paginate(number)}
             className={`px-3 py-1 mx-1 border border-gray-300 rounded-md ${currentPage === number
-              ? 'bg-green-700 text-white'
-              : 'bg-white text-green-700 hover:bg-green-200'
+              ? 'bg-blue-700 text-white'
+              : 'bg-white text-blue-700 hover:bg-blue-200'
               }`}
           >
             {number}
@@ -95,18 +96,21 @@ const ProductosActivos = () => {
   };
 
   return (
-    <div className="p-6 bg-yellow-50 shadow-lg rounded-lg max-w-full w-full">
-      <h2 className="text-3xl font-bold text-green-900 mb-6 text-center">Productos Activos</h2>
+    <div className="p-6 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 shadow-xl rounded-xl max-w-full w-full">
+      <h2 className="text-3xl font-extrabold text-gray-800 mb-6 text-center tracking-wider">
+        <FaPlus className="inline-block mb-2 text-blue-700" /> {/* Icono en el título */}
+        Productos Activos
+      </h2>
 
       <div className="flex justify-center mb-6">
         <button
           onClick={() => { setShowForm(!showForm); setEditingProducto(null); }}
-          className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors duration-300"
+          className="px-6 py-3 text-white font-semibold rounded-full shadow-lg transition-all duration-300 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700"
         >
+          <FaPlus className="inline-block mr-2" /> {/* Icono de agregar */}
           {showForm ? 'Ocultar Formulario' : 'Agregar Nuevo Producto'}
         </button>
       </div>
-
 
       {showForm && (
         <ProductoForm
@@ -118,12 +122,12 @@ const ProductosActivos = () => {
 
       {productos.length > 0 ? (
         <>
-          <div className="w-full overflow-x-auto">
+          <div className="w-full overflow-x-auto mx-auto">
             <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
-              <thead className="bg-green-700 text-white">
+              <thead className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
                 <tr>
                   <th
-                    className="py-3 px-6 text-left text-sm font-semibold cursor-pointer hover:bg-green-800"
+                    className="py-3 px-6 text-left text-sm font-semibold cursor-pointer hover:bg-blue-700"
                     onClick={handleSortByName}
                   >
                     Nombre {sortDirection === 'asc' ? '▲' : '▼'}
@@ -136,7 +140,7 @@ const ProductosActivos = () => {
                 {currentItems.map((producto) => (
                   <tr
                     key={producto.productoId}
-                    className="border-b border-gray-200 hover:bg-yellow-50"
+                    className="border-b border-gray-200 hover:bg-gray-50"
                   >
                     <td className="py-3 px-6 whitespace-nowrap">{producto.nombreProducto}</td>
                     <td className="py-3 px-6 max-w-xs whitespace-nowrap overflow-hidden text-ellipsis" style={{ minHeight: '50px' }}>
@@ -166,14 +170,16 @@ const ProductosActivos = () => {
                     <td className="py-3 px-6 whitespace-nowrap flex space-x-2">
                       <button
                         onClick={() => handleEditProducto(producto)}
-                        className="px-3 py-1 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-300"
+                        className="px-3 py-1 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-semibold rounded-lg shadow-md hover:from-yellow-400 hover:to-yellow-500 transition-all duration-300 flex items-center"
                       >
+                        <FaEdit className="mr-2" /> {/* Icono de editar */}
                         Editar
                       </button>
                       <button
                         onClick={() => handleDeleteProducto(producto.productoId)}
-                        className="px-3 py-1 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors duration-300"
+                        className="px-3 py-1 bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold rounded-lg shadow-md hover:from-red-500 hover:to-red-600 transition-all duration-300 flex items-center"
                       >
+                        <FaTrashAlt className="mr-2" /> {/* Icono de eliminar */}
                         Eliminar
                       </button>
                     </td>
@@ -186,7 +192,7 @@ const ProductosActivos = () => {
           <Pagination totalPages={totalPages} currentPage={currentPage} paginate={setCurrentPage} />
         </>
       ) : (
-        <p className="text-gray-700 text-lg">No hay productos activos disponibles.</p>
+        <p className="text-gray-700 text-lg text-center">No hay productos activos disponibles.</p>
       )}
     </div>
   );

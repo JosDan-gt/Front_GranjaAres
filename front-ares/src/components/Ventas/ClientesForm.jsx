@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../axiosInstance';
+import { FaSave, FaTimes, FaBroom } from 'react-icons/fa'; // Íconos de FontAwesome
 
 const ClienteForm = ({ onCancel, onSubmit, cliente }) => {
   const [formData, setFormData] = useState({
@@ -75,7 +76,6 @@ const ClienteForm = ({ onCancel, onSubmit, cliente }) => {
     }
   };
 
-
   const handleClear = () => {
     setFormData({
       nombreCliente: '',
@@ -86,93 +86,94 @@ const ClienteForm = ({ onCancel, onSubmit, cliente }) => {
   };
 
   return (
-    <div className="flex items-start space-x-6 p-6 bg-yellow-50 shadow-lg rounded-lg mb-4" style={{ backgroundColor: '#F5F5DC' }}>
-      <form onSubmit={handleSubmit} className="space-y-6 flex-1">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="col-span-1">
-            <label className="block text-sm font-semibold text-green-900">Nombre del Cliente</label>
-            <input
-              type="text"
-              name="nombreCliente"
-              value={formData.nombreCliente}
-              onChange={handleChange}
-              disabled={isDisabled}
-              className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600"
-              placeholder="Ingrese el nombre del cliente"
-            />
-            {errors.nombreCliente && <p className="text-red-600 text-xs mt-2">{errors.nombreCliente}</p>}
-          </div>
-          <div className="col-span-1">
-            <label className="block text-sm font-semibold text-green-900">Teléfono</label>
-            <input
-              type="text"
-              name="telefono"
-              value={formData.telefono}
-              onChange={(e) => {
-                if (e.target.value.length <= 8) {
-                  handleChange(e);
-                }
-              }}
-              disabled={isDisabled}
-              inputMode="numeric"
-              pattern="\d{8}"
-              onKeyPress={(e) => {
-                if (!/[0-9]/.test(e.key)) {
-                  e.preventDefault();
-                }
-              }}
-              className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600"
-              placeholder="Ingrese el teléfono"
-            />
-            {errors.telefono && <p className="text-red-600 text-xs mt-2">{errors.telefono}</p>}
-          </div>
-
-
-          <div className="col-span-2">
-            <label className="block text-sm font-semibold text-green-900">Dirección</label>
-            <textarea
-              name="direccion"
-              value={formData.direccion}
-              onChange={handleChange}
-              disabled={isDisabled}
-              className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600"
-              placeholder="Ingrese la dirección"
-              rows="3"
-            />
-            {errors.direccion && <p className="text-red-600 text-xs mt-2">{errors.direccion}</p>}
-          </div>
+    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {/* Nombre del Cliente */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Nombre del Cliente</label>
+          <input
+            type="text"
+            name="nombreCliente"
+            value={formData.nombreCliente}
+            onChange={handleChange}
+            disabled={isDisabled}
+            className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+            placeholder="Ingrese el nombre del cliente"
+          />
+          {errors.nombreCliente && <p className="text-xs mt-1 text-red-500">{errors.nombreCliente}</p>}
         </div>
-      </form>
-      <div className="flex flex-col space-y-3">
+
+        {/* Teléfono */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Teléfono</label>
+          <input
+            type="text"
+            name="telefono"
+            value={formData.telefono}
+            onChange={(e) => {
+              if (e.target.value.length <= 8) {
+                handleChange(e);
+              }
+            }}
+            disabled={isDisabled}
+            inputMode="numeric"
+            pattern="\d{8}"
+            onKeyPress={(e) => {
+              if (!/[0-9]/.test(e.key)) {
+                e.preventDefault();
+              }
+            }}
+            className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+            placeholder="Ingrese el teléfono"
+          />
+          {errors.telefono && <p className="text-xs mt-1 text-red-500">{errors.telefono}</p>}
+        </div>
+
+        {/* Dirección */}
+        <div className="col-span-2">
+          <label className="block text-sm font-medium text-gray-700">Dirección</label>
+          <textarea
+            name="direccion"
+            value={formData.direccion}
+            onChange={handleChange}
+            disabled={isDisabled}
+            className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+            placeholder="Ingrese la dirección"
+            rows="3"
+          />
+          {errors.direccion && <p className="text-xs mt-1 text-red-500">{errors.direccion}</p>}
+        </div>
+      </div>
+
+      {/* Acciones del Formulario */}
+      <div className="flex flex-col sm:flex-row justify-between mt-6 space-y-4 sm:space-y-0 sm:space-x-4">
         <button
           type="button"
           onClick={onCancel}
           disabled={isDisabled}
-          className={`px-4 py-2 font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 ${isDisabled ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 focus:ring-opacity-50'
-            }`}
+          className={`bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 focus:ring-2 focus:ring-red-500 ${isDisabled ? 'cursor-not-allowed' : ''}`}
         >
-          Cancelar
+          <FaTimes className="inline-block mr-2" /> Cancelar
         </button>
+
         <button
           type="button"
           onClick={handleClear}
           disabled={isDisabled}
-          className={`px-4 py-2 font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 ${isDisabled ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-yellow-500 text-white hover:bg-yellow-600 focus:ring-yellow-500 focus:ring-opacity-50'
-            }`}
+          className={`bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-500 ${isDisabled ? 'cursor-not-allowed' : ''}`}
         >
-          Limpiar
+          <FaBroom className="inline-block mr-2" /> Limpiar
         </button>
+
         <button
           type="submit"
-          onClick={handleSubmit}
           disabled={isDisabled}
-          className={`px-4 py-2 font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 ${isDisabled ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 focus:ring-opacity-50'
-            }`}
+          className={`bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 focus:ring-2 focus:ring-green-500 ${isDisabled ? 'cursor-not-allowed' : ''}`}
         >
-          {cliente ? 'Actualizar Cliente' : 'Insertar Cliente'}
+          <FaSave className="inline-block mr-2" /> {cliente ? 'Actualizar Cliente' : 'Insertar Cliente'}
         </button>
       </div>
-    </div>
+    </form>
   );
 };
 

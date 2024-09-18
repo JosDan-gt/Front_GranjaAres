@@ -16,7 +16,6 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
       const userRoles = getRolesFromToken();
       setRoles(userRoles);
-      console.log('Roles obtenidos:', userRoles); // Verificar los roles obtenidos
     } else {
       setIsAuthenticated(false);
       setRoles([]);

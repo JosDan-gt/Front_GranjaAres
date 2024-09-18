@@ -3,7 +3,13 @@ import axiosInstance from '../axiosInstance';
 import { AuthContext } from '../Context/AuthContext';
 import { FaSave, FaTimes, FaBroom } from 'react-icons/fa'; // Importar iconos
 import { FaCalendarAlt } from 'react-icons/fa';
-import { FaBox, FaLayerGroup, FaEgg } from 'react-icons/fa';
+import { FaLayerGroup, FaEgg } from 'react-icons/fa';
+import { AiFillProduct } from "react-icons/ai";
+import { HiBuildingStorefront } from "react-icons/hi2";
+import { CgDetailsMore } from "react-icons/cg";
+import { BsFillLayersFill } from "react-icons/bs";
+
+
 
 
 const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData }) => {
@@ -185,21 +191,21 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
     try {
       const response = isUpdateMode
         ? await axiosInstance.put('/putclasificacion', {
-            Id: item?.id,
-            Tamano: formData.tamano,
-            Cajas: parseInt(formData.cajas),
-            CartonesExtras: parseInt(formData.cartonesExtras),
-            HuevosSueltos: parseInt(formData.huevosSueltos),
-            IdProd: formData.idProd,
-          })
+          Id: item?.id,
+          Tamano: formData.tamano,
+          Cajas: parseInt(formData.cajas),
+          CartonesExtras: parseInt(formData.cartonesExtras),
+          HuevosSueltos: parseInt(formData.huevosSueltos),
+          IdProd: formData.idProd,
+        })
         : await axiosInstance.post('/postclasificacion', {
-            Tamano: formData.tamano,
-            Cajas: parseInt(formData.cajas),
-            CartonesExtras: parseInt(formData.cartonesExtras),
-            HuevosSueltos: parseInt(formData.huevosSueltos),
-            IdProd: formData.idProd,
-            FechaClaS: new Date(formData.fechaClaS).toISOString(),
-          });
+          Tamano: formData.tamano,
+          Cajas: parseInt(formData.cajas),
+          CartonesExtras: parseInt(formData.cartonesExtras),
+          HuevosSueltos: parseInt(formData.huevosSueltos),
+          IdProd: formData.idProd,
+          FechaClaS: new Date(formData.fechaClaS).toISOString(),
+        });
 
       alert(`Clasificación ${isUpdateMode ? 'actualizada' : 'registrada'} exitosamente.`);
       onClose();
@@ -328,11 +334,11 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
 
           {/* Botones de Acción */}
           {isAdminOrGestor && (
-            <div className="flex justify-end mt-6 space-x-3">
+            <div className="flex flex-col sm:flex-row justify-end mt-6 space-y-3 sm:space-y-0 sm:space-x-3">
               <button
                 type="button"
                 onClick={handleReset}
-                className="flex items-center px-4 py-2 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50"
+                className="flex items-center justify-center w-full sm:w-auto px-4 py-2 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50"
               >
                 <FaBroom className="mr-2" /> {/* Ícono de limpiar */}
                 Limpiar
@@ -340,7 +346,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
               <button
                 type="button"
                 onClick={onClose}
-                className="flex items-center px-4 py-2 bg-gray-500 text-white font-semibold rounded-lg shadow-md hover:bg-gray-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+                className="flex items-center justify-center w-full sm:w-auto px-4 py-2 bg-gray-500 text-white font-semibold rounded-lg shadow-md hover:bg-gray-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
               >
                 <FaTimes className="mr-2" /> {/* Ícono de cancelar */}
                 Cancelar
@@ -348,13 +354,14 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
               <button
                 type="submit"
                 disabled={loading}
-                className="flex items-center px-4 py-2 bg-green-700 text-white font-semibold rounded-lg shadow-md hover:bg-green-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                className="flex items-center justify-center w-full sm:w-auto px-4 py-2 bg-green-700 text-white font-semibold rounded-lg shadow-md hover:bg-green-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
               >
                 <FaSave className="mr-2" /> {/* Ícono de guardar */}
                 {loading ? 'Guardando...' : isUpdateMode ? 'Actualizar' : 'Guardar'}
               </button>
             </div>
           )}
+
         </form>
       </div>
 
@@ -362,7 +369,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
       <div className="flex-1 p-6 bg-white rounded-lg shadow-md">
         <h3 className="text-xl font-bold mb-4 text-green-900 flex items-center">
           Detalles de Producción
-          <FaCalendarAlt className="ml-2 text-blue-700" /> {/* Ícono en el título */}
+          <CgDetailsMore className="ml-2 text-blue-700" /> {/* Ícono en el título */}
         </h3>
         {selectedProduccion ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -376,28 +383,28 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
             <div className="bg-green-50 p-4 rounded-md shadow-sm">
               <h4 className="font-semibold text-green-700 mb-2 flex items-center">
                 Cantidad Total Producción
-                <FaBox className="ml-2 text-blue-700" /> {/* Ícono */}
+                <AiFillProduct  className="ml-2 text-blue-700" size={23} /> {/* Ícono */}
               </h4>
               <p className="text-green-900">{selectedProduccion.cantidadTotalProduccion}</p>
             </div>
             <div className="bg-green-50 p-4 rounded-md shadow-sm">
               <h4 className="font-semibold text-green-700 mb-2 flex items-center">
                 Stock Restante
-                <FaBox className="ml-2 text-blue-700" /> {/* Ícono */}
+                <HiBuildingStorefront  className="ml-2 text-blue-700" size={23}/> {/* Ícono */}
               </h4>
               <p className="text-green-900">{selectedProduccion.stockRestante}</p>
             </div>
             <div className="bg-green-50 p-4 rounded-md shadow-sm">
               <h4 className="font-semibold text-green-700 mb-2 flex items-center">
                 Cajas Restantes
-                <FaBox className="ml-2 text-blue-700" /> {/* Ícono */}
+                <FaLayerGroup className="ml-2 text-blue-700" /> {/* Ícono */}
               </h4>
               <p className="text-green-900">{selectedProduccion.cajasRestantes}</p>
             </div>
             <div className="bg-green-50 p-4 rounded-md shadow-sm">
               <h4 className="font-semibold text-green-700 mb-2 flex items-center">
                 Cartones Restantes
-                <FaLayerGroup className="ml-2 text-blue-700" /> {/* Ícono */}
+                <BsFillLayersFill className="ml-2 text-blue-700" /> {/* Ícono */}
               </h4>
               <p className="text-green-900">{selectedProduccion.cartonesRestantes}</p>
             </div>

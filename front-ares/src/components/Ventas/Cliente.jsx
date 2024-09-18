@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../axiosInstance';
 import ClienteForm from '../Ventas/ClientesForm';
+import { FaUserEdit, FaTrashAlt, FaPlus, FaSortAlphaDown, FaSortAlphaUp } from 'react-icons/fa';
 
 const ClientesActivos = () => {
   const [clientes, setClientes] = useState([]);
@@ -88,8 +89,8 @@ const ClientesActivos = () => {
             key={number}
             onClick={() => paginate(number)}
             className={`px-3 py-1 mx-1 border border-gray-300 rounded-md ${currentPage === number
-                ? 'bg-green-700 text-white'
-                : 'bg-white text-green-700 hover:bg-green-200'
+                ? 'bg-blue-600 text-white'
+                : 'bg-white text-blue-600 hover:bg-blue-200'
               }`}
           >
             {number}
@@ -100,18 +101,21 @@ const ClientesActivos = () => {
   };
 
   return (
-    <div className="p-6 bg-yellow-50 shadow-lg rounded-lg max-w-full w-full">
-      <h2 className="text-3xl font-bold text-green-900 mb-6 text-center">Clientes Activos</h2>
+    <div className="p-6 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 shadow-xl rounded-xl">
+      <h2 className="text-3xl font-extrabold text-gray-800 mb-6 text-center tracking-wider">
+        <FaUserEdit className="inline-block mb-2 text-blue-700" /> {/* Icono en el título */}
+        Clientes Activos
+      </h2>
 
       <div className="flex justify-center mb-6">
         <button
           onClick={() => { setShowForm(!showForm); setEditingCliente(null); }}
-          className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors duration-300"
+          className="px-6 py-3 text-white font-semibold rounded-full shadow-lg transition-all duration-300 bg-gradient-to-r from-green-600 to-green-800 hover:from-green-500 hover:to-green-700"
         >
+          <FaPlus className="inline-block mr-2" /> {/* Icono de agregar */}
           {showForm ? 'Ocultar Formulario' : 'Agregar Nuevo Cliente'}
         </button>
       </div>
-
 
       {showForm && (
         <ClienteForm
@@ -123,29 +127,29 @@ const ClientesActivos = () => {
 
       {clientes.length > 0 ? (
         <>
-          <div className="w-full overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
-              <thead className="bg-green-700 text-white">
+          <div className="w-full overflow-x-auto rounded-lg shadow-lg">
+            <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+              <thead className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
                 <tr>
                   <th
-                    className="py-3 px-6 text-left text-sm font-semibold cursor-pointer hover:bg-green-800"
+                    className="py-3 px-6 text-center text-sm font-semibold cursor-pointer hover:bg-blue-700"
                     onClick={handleSortByName}
                   >
-                    Nombre {sortDirection === 'asc' ? '▲' : '▼'}
+                    Nombre {sortDirection === 'asc' ? <FaSortAlphaUp /> : <FaSortAlphaDown />}
                   </th>
-                  <th className="py-3 px-6 text-left text-sm font-semibold">Dirección</th>
-                  <th className="py-3 px-6 text-left text-sm font-semibold">Teléfono</th>
-                  <th className="py-3 px-6 text-left text-sm font-semibold">Acciones</th>
+                  <th className="py-3 px-6 text-center text-sm font-semibold">Dirección</th>
+                  <th className="py-3 px-6 text-center text-sm font-semibold">Teléfono</th>
+                  <th className="py-3 px-6 text-center text-sm font-semibold">Acciones</th>
                 </tr>
               </thead>
               <tbody className="text-gray-700">
                 {currentItems.map((cliente) => (
                   <tr
                     key={cliente.clienteId}
-                    className="border-b border-gray-200 hover:bg-yellow-50"
+                    className="border-b border-gray-200 hover:bg-gray-50"
                   >
-                    <td className="py-3 px-6 whitespace-nowrap">{cliente.nombreCliente}</td>
-                    <td className="py-3 px-6 max-w-xs whitespace-nowrap overflow-hidden text-ellipsis">
+                    <td className="py-3 px-6 text-center">{cliente.nombreCliente}</td>
+                    <td className="py-3 px-6 text-center max-w-xs whitespace-nowrap overflow-hidden text-ellipsis">
                       <div
                         style={{ maxWidth: '200px', whiteSpace: expanded === cliente.clienteId ? 'normal' : 'nowrap', overflow: expanded === cliente.clienteId ? 'visible' : 'hidden', textOverflow: 'ellipsis' }}
                       >
@@ -160,18 +164,20 @@ const ClientesActivos = () => {
                         </button>
                       )}
                     </td>
-                    <td className="py-3 px-6 whitespace-nowrap">{cliente.telefono}</td>
-                    <td className="py-3 px-6 whitespace-nowrap flex space-x-2">
+                    <td className="py-3 px-6 text-center">{cliente.telefono}</td>
+                    <td className="py-3 px-6 text-center flex space-x-2 justify-center">
                       <button
                         onClick={() => handleEditCliente(cliente)}
-                        className="px-3 py-1 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-300"
+                        className="px-3 py-1 bg-yellow-600 text-white font-semibold rounded-lg hover:bg-yellow-700 transition-colors duration-300 flex items-center"
                       >
+                        <FaUserEdit className="mr-2" />
                         Editar
                       </button>
                       <button
                         onClick={() => handleDeleteCliente(cliente.clienteId)}
-                        className="px-3 py-1 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors duration-300"
+                        className="px-3 py-1 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors duration-300 flex items-center"
                       >
+                        <FaTrashAlt className="mr-2" />
                         Eliminar
                       </button>
                     </td>
@@ -184,7 +190,7 @@ const ClientesActivos = () => {
           <Pagination totalPages={totalPages} currentPage={currentPage} paginate={setCurrentPage} />
         </>
       ) : (
-        <p className="text-gray-700 text-lg">No hay clientes activos disponibles.</p>
+        <p className="text-gray-700 text-lg text-center">No hay clientes activos disponibles.</p>
       )}
     </div>
   );

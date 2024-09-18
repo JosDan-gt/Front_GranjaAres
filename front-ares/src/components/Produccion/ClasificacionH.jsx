@@ -6,6 +6,9 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import ClasificacionForm from './ClasificacionForm';
 import { useLocation } from 'react-router-dom';
+import { MdRealEstateAgent } from "react-icons/md";
+import { LuReplace } from "react-icons/lu";
+import { GiEggClutch } from "react-icons/gi";
 
 const ClasificacionH = () => {
   const { id } = useParams();
@@ -111,11 +114,10 @@ const ClasificacionH = () => {
           <button
             key={number}
             onClick={() => paginate(number)}
-            className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-all duration-300 focus:outline-none ${
-              currentPage === number
+            className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-all duration-300 focus:outline-none ${currentPage === number
                 ? 'bg-gradient-to-r from-blue-600 to-blue-800 text-white'
                 : 'bg-white text-blue-700 border border-gray-300 hover:bg-blue-100 hover:text-blue-900'
-            }`}
+              }`}
           >
             {number}
           </button>
@@ -126,28 +128,28 @@ const ClasificacionH = () => {
 
   return (
     <div className="p-6 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 shadow-xl rounded-xl">
-      <div className="flex justify-start mb-6 text-lg items-center">
+      <div className="flex flex-col sm:flex-row sm:justify-start sm:items-center mb-6 text-lg items-center">
         <Link
           to={`/produccionG/${id}`}
           state={{ estadoBaja }}
-          className="text-blue-700 hover:text-blue-900 transition duration-300 flex items-center space-x-2"
+          className="text-blue-700 hover:text-blue-900 transition duration-300 flex items-center space-x-2 mb-2 sm:mb-0"
         >
-          <FaBox className="text-blue-700" /> {/* Ícono de caja */}
+          <GiEggClutch className="text-blue-700" /> {/* Ícono de producción */}
           <span>Producción</span>
         </Link>
-        <span className="mx-2 text-blue-700">/</span>
+        <span className="mx-2 text-blue-700 hidden sm:inline">/</span>
         <Link
           to={`/estado/${id}`}
           state={{ estadoBaja }}
           className="text-blue-700 hover:text-blue-900 transition duration-300 flex items-center space-x-2"
         >
-          <FaBox className="text-blue-700" /> {/* Ícono de caja */}
+          <MdRealEstateAgent className="text-blue-700" /> {/* Ícono de estado */}
           <span>Estado Lote</span>
         </Link>
       </div>
 
-      <h2 className="text-3xl font-extrabold text-gray-800 mb-6 text-center tracking-wider">
-        <FaBox className="inline-block mb-2 text-blue-700" /> {/* Icono en el título */}
+      <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-800 mb-6 text-center tracking-wider">
+        <LuReplace className="inline-block mb-2 text-blue-700" /> {/* Icono en el título */}
         Clasificación de Huevos
       </h2>
 
@@ -155,11 +157,10 @@ const ClasificacionH = () => {
         <button
           disabled={isDisabled}
           onClick={handleAddClick}
-          className={`px-6 py-3 text-white font-semibold rounded-full shadow-lg transition-all duration-300 ${
-            isDisabled
+          className={`w-full sm:w-auto px-6 py-3 text-white font-semibold rounded-full shadow-lg transition-all duration-300 ${isDisabled
               ? 'bg-gray-400 text-gray-500 cursor-not-allowed'
               : 'bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700'
-          }`}
+            }`}
         >
           <FaBox className="inline-block mr-2" /> {/* Ícono en el botón */}
           Agregar Clasificación
@@ -217,9 +218,8 @@ const ClasificacionH = () => {
               currentItems.map((item, index) => (
                 <tr
                   key={index}
-                  className={`bg-white border-b hover:bg-gray-50 ${
-                    index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
-                  }`}
+                  className={`bg-white border-b hover:bg-gray-50 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                    }`}
                 >
                   <td className="px-6 py-4 text-center">{item.tamano}</td>
                   <td className="px-6 py-4 text-center">{item.cajas}</td>
@@ -238,8 +238,12 @@ const ClasificacionH = () => {
                   </td>
                   <td className="px-6 py-4 text-center">
                     <button
+                      disabled={isDisabled}
                       onClick={() => handleEditClick(item)}
-                      className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-semibold rounded-lg shadow-md hover:from-yellow-400 hover:to-yellow-500 transition-all duration-300"
+                      className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-all duration-300 ${isDisabled
+                          ? 'bg-gray-400 text-gray-500 cursor-not-allowed'
+                          : 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white hover:from-yellow-400 hover:to-yellow-500'
+                        }`}
                     >
                       <FaEdit className="inline-block mr-2" /> {/* Ícono de editar */}
                       Editar
@@ -260,6 +264,7 @@ const ClasificacionH = () => {
       </div>
     </div>
   );
+
 };
 
 export default ClasificacionH;

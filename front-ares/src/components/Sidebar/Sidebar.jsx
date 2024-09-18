@@ -22,25 +22,25 @@ const HorizontalMenu = () => {
   };
 
   return (
-    <div className="bg-[#2d3748] text-white">
+    <div className="bg-gradient-to-r from-red-400 to-orange-300 text-white relative shadow-lg">
       {/* Botón del menú hamburguesa para pantallas pequeñas */}
       <div className="flex justify-between items-center p-4 sm:hidden">
-        <span className="text-xl font-bold">Menú</span>
+        <span className="text-xl font-extrabold">Menú</span>
         <button onClick={toggleMenu} className="focus:outline-none">
           {isOpen ? <FiX size={28} /> : <FiMenu size={28} />}
         </button>
       </div>
 
-      {/* Menú principal (desplegado o colapsado según el estado) */}
-      <nav className={`sm:flex ${isOpen ? 'block' : 'hidden'} sm:block`}>
+      {/* Menú principal centrado */}
+      <nav className={`sm:flex justify-center ${isOpen ? 'block' : 'hidden'} sm:block`}>
         <ul className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6 p-4 sm:items-center">
           <li>
-            <Link to="/dashboard" className="text-white hover:text-yellow-400 transition">
+            <Link to="/dashboard" className="text-black font-extrabold hover:text-yellow-300 transition duration-300 ease-in-out transform hover:scale-105">
               Dashboard
             </Link>
           </li>
           <li>
-            <Link to="/lotes" className="text-white hover:text-yellow-400 transition">
+            <Link to="/lotes" className="text-black font-extrabold hover:text-yellow-300 transition duration-300 ease-in-out transform hover:scale-105">
               Lotes
             </Link>
           </li>
@@ -50,24 +50,24 @@ const HorizontalMenu = () => {
             <li className="relative">
               <button
                 onClick={() => setOpenRazasCorral(!openRazasCorral)}
-                className="text-white hover:text-yellow-400 transition flex items-center"
+                className="text-black font-extrabold hover:text-yellow-300 transition duration-300 ease-in-out flex items-center"
               >
                 Gestión de Corrales y Razas {openRazasCorral ? <FiChevronUp /> : <FiChevronDown />}
               </button>
               {openRazasCorral && (
-                <ul className="absolute mt-2 bg-[#4a5568] rounded shadow-lg space-y-2 p-2">
+                <ul className="absolute z-10 bg-gradient-to-r from-red-400 to-orange-300 rounded-md shadow-md p-2 mt-2 left-0 space-y-2 w-48">
                   <li>
-                    <Link to="/corrales" className="block text-white hover:text-yellow-400 transition">
+                    <Link to="/corrales" className="block font-extrabold text-black hover:text-yellow-300 transition duration-300 ease-in-out transform hover:scale-105">
                       Corrales
                     </Link>
                   </li>
                   <li>
-                    <Link to="/razasg" className="block text-white hover:text-yellow-400 transition">
+                    <Link to="/razasg" className="block font-extrabold text-black hover:text-yellow-300 transition duration-300 ease-in-out transform hover:scale-105">
                       Raza de Gallina
                     </Link>
                   </li>
                   <li>
-                    <Link to="/gestion" className="block text-white hover:text-yellow-400 transition">
+                    <Link to="/gestion" className="block font-extrabold text-black hover:text-yellow-300 transition duration-300 ease-in-out transform hover:scale-105">
                       Gestión de Lotes
                     </Link>
                   </li>
@@ -81,24 +81,24 @@ const HorizontalMenu = () => {
             <li className="relative">
               <button
                 onClick={() => setOpenAdmin(!openAdmin)}
-                className="text-white hover:text-yellow-400 transition flex items-center"
+                className="text-black font-extrabold hover:text-yellow-300 transition duration-300 ease-in-out flex items-center"
               >
                 Gestión de Negocio {openAdmin ? <FiChevronUp /> : <FiChevronDown />}
               </button>
               {openAdmin && (
-                <ul className="absolute mt-2 bg-[#4a5568] rounded shadow-lg space-y-2 p-2">
+                <ul className="absolute z-10 bg-gradient-to-r from-red-400 to-orange-300 rounded-md shadow-md p-2 mt-2 left-0 space-y-2 w-48">
                   <li>
-                    <Link to="/cliente" className="block text-white hover:text-yellow-400 transition">
+                    <Link to="/cliente" className="block font-extrabold text-black hover:text-yellow-300 transition duration-300 ease-in-out transform hover:scale-105">
                       Clientes
                     </Link>
                   </li>
                   <li>
-                    <Link to="/producto" className="block text-white hover:text-yellow-400 transition">
+                    <Link to="/producto" className="block font-extrabold text-black hover:text-yellow-300 transition duration-300 ease-in-out transform hover:scale-105">
                       Productos
                     </Link>
                   </li>
                   <li>
-                    <Link to="/venta" className="block text-white hover:text-yellow-400 transition">
+                    <Link to="/venta" className="block font-extrabold text-black hover:text-yellow-300 transition duration-300 ease-in-out transform hover:scale-105">
                       Ventas
                     </Link>
                   </li>

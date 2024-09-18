@@ -196,10 +196,10 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
           )}
         </div>
 
-        <div className="flex justify-end mt-6">
+        <div className="flex flex-col sm:flex-row justify-end sm:space-x-2 mt-6 space-y-2 sm:space-y-0">
           <button
             type="submit"
-            className="px-4 py-2 font-semibold bg-green-600 text-white rounded-md shadow-md hover:bg-green-700 transition-all duration-300 flex items-center"
+            className="w-full sm:w-auto px-4 py-2 font-semibold bg-green-600 text-white rounded-md shadow-md hover:bg-green-700 transition-all duration-300 flex items-center justify-center"
             disabled={loading}
           >
             <FaSave className="mr-2" />
@@ -208,7 +208,7 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
           <button
             type="button"
             onClick={onCancel}
-            className="ml-2 px-4 py-2 font-semibold bg-yellow-500 text-white rounded-md shadow-md hover:bg-yellow-600 transition-all duration-300 flex items-center"
+            className="w-full sm:w-auto px-4 py-2 font-semibold bg-yellow-500 text-white rounded-md shadow-md hover:bg-yellow-600 transition-all duration-300 flex items-center justify-center"
           >
             <FaTimes className="mr-2" />
             Cancelar
@@ -223,12 +223,13 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
                 idEtapa: '',
               })
             }
-            className="ml-2 px-4 py-2 font-semibold bg-gray-500 text-white rounded-md shadow-md hover:bg-gray-600 transition-all duration-300 flex items-center"
+            className="w-full sm:w-auto px-4 py-2 font-semibold bg-gray-500 text-white rounded-md shadow-md hover:bg-gray-600 transition-all duration-300 flex items-center justify-center"
           >
             <FaBroom className="mr-2" />
             Limpiar
           </button>
         </div>
+
       </form>
     </div>
   );

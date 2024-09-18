@@ -56,7 +56,7 @@ const RazaG = () => {
           }}
           className={`px-6 py-3 text-white font-semibold rounded-full shadow-lg transition-all duration-300 ${
             showForm
-              ? 'bg-gray-400 text-gray-500 cursor-not-allowed'
+              ? 'bg-gradient-to-r from-red-500 to-red-700 hover:from-red-400 hover:to-red-600'
               : 'bg-gradient-to-r from-green-600 to-green-800 hover:from-green-500 hover:to-green-700'
           }`}
         >
