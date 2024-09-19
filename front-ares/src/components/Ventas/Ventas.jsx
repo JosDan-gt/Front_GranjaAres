@@ -180,39 +180,6 @@ const VentasActivas = () => {
         Ventas Activas
       </h2>
 
-      {/* Filtros arriba de la tabla */}
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
-        <div className="mb-4 sm:mb-0">
-          <label className="block text-sm font-medium text-gray-700">Cliente</label>
-          <select
-            value={selectedCliente}
-            onChange={(e) => setSelectedCliente(e.target.value)}
-            className="mt-1 block w-full sm:w-auto px-4 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-          >
-            <option value="">Todos</option>
-            {clientes.map((cliente) => (
-              <option key={cliente.clienteId} value={cliente.clienteId}>
-                {cliente.nombreCliente}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="mb-4 sm:mb-0">
-          <label className="block text-sm font-medium text-gray-700">Rango de Fecha</label>
-          <div className="flex space-x-2">
-            <DatePicker
-              selectsRange
-              startDate={startDate}
-              endDate={endDate}
-              onChange={(update) => setDateRange(update)}
-              className="px-4 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-              placeholderText="Seleccionar rango de fechas"
-              isClearable
-            />
-          </div>
-        </div>
-      </div>
 
       {/* Botón para agregar nueva venta */}
       <div className="flex justify-center mb-4">
@@ -236,6 +203,39 @@ const VentasActivas = () => {
 
       {/* Tabla de ventas */}
       <div className="overflow-x-auto max-w-full rounded-lg shadow-lg">
+        <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-4">
+          <div className="w-full sm:w-auto">
+            <label className="block text-sm font-medium text-gray-700 text-center">Cliente</label>
+            <select
+              value={selectedCliente}
+              onChange={(e) => setSelectedCliente(e.target.value)}
+              className=" block w-full sm:w-auto px-4 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+            >
+              <option value="">Todos</option>
+              {clientes.map((cliente) => (
+                <option key={cliente.clienteId} value={cliente.clienteId}>
+                  {cliente.nombreCliente}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="w-full sm:w-auto">
+            <label className="block text-sm font-medium text-gray-700 text-center">Rango de Fecha</label>
+            <div className="flex space-x-2">
+              <DatePicker
+                selectsRange
+                startDate={startDate}
+                endDate={endDate}
+                onChange={(update) => setDateRange(update)}
+                className="w-full sm:w-auto px-4 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                placeholderText="Seleccionar rango de fechas"
+                isClearable
+              />
+            </div>
+          </div>
+        </div>
+
         <table className="w-full text-sm text-left text-gray-700 bg-white rounded-lg">
           <thead className="text-xs text-white uppercase bg-gradient-to-r from-blue-600 to-blue-800">
             <tr>
@@ -326,11 +326,11 @@ const VentasActivas = () => {
       </div>
 
       {/* Botones de descarga de PDF */}
-      <div className="flex justify-end space-x-4 mt-4">
+      <div className="flex flex-col sm:flex-row sm:justify-center sm:space-x-4 space-y-4 sm:space-y-0 mt-4 text-center">
         <PDFDownloadLink
           document={<VentasGeneralesPDF ventas={ventas} detallesVentas={detallesVentas} clientes={clientes} productos={productos} />}
           fileName="reporte_ventas_generales.pdf"
-          className="flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-300 bg-blue-500 text-white hover:bg-blue-600"
+          className="flex items-center justify-center w-full sm:w-auto px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-300 bg-blue-500 text-white hover:bg-blue-600"
         >
           {({ loading }) => (
             <>
@@ -343,7 +343,7 @@ const VentasActivas = () => {
         <PDFDownloadLink
           document={<VentasPorClientePDF ventas={ventas} detallesVentas={detallesVentas} clientes={clientes} productos={productos} />}
           fileName="reporte_ventas_por_cliente.pdf"
-          className="flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-300 bg-blue-500 text-white hover:bg-blue-600"
+          className="flex items-center justify-center w-full sm:w-auto px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-300 bg-blue-500 text-white hover:bg-blue-600"
         >
           {({ loading }) => (
             <>
@@ -356,7 +356,7 @@ const VentasActivas = () => {
         <PDFDownloadLink
           document={<VentasPorFechaPDF ventas={ventas} detallesVentas={detallesVentas} clientes={clientes} productos={productos} fechaInicio={startDate} fechaFin={endDate} />}
           fileName="reporte_ventas_por_fechas.pdf"
-          className="flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-300 bg-blue-500 text-white hover:bg-blue-600"
+          className="flex items-center justify-center w-full sm:w-auto px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-300 bg-blue-500 text-white hover:bg-blue-600"
         >
           {({ loading }) => (
             <>
@@ -366,7 +366,6 @@ const VentasActivas = () => {
           )}
         </PDFDownloadLink>
       </div>
-
       {/* Paginación */}
       <Pagination totalPages={totalPages} currentPage={currentPage} paginate={goToPage} />
     </div>
