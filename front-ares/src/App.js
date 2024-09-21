@@ -1,8 +1,8 @@
+// App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
-import Sidebar from './components/Sidebar/Sidebar.jsx'; // Ajustar si es Sidebar horizontal
 import Dashboard from './components/Dashboard.jsx';
 import Lote from './components/Lote/Lote.jsx';
 import ClasificacionH from './components/Produccion/ClasificacionH.jsx';
@@ -35,17 +35,6 @@ const ErrorDisplay = () => {
   );
 };
 
-// Layout para las rutas protegidas que comparten la misma estructura (Header, Footer)
-const ProtectedLayout = ({ children }) => (
-  <div className="flex flex-col min-h-screen">
-    <Header />
-    <div className="flex-1 p-4 bg-gray-100">
-      {children}
-    </div>
-    <Footer />
-  </div>
-);
-
 function App() {
   return (
     <AuthProvider>
@@ -58,30 +47,35 @@ function App() {
 
             {/* Rutas protegidas */}
             <Route
-              path="*"
+              path="/*"
               element={
                 <ProtectedRoute>
-                  <ProtectedLayout>
-                    <Routes>
-                      <Route path="/dashboard" element={<Dashboard />} />
-                      <Route path="/lotes" element={<Lote />} />
-                      <Route path="/produccionG/:idLote" element={<ProduccionG />} />
-                      <Route path="/clasificacion/:id" element={<ClasificacionH />} />
-                      <Route path="/estado/:idLote" element={<EstadoLote />} />
-                      <Route path="/corrales" element={<Corral />} />
-                      <Route path="/razasg" element={<RazaG />} />
-                      <Route path="/gestion" element={<GestionLote />} />
-                      <Route path="/cliente" element={<Cliente />} />
-                      <Route path="/producto" element={<Producto />} />
-                      <Route path="/venta" element={<Ventas />} />
-                    </Routes>
-                  </ProtectedLayout>
+                  {/* Estructura centralizada de la aplicación */}
+                  <div className="flex flex-col min-h-screen">
+                    <Header />
+                    
+                    <div className="flex-1 p-4 bg-gray-100">
+                      <Routes>
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/lotes" element={<Lote />} />
+                        <Route path="/produccionG/:idLote" element={<ProduccionG />} />
+                        <Route path="/clasificacion/:id" element={<ClasificacionH />} />
+                        <Route path="/estado/:idLote" element={<EstadoLote />} />
+                        <Route path="/corrales" element={<Corral />} />
+                        <Route path="/razasg" element={<RazaG />} />
+                        <Route path="/gestion" element={<GestionLote />} />
+                        <Route path="/cliente" element={<Cliente />} />
+                        <Route path="/producto" element={<Producto />} />
+                        <Route path="/venta" element={<Ventas />} />
+                        {/* Ruta por defecto para manejar páginas no encontradas (404) */}
+                        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                      </Routes>
+                    </div>
+                    <Footer />
+                  </div>
                 </ProtectedRoute>
               }
             />
-
-            {/* Ruta por defecto para manejar páginas no encontradas (404) */}
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </Router>
       </ErrorProvider>

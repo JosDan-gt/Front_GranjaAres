@@ -14,7 +14,7 @@ const HorizontalMenu = () => {
   useEffect(() => {
     setOpenAdmin(false);
     setOpenRazasCorral(false);
-  }, [roles]);
+  }, [roles]);  
 
   // Alterna el menú hamburguesa
   const toggleMenu = () => {
