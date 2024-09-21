@@ -87,9 +87,9 @@ const ClienteForm = ({ onCancel, onSubmit, cliente }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Nombre del Cliente */}
-        <div>
+        <div className="col-span-1">
           <label className="block text-sm font-medium text-gray-700">Nombre del Cliente</label>
           <input
             type="text"
@@ -102,9 +102,9 @@ const ClienteForm = ({ onCancel, onSubmit, cliente }) => {
           />
           {errors.nombreCliente && <p className="text-xs mt-1 text-red-500">{errors.nombreCliente}</p>}
         </div>
-
+  
         {/* Teléfono */}
-        <div>
+        <div className="col-span-1">
           <label className="block text-sm font-medium text-gray-700">Teléfono</label>
           <input
             type="text"
@@ -128,9 +128,9 @@ const ClienteForm = ({ onCancel, onSubmit, cliente }) => {
           />
           {errors.telefono && <p className="text-xs mt-1 text-red-500">{errors.telefono}</p>}
         </div>
-
+  
         {/* Dirección */}
-        <div className="col-span-2">
+        <div className="col-span-1 md:col-span-2">
           <label className="block text-sm font-medium text-gray-700">Dirección</label>
           <textarea
             name="direccion"
@@ -144,7 +144,7 @@ const ClienteForm = ({ onCancel, onSubmit, cliente }) => {
           {errors.direccion && <p className="text-xs mt-1 text-red-500">{errors.direccion}</p>}
         </div>
       </div>
-
+  
       {/* Acciones del Formulario */}
       <div className="flex flex-col sm:flex-row justify-between mt-6 space-y-4 sm:space-y-0 sm:space-x-4">
         <button
@@ -155,7 +155,7 @@ const ClienteForm = ({ onCancel, onSubmit, cliente }) => {
         >
           <FaTimes className="inline-block mr-2" /> Cancelar
         </button>
-
+  
         <button
           type="button"
           onClick={handleClear}
@@ -164,7 +164,7 @@ const ClienteForm = ({ onCancel, onSubmit, cliente }) => {
         >
           <FaBroom className="inline-block mr-2" /> Limpiar
         </button>
-
+  
         <button
           type="submit"
           disabled={isDisabled}
@@ -175,6 +175,7 @@ const ClienteForm = ({ onCancel, onSubmit, cliente }) => {
       </div>
     </form>
   );
+  
 };
 
 export default ClienteForm;
