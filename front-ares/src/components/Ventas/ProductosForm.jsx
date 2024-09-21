@@ -56,10 +56,10 @@ const ProductoForm = ({ onCancel, onSubmit, producto }) => {
     try {
       if (producto) {
         // Actualizar producto existente
-        await axiosInstance.put('https://localhost:7249/api/Ventas/updProducto', { productoId: producto.productoId, ...formData });
+        await axiosInstance.put('api/Ventas/updProducto', { productoId: producto.productoId, ...formData });
       } else {
         // Insertar nuevo producto
-        await axiosInstance.post('https://localhost:7249/api/Ventas/InsertarProducto', formData);
+        await axiosInstance.post('api/Ventas/InsertarProducto', formData);
       }
       onSubmit(); // Llamar a la función onSubmit pasada como prop
     } catch (error) {
