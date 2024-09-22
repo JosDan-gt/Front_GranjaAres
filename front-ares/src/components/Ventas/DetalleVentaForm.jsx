@@ -11,7 +11,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
   const [formData, setFormData] = useState({
     clienteId: '',
     fechaVenta: '',
-    detallesVenta: [{ productoId: '', tipoEmpaque: 'Cartón', tamanoHuevo: 'Pequeño', cantidadVendida: 1, precioUnitario: 0 }],
+    detallesVenta: [{ productoId: '', tipoEmpaque: '', tamanoHuevo: '', cantidadVendida: 0, precioUnitario: 0 }],
   });
 
   const [fieldErrors, setFieldErrors] = useState({});
@@ -83,7 +83,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
     setFormData({
       clienteId: '',
       fechaVenta: '',
-      detallesVenta: [{ productoId: '', tipoEmpaque: 'Cartón', tamanoHuevo: 'Pequeño', cantidadVendida: 1, precioUnitario: 0 }],
+      detallesVenta: [{ productoId: '', tipoEmpaque: '', tamanoHuevo: '', cantidadVendida: 0, precioUnitario: 0 }],
     });
     setDireccionCliente('');
     setFieldErrors({});
