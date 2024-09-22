@@ -93,6 +93,11 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
     const errors = {};
     if (!formData.clienteId) errors.clienteId = 'Por favor, seleccione un cliente.';
     if (!formData.fechaVenta) errors.fechaVenta = 'Por favor, seleccione una fecha de venta.';
+    if (!formData.productoId) errors.fechaVenta = 'Por favor, seleccione al menos un producto.';
+    if (!formData.tipoEmpaque) errors.fechaVenta = 'Por favor, seleccione una opcion';
+    if (!formData.tamanoHuevo) errors.fechaVenta = 'Por favor, seleccione un tamaño ';
+    if (!formData.cantidadVendida || formData.cantidadVendida <= 0) errors.fechaVenta = 'Por favor, ingrese una cantidad';
+    if (!formData.precioUnitario || formData.precioUnitario <=0) errors.fechaVenta = 'Por favor, ingrese una cantidad';
     if (formData.detallesVenta.length === 0) errors.detallesVenta = 'Debe agregar al menos un detalle de venta.';
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
