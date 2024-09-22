@@ -5,9 +5,9 @@ import { FaSave, FaTimes, FaBroom } from 'react-icons/fa'; // Importar iconos
 const ProduccionForm = ({ item, idLote, onClose, refreshData }) => {
   const [formData, setFormData] = useState({
     idProd: '',
-    cantCajas: '',
-    cantCartones: '',
-    cantSueltos: '',
+    cantCajas: '0',
+    cantCartones: '0',
+    cantSueltos: '0',
     defectuosos: '',
     fechaRegistroP: '',
   });

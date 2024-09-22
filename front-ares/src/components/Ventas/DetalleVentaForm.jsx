@@ -39,7 +39,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
       setFormData({
         clienteId: venta.clienteId,
         fechaVenta: venta.fechaVenta,
-        detallesVenta: venta.detallesVenta || [{ productoId: '', tipoEmpaque: 'Cartón', tamanoHuevo: 'Pequeño', cantidadVendida: 1, precioUnitario: 0 }],
+        detallesVenta: venta.detallesVenta || [{ productoId: '', tipoEmpaque: '', tamanoHuevo: '', cantidadVendida: 0, precioUnitario: 0 }],
       });
       const clienteSeleccionado = clientes.find(cliente => cliente.clienteId === venta.clienteId);
       if (clienteSeleccionado) {

@@ -18,9 +18,9 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
 
   const [formData, setFormData] = useState({
     tamano: '',
-    cajas: '',
-    cartonesExtras: '',
-    huevosSueltos: '',
+    cajas: '0',
+    cartonesExtras: '0',
+    huevosSueltos: '0',
     fechaClaS: '',
     fechaProdu: '',
     idProd: null,
