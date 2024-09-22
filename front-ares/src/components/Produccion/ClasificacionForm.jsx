@@ -103,8 +103,8 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
     const { name, value } = e.target;
 
     if (name === 'tamano') {
-      const regex = /^[a-zA-Z\s]*$/;
-      if (!regex.test(value)) return;
+      const regex = /^[a-zA-Z\s]*$/; // Solo permite letras y espacios
+      if (!regex.test(value)) return; // Si no pasa la validación, no actualiza el estado
     }
 
     if (['cajas', 'cartonesExtras', 'huevosSueltos'].includes(name)) {
@@ -114,7 +114,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
 
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: value.trim(), // Asegúrate de que se elimina cualquier espacio innecesario
     });
   };
 
@@ -246,11 +246,12 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
                 <option value="Extra Grande">Extra Grande</option>
                 <option value="Grande">Grande</option>
                 <option value="Mediano">Mediano</option>
-                <option value="Pequeño">Pequeño</option>
+                <option value="Pequeno">Pequeño</option>
                 <option value="Pigui">Pigui</option>
               </select>
               {errors.tamano && <p className="text-red-500 text-xs mt-1">{errors.tamano}</p>}
             </div>
+
 
             {/* Cajas */}
             <div>
@@ -383,14 +384,14 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
             <div className="bg-green-50 p-4 rounded-md shadow-sm">
               <h4 className="font-semibold text-green-700 mb-2 flex items-center">
                 Cantidad Total Producción
-                <AiFillProduct  className="ml-2 text-blue-700" size={23} /> {/* Ícono */}
+                <AiFillProduct className="ml-2 text-blue-700" size={23} /> {/* Ícono */}
               </h4>
               <p className="text-green-900">{selectedProduccion.cantidadTotalProduccion}</p>
             </div>
             <div className="bg-green-50 p-4 rounded-md shadow-sm">
               <h4 className="font-semibold text-green-700 mb-2 flex items-center">
                 Stock Restante
-                <HiBuildingStorefront  className="ml-2 text-blue-700" size={23}/> {/* Ícono */}
+                <HiBuildingStorefront className="ml-2 text-blue-700" size={23} /> {/* Ícono */}
               </h4>
               <p className="text-green-900">{selectedProduccion.stockRestante}</p>
             </div>

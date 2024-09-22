@@ -263,7 +263,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
                   <option value="Extra Grande">Extra Grande</option>
                   <option value="Grande">Grande</option>
                   <option value="Mediano">Mediano</option>
-                  <option value="Pequeño">Pequeño</option>
+                  <option value="Pequeno">Pequeño</option>
                   <option value="Defectuosos">Defectuosos</option>
                 </select>
               </div>
