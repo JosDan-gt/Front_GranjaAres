@@ -103,19 +103,20 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
     const { name, value } = e.target;
 
     if (name === 'tamano') {
-      const regex = /^[a-zA-Z\s]*$/; // Solo permite letras y espacios
-      if (!regex.test(value)) return; // Si no pasa la validación, no actualiza el estado
+      const regex = /^[a-zA-ZñÑ\s]*$/;
+      if (!regex.test(value)) return;
     }
+
 
     if (['cajas', 'cartonesExtras', 'huevosSueltos'].includes(name)) {
       const regex = /^[0-9]*$/;
       if (!regex.test(value)) return;
     }
 
-    setFormData({
-      ...formData,
-      [name]: value.trim(), // Asegúrate de que se elimina cualquier espacio innecesario
-    });
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value, // Actualizamos siempre el valor del campo, incluso si es el mismo
+    }));
   };
 
   const handleFechaProduChange = (e) => {
@@ -234,19 +235,19 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {/* Tamaño */}
             <div>
-              <label className="block text-sm font-medium text-green-900 mb-1">Tamaño</label>
+              <label className="block text-sm font-medium text-gray-700">Tamaño Huevo</label>
               <select
+                className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
                 name="tamano"
                 value={formData.tamano}
                 onChange={handleChange}
-                className="w-full p-2 border border-green-700 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 disabled={!isAdminOrGestor}
               >
                 <option value="">Seleccione un tamaño</option>
                 <option value="Extra Grande">Extra Grande</option>
                 <option value="Grande">Grande</option>
                 <option value="Mediano">Mediano</option>
-                <option value="Pequeno">Pequeño</option>
+                <option value="Pequeño">Pequeño</option>
                 <option value="Pigui">Pigui</option>
               </select>
               {errors.tamano && <p className="text-red-500 text-xs mt-1">{errors.tamano}</p>}
