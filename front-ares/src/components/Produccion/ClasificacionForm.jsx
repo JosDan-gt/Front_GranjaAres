@@ -134,7 +134,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
 
   const validateForm = () => {
     const newErrors = {};
-    const regexLetters = /^[a-zA-Z\s]*$/;
+    const regexLetters = /^[a-zA-ZñÑ\s]*$/;
 
     if (!formData.tamano) {
       newErrors.tamano = 'Este campo es obligatorio.';
