@@ -257,6 +257,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
                   <option value="Caja">Caja</option>
                   <option value="Sueltos">Sueltos</option>
                 </select>
+                {fieldErrors.tipoEmpaque && <p className="text-xs mt-1 text-red-500">{fieldErrors.tipoEmpaque}</p>}
               </div>
 
               <div>
@@ -273,6 +274,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
                   <option value="Pequeño">Pequeño</option>
                   <option value="Defectuosos">Defectuosos</option>
                 </select>
+                {fieldErrors.tamanoHuevo && <p className="text-xs mt-1 text-red-500">{fieldErrors.tamanoHuevo}</p>}
               </div>
 
               <div>
@@ -283,6 +285,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
                   value={detalle.cantidadVendida}
                   onChange={(e) => handleDetailChange(index, 'cantidadVendida', e.target.value)}
                 />
+                {fieldErrors.cantidadVendida && <p className="text-xs mt-1 text-red-500">{fieldErrors.cantidadVendida}</p>}
               </div>
 
               <div>
@@ -293,6 +296,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
                   value={detalle.precioUnitario}
                   onChange={(e) => handleDetailChange(index, 'precioUnitario', e.target.value)}
                 />
+                {fieldErrors.precioUnitario && <p className="text-xs mt-1 text-red-500">{fieldErrors.precioUnitario}</p>}
               </div>
 
               <div className="flex items-center">
