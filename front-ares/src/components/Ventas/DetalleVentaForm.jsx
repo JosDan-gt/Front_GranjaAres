@@ -247,6 +247,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
                   value={detalle.tipoEmpaque}
                   onChange={(e) => handleDetailChange(index, 'tipoEmpaque', e.target.value)}
                 >
+                  <option value="">Seleccione Tipo de Empaque</option>
                   <option value="Cartón">Cartón</option>
                   <option value="Caja">Caja</option>
                   <option value="Sueltos">Sueltos</option>
@@ -260,6 +261,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
                   value={detalle.tamanoHuevo}
                   onChange={(e) => handleDetailChange(index, 'tamanoHuevo', e.target.value)}
                 >
+                  <option value="">Seleccione un Tamaño</option>
                   <option value="Extra Grande">Extra Grande</option>
                   <option value="Grande">Grande</option>
                   <option value="Mediano">Mediano</option>
