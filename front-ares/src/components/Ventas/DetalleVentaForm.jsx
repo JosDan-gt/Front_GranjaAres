@@ -230,92 +230,116 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
       </div>
 
       {/* Detalles de Venta */}
-      {formData.detallesVenta.map((detalle, index) => (
-        <div key={index} className="p-4 bg-gray-50 rounded-lg shadow-sm">
-          <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Producto</label>
-              <select
-                className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
-                value={detalle.productoId}
-                onChange={(e) => handleDetailChange(index, 'productoId', e.target.value)}
-              >
-                <option value="">Seleccione un producto</option>
-                {productos.map((producto) => (
-                  <option key={producto.productoId} value={producto.productoId}>
-                    {producto.nombreProducto}
-                  </option>
-                ))}
-              </select>
-              {fieldErrors[`productoId_${index}`] && (
-                <p className="text-xs mt-1 text-red-500">{fieldErrors[`productoId_${index}`]}</p>
-              )}
-            </div>
+      {/* Detalles de Venta */}
+      <div className="space-y-4">
+        {formData.detallesVenta.map((detalle, index) => (
+          <div key={index} className="p-4 bg-gray-50 rounded-lg shadow-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
+              {/* Producto */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Producto</label>
+                <select
+                  className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                  value={detalle.productoId}
+                  onChange={(e) => handleDetailChange(index, 'productoId', e.target.value)}
+                >
+                  <option value="">Seleccione un producto</option>
+                  {productos.map((producto) => (
+                    <option key={producto.productoId} value={producto.productoId}>
+                      {producto.nombreProducto}
+                    </option>
+                  ))}
+                </select>
+                {fieldErrors[`productoId_${index}`] && (
+                  <p className="text-xs mt-1 text-red-500">{fieldErrors[`productoId_${index}`]}</p>
+                )}
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Tipo Empaque</label>
-              <select
-                className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
-                value={detalle.tipoEmpaque}
-                onChange={(e) => handleDetailChange(index, 'tipoEmpaque', e.target.value)}
-              >
-                <option value="">Seleccione Tipo de Empaque</option>
-                <option value="Cartón">Cartón</option>
-                <option value="Caja">Caja</option>
-                <option value="Sueltos">Sueltos</option>
-              </select>
-              {fieldErrors[`tipoEmpaque_${index}`] && (
-                <p className="text-xs mt-1 text-red-500">{fieldErrors[`tipoEmpaque_${index}`]}</p>
-              )}
-            </div>
+              {/* Tipo Empaque */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Tipo Empaque</label>
+                <select
+                  className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                  value={detalle.tipoEmpaque}
+                  onChange={(e) => handleDetailChange(index, 'tipoEmpaque', e.target.value)}
+                >
+                  <option value="">Seleccione Tipo de Empaque</option>
+                  <option value="Cartón">Cartón</option>
+                  <option value="Caja">Caja</option>
+                  <option value="Sueltos">Sueltos</option>
+                </select>
+                {fieldErrors[`tipoEmpaque_${index}`] && (
+                  <p className="text-xs mt-1 text-red-500">{fieldErrors[`tipoEmpaque_${index}`]}</p>
+                )}
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Tamaño Huevo</label>
-              <select
-                className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
-                value={detalle.tamanoHuevo}
-                onChange={(e) => handleDetailChange(index, 'tamanoHuevo', e.target.value)}
-              >
-                <option value="">Seleccione un Tamaño</option>
-                <option value="Extra Grande">Extra Grande</option>
-                <option value="Grande">Grande</option>
-                <option value="Mediano">Mediano</option>
-                <option value="Pequeño">Pequeño</option>
-                <option value="Defectuosos">Defectuosos</option>
-              </select>
-              {fieldErrors[`tamanoHuevo_${index}`] && (
-                <p className="text-xs mt-1 text-red-500">{fieldErrors[`tamanoHuevo_${index}`]}</p>
-              )}
-            </div>
+              {/* Tamaño Huevo */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Tamaño Huevo</label>
+                <select
+                  className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                  value={detalle.tamanoHuevo}
+                  onChange={(e) => handleDetailChange(index, 'tamanoHuevo', e.target.value)}
+                >
+                  <option value="">Seleccione un Tamaño</option>
+                  <option value="Extra Grande">Extra Grande</option>
+                  <option value="Grande">Grande</option>
+                  <option value="Mediano">Mediano</option>
+                  <option value="Pequeño">Pequeño</option>
+                  <option value="Defectuosos">Defectuosos</option>
+                </select>
+                {fieldErrors[`tamanoHuevo_${index}`] && (
+                  <p className="text-xs mt-1 text-red-500">{fieldErrors[`tamanoHuevo_${index}`]}</p>
+                )}
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Cantidad Vendida</label>
-              <input
-                type="number"
-                className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
-                value={detalle.cantidadVendida}
-                onChange={(e) => handleDetailChange(index, 'cantidadVendida', e.target.value)}
-              />
-              {fieldErrors[`cantidadVendida_${index}`] && (
-                <p className="text-xs mt-1 text-red-500">{fieldErrors[`cantidadVendida_${index}`]}</p>
-              )}
-            </div>
+              {/* Cantidad Vendida */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Cantidad Vendida</label>
+                <input
+                  type="number"
+                  className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                  value={detalle.cantidadVendida}
+                  onChange={(e) => handleDetailChange(index, 'cantidadVendida', e.target.value)}
+                />
+                {fieldErrors[`cantidadVendida_${index}`] && (
+                  <p className="text-xs mt-1 text-red-500">{fieldErrors[`cantidadVendida_${index}`]}</p>
+                )}
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Precio Unitario (Q)</label>
-              <input
-                type="number"
-                className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
-                value={detalle.precioUnitario}
-                onChange={(e) => handleDetailChange(index, 'precioUnitario', e.target.value)}
-              />
-              {fieldErrors[`precioUnitario_${index}`] && (
-                <p className="text-xs mt-1 text-red-500">{fieldErrors[`precioUnitario_${index}`]}</p>
-              )}
+              {/* Precio Unitario */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Precio Unitario (Q)</label>
+                <input
+                  type="number"
+                  className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                  value={detalle.precioUnitario}
+                  onChange={(e) => handleDetailChange(index, 'precioUnitario', e.target.value)}
+                />
+                {fieldErrors[`precioUnitario_${index}`] && (
+                  <p className="text-xs mt-1 text-red-500">{fieldErrors[`precioUnitario_${index}`]}</p>
+                )}
+              </div>
+
+              {/* Botón para eliminar detalle */}
+              <div className="flex items-center">
+                <button type="button" onClick={() => handleRemoveDetail(index)} className="text-red-600">
+                  <FaTrashAlt className="inline-block mr-2" /> Eliminar
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+
+        {/* Botón para agregar un nuevo detalle */}
+        <button
+          type="button"
+          onClick={handleAddDetail}
+          className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4"
+        >
+          <FaPlus className="inline-block mr-2" /> Agregar Detalle
+        </button>
+      </div>
 
 
       {/* Acciones del Formulario */}
