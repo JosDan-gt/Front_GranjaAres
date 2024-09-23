@@ -143,15 +143,15 @@ const LotesActivos = ({ reloadFlag, triggerReload }) => {
         />
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-8">
         {lotes.map((lote) => (
           <div key={lote.idLote} className="bg-white rounded-lg shadow-xl p-6 hover:shadow-2xl transition-shadow duration-300 transform hover:scale-105">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-2xl text-gray-800 font-extrabold">Lote {lote.numLote}</h3>
+              <h3 className="text-2xl text-gray-800 font-extrabold">{lote.numLote}</h3>
               <GiChicken className="text-black text-3xl" />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center">
               <div className="bg-blue-100 p-4 rounded-lg shadow-md">
                 <p className="text-sm font-semibold text-gray-800">Cantidad Inicial</p>
                 <p className="text-lg font-bold text-blue-600">{lote.cantidadGctual}</p>
@@ -160,11 +160,14 @@ const LotesActivos = ({ reloadFlag, triggerReload }) => {
                 <p className="text-sm font-semibold text-gray-800">Cantidad Actual</p>
                 <p className="text-lg font-bold text-green-600">{lote.cantidadG}</p>
               </div>
-              <div className="bg-yellow-100 p-4 rounded-lg shadow-md">
+              <div className="bg-yellow-100 p-4 rounded-lg shadow-md sm:col-span-2">
                 <p className="text-sm font-semibold text-gray-800">Fecha de Adquisición</p>
                 <p className="text-lg font-bold text-yellow-600">{new Date(lote.fechaAdq).toLocaleDateString()}</p>
               </div>
             </div>
+
+
+
 
             <label className="block text-sm font-medium text-gray-700 mt-6">Acciones</label>
             <select
@@ -180,7 +183,7 @@ const LotesActivos = ({ reloadFlag, triggerReload }) => {
 
 
             {isAdmin && (
-              <div className="flex flex-col mt-6 space-y-3">
+              <div className="flex flex-col space-y-3 md:space-y-2 md:flex-col lg:flex-row lg:space-x-3 mt-6">
                 <button
                   onClick={() => handleEdit(lote)}
                   className="flex items-center space-x-2 px-3 py-2 bg-yellow-500 text-white font-semibold rounded-lg shadow-lg hover:bg-yellow-600 transition"
@@ -201,6 +204,8 @@ const LotesActivos = ({ reloadFlag, triggerReload }) => {
                 </button>
               </div>
             )}
+
+
           </div>
         ))}
       </div>

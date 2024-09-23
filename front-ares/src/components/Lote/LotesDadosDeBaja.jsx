@@ -80,11 +80,11 @@ const LotesDadosDeBaja = ({ reloadFlag, triggerReload }) => {
                 {lotesDadosDeBaja.map((lote) => (
                     <div key={lote.idLote} className="bg-white rounded-lg shadow-xl p-6 hover:shadow-2xl transition-shadow duration-300 transform hover:scale-105">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-2xl font-extrabold text-red-800">Lote {lote.numLote}</h3>
+                            <h3 className="text-2xl font-extrabold text-red-800">{lote.numLote}</h3>
                             <IoIosAlert className="text-red-600 text-3xl" />
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center">
                             <div className="bg-gray-100 p-4 rounded-lg shadow-md">
                                 <p className="text-sm font-semibold text-gray-700">Cantidad</p>
                                 <p className="text-lg font-bold text-gray-600">{lote.cantidadG}</p>
@@ -94,6 +94,7 @@ const LotesDadosDeBaja = ({ reloadFlag, triggerReload }) => {
                                 <p className="text-lg font-bold text-gray-600">{new Date(lote.fechaAdq).toLocaleDateString()}</p>
                             </div>
                         </div>
+
 
                         <label className="block text-sm font-medium text-gray-800 mt-6">Acciones</label>
                         <select

@@ -52,15 +52,17 @@ const ClasificacionGrafica = ({ idLote, period }) => {
 
   const getColorForTamano = (tamano, transparent = false) => {
     const colors = {
-      'Pigui': 'rgba(139, 69, 19, 1)', // Marrón
-      'Pequeño': 'rgba(85, 107, 47, 1)', // Verde oliva
-      'Mediano': 'rgba(218, 165, 32, 1)', // Dorado
-      'Grande': 'rgba(107, 142, 35, 1)', // Verde oscuro
-      'Extra Grande': 'rgba(154, 205, 50, 1)', // Verde amarillento
+      'Pigui': 'rgba(0, 123, 255, 1)',    // Azul profundo
+      'Pequeño': 'rgba(0, 200, 150, 1)',  // Verde azulado
+      'Mediano': 'rgba(255, 193, 7, 1)',  // Amarillo dorado
+      'Grande': 'rgba(40, 167, 69, 1)',   // Verde brillante
+      'Extra Grande': 'rgba(220, 53, 69, 1)', // Rojo oscuro
     };
-    const color = colors[tamano] || 'rgba(160, 82, 45, 1)'; // Marrón oscuro por defecto
-    return transparent ? color.replace('1)', '0.2)') : color;
+    const color = colors[tamano] || 'rgba(108, 117, 125, 1)'; // Gris por defecto
+    return transparent ? color.replace('1)', '0.3)') : color;
   };
+
+
 
   const classificationChart = processClassificationChartData();
 
@@ -69,15 +71,24 @@ const ClasificacionGrafica = ({ idLote, period }) => {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'top',
+        position: 'bottom',
+        labels: {
+          font: {
+            family: "'Helvetica Neue', sans-serif", // Tipografía moderna y limpia
+            size: 12,
+            color: '#333',
+          },
+          boxWidth: 10, // Caja de leyenda más pequeña
+          padding: 20,  // Espaciado mayor entre etiquetas
+        },
       },
       title: {
         display: true,
         text: `Clasificación (${period.charAt(0).toUpperCase() + period.slice(1)})`,
         font: {
           size: 18,
-          family: "'Comic Sans MS', cursive, sans-serif", // Tipografía amigable
-          color: '#3e3e3e',
+          family: "'Helvetica Neue', sans-serif",
+          color: '#333',
         },
       },
     },
@@ -88,10 +99,13 @@ const ClasificacionGrafica = ({ idLote, period }) => {
           display: true,
           text: 'Fecha',
           font: {
-            size: 14,
-            family: "'Comic Sans MS', cursive, sans-serif",
-            color: '#3e3e3e',
+            size: 12,
+            family: "'Helvetica Neue', sans-serif",
+            color: '#333',
           },
+        },
+        grid: {
+          display: false, // Eliminar las líneas del grid en el eje X
         },
       },
       y: {
@@ -99,14 +113,19 @@ const ClasificacionGrafica = ({ idLote, period }) => {
           display: true,
           text: 'Cantidad',
           font: {
-            size: 14,
-            family: "'Comic Sans MS', cursive, sans-serif",
-            color: '#3e3e3e',
+            size: 12,
+            family: "'Helvetica Neue', sans-serif",
+            color: '#333',
           },
+        },
+        grid: {
+          color: 'rgba(108, 117, 125, 0.1)', // Líneas de grid muy suaves
         },
       },
     },
   };
+
+
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-lg border border-green-600">

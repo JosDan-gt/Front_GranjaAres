@@ -34,18 +34,18 @@ const ProduccionGrafica = ({ idLote, period }) => {
       {
         label: 'Producción',
         data: productionData.map(d => d.produccion),
-        borderColor: 'rgba(107, 142, 35, 1)', // Verde oscuro
-        backgroundColor: 'rgba(107, 142, 35, 0.2)',
-        fill: true,
-        tension: 0.4,
+        borderColor: 'rgba(0, 123, 255, 1)',    // Azul profundo
+        backgroundColor: 'rgba(0, 123, 255, 0.2)',  // Fondo transparente
+        fill: false,  // Sin relleno
+        tension: 0,   // Líneas rectas
       },
       {
         label: 'Defectuosos',
         data: productionData.map(d => d.defectuosos),
-        borderColor: 'rgba(139, 69, 19, 1)', // Marrón
-        backgroundColor: 'rgba(139, 69, 19, 0.2)',
-        fill: true,
-        tension: 0.4,
+        borderColor: 'rgba(220, 53, 69, 1)', // Rojo oscuro
+        backgroundColor: 'rgba(220, 53, 69, 0.2)',
+        fill: false,  // Sin relleno
+        tension: 0,   // Líneas rectas
       },
     ],
   };
@@ -55,9 +55,15 @@ const ProduccionGrafica = ({ idLote, period }) => {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'top',
+        position: 'bottom', // Leyenda en la parte inferior
         labels: {
-          color: '#3e3e3e', // Color natural para las etiquetas de la leyenda
+          font: {
+            family: "'Helvetica Neue', sans-serif", // Tipografía minimalista
+            size: 12,
+            color: '#333',
+          },
+          boxWidth: 10, // Tamaño reducido de la caja de leyenda
+          padding: 20,  // Espaciado entre etiquetas
         },
       },
       title: {
@@ -65,8 +71,8 @@ const ProduccionGrafica = ({ idLote, period }) => {
         text: `Producción y Defectuosos (${period.charAt(0).toUpperCase() + period.slice(1)})`,
         font: {
           size: 18,
-          family: "'Comic Sans MS', cursive, sans-serif", // Estilo amigable y natural
-          color: '#3e3e3e',
+          family: "'Helvetica Neue', sans-serif", // Tipografía limpia y profesional
+          color: '#333',
         },
       },
     },
@@ -77,10 +83,13 @@ const ProduccionGrafica = ({ idLote, period }) => {
           display: true,
           text: 'Fecha',
           font: {
-            size: 14,
-            family: "'Comic Sans MS', cursive, sans-serif",
-            color: '#3e3e3e',
+            size: 12,
+            family: "'Helvetica Neue', sans-serif",
+            color: '#333',
           },
+        },
+        grid: {
+          display: false, // Ocultar líneas del grid en el eje X
         },
       },
       y: {
@@ -88,10 +97,13 @@ const ProduccionGrafica = ({ idLote, period }) => {
           display: true,
           text: 'Cantidad',
           font: {
-            size: 14,
-            family: "'Comic Sans MS', cursive, sans-serif",
-            color: '#3e3e3e',
+            size: 12,
+            family: "'Helvetica Neue', sans-serif",
+            color: '#333',
           },
+        },
+        grid: {
+          color: 'rgba(108, 117, 125, 0.1)', // Líneas de grid discretas en el eje Y
         },
       },
     },
