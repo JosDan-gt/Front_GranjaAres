@@ -127,11 +127,10 @@ const EstadoLote = () => {
           <button
             key={number}
             onClick={() => paginate(number)}
-            className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-all duration-300 focus:outline-none ${
-              currentPage === number
+            className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-all duration-300 focus:outline-none ${currentPage === number
                 ? 'bg-gradient-to-r from-blue-600 to-blue-800 text-white'
                 : 'bg-white text-blue-700 border border-gray-300 hover:bg-blue-100 hover:text-blue-900'
-            }`}
+              }`}
           >
             {number}
           </button>
@@ -210,7 +209,8 @@ const EstadoLote = () => {
                   <td className="px-6 py-4 text-center">{estado.cantidadG}</td>
                   <td className="px-6 py-4 text-center">{estado.bajas}</td>
                   <td className="px-6 py-4 text-center">{estado.semana}</td>
-                  <td className="px-6 py-4 text-center">{estado.idEtapa === 1 ? 'Crianza' : 'Desarrollo'}</td>
+                  <td className="px-6 py-4 text-center">{estado.nombreEtapa}</td>
+
                   <td className="px-6 py-4 text-center">
                     <button
                       onClick={() => handleEdit(estado)}
