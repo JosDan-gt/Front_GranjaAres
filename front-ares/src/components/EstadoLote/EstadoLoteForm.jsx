@@ -9,7 +9,7 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
     semana: '',
     idEtapa: '',
   });
-  const [etapas, setEtapas] = useState([]);
+  const [etapas, setEtapas] = useState([]); // Inicializa etapas como un array vacío
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -28,17 +28,17 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
     const fetchEtapas = async () => {
       try {
         const response = await axiosInstance.get('/getetapas');
-        setEtapas(response.data);
+        setEtapas(response.data); // Guarda las etapas en el estado
       } catch (error) {
         console.error('Error fetching etapas:', error);
       }
     };
 
     fetchEtapas();
-  }, []);
+  }, []); // No es necesario agregar setEtapas como dependencia
 
   useEffect(() => {
-    resetFormData();
+    resetFormData(); // Resetea los datos del formulario cuando cambia estadoData
   }, [estadoData]);
 
   const handleChange = (e) => {
@@ -102,7 +102,7 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
         semana: '',
         idEtapa: '',
       });
-      onCancel(); // Cambiar onClose por onCancel
+      onCancel();
       onSubmit();
     } catch (error) {
       if (error.response && error.response.data) {
@@ -229,7 +229,6 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
             Limpiar
           </button>
         </div>
-
       </form>
     </div>
   );

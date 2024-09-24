@@ -11,7 +11,6 @@ import { TbBuildingEstate } from "react-icons/tb";
 
 const EstadoLote = () => {
   const { idLote } = useParams();
-  const [estadoLote, setEstadoLote] = useState([]);
   const [selectedEstado, setSelectedEstado] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -22,6 +21,8 @@ const EstadoLote = () => {
   const location = useLocation();
   const { estadoBaja } = location.state || {};
   const [loading, setLoading] = useState(true);
+  const [estadoLote, setEstadoLote] = useState([]);
+  const [etapas, setEtapas] = useState([]);
 
   const isDisabled = estadoBaja !== undefined ? estadoBaja : false;
 
@@ -30,12 +31,21 @@ const EstadoLote = () => {
       try {
         setLoading(true);
         const response = await axiosInstance.get(`/getestadolote?idLote=${idLote}`);
+        console.log(response.data); // Verifica qué datos estás recibiendo
         const sortedData = response.data.sort((a, b) => new Date(b.fechaRegistro) - new Date(a.fechaRegistro));
         setEstadoLote(sortedData);
       } catch (error) {
         console.error('Error fetching estadoLote:', error);
       } finally {
         setLoading(false);
+      }
+    };
+    const fetchEtapas = async () => {
+      try {
+        const response = await axiosInstance.get('/getetapas'); // Llama al endpoint que trae las etapas
+        setEtapas(response.data);
+      } catch (error) {
+        console.error('Error fetching etapas:', error);
       }
     };
 
@@ -51,8 +61,10 @@ const EstadoLote = () => {
     if (idLote) {
       fetchEstadoLote();
       fetchLoteStatus();
+      fetchEtapas();
     }
   }, [idLote]);
+
 
   const handleAddNew = () => {
     setSelectedEstado(null);
@@ -94,6 +106,7 @@ const EstadoLote = () => {
     }
   };
 
+
   const totalPages = Math.ceil(estadoLote.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -128,8 +141,8 @@ const EstadoLote = () => {
             key={number}
             onClick={() => paginate(number)}
             className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-all duration-300 focus:outline-none ${currentPage === number
-                ? 'bg-gradient-to-r from-blue-600 to-blue-800 text-white'
-                : 'bg-white text-blue-700 border border-gray-300 hover:bg-blue-100 hover:text-blue-900'
+              ? 'bg-gradient-to-r from-blue-600 to-blue-800 text-white'
+              : 'bg-white text-blue-700 border border-gray-300 hover:bg-blue-100 hover:text-blue-900'
               }`}
           >
             {number}
@@ -203,38 +216,45 @@ const EstadoLote = () => {
                 <td colSpan="6" className="py-4 text-center text-gray-500">Cargando...</td>
               </tr>
             ) : currentItems.length ? (
-              currentItems.map((estado) => (
-                <tr key={estado.idEstado} className="border-b hover:bg-gray-50">
-                  <td className="px-6 py-4 text-center">{new Date(estado.fechaRegistro).toLocaleDateString()}</td>
-                  <td className="px-6 py-4 text-center">{estado.cantidadG}</td>
-                  <td className="px-6 py-4 text-center">{estado.bajas}</td>
-                  <td className="px-6 py-4 text-center">{estado.semana}</td>
-                  <td className="px-6 py-4 text-center">{estado.nombreEtapa}</td>
+              currentItems.map((estado) => {
+                // Encuentra el nombre de la etapa correspondiente al idEtapa
+                const etapa = etapas.find((e) => e.idEtapa === estado.idEtapa);
+                const nombreEtapa = etapa ? etapa.nombre : 'Etapa desconocida'; // Muestra 'Etapa desconocida' si no encuentra la etapa
 
-                  <td className="px-6 py-4 text-center">
-                    <button
-                      onClick={() => handleEdit(estado)}
-                      disabled={isDisabled}
-                      className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-colors duration-300 ${isDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-yellow-500 text-white hover:bg-yellow-600'}`}
-                    >
-                      <FaEdit className="inline-block mr-1" /> Editar
-                    </button>
-                    <button
-                      onClick={() => handleDelete(estado.idEstado)}
-                      disabled={isDisabled}
-                      className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-colors duration-300 ${isDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 text-white hover:bg-red-600'}`}
-                    >
-                      <FaTrash className="inline-block mr-1" /> Eliminar
-                    </button>
-                  </td>
-                </tr>
-              ))
+                return (
+                  <tr key={estado.idEstado} className="border-b hover:bg-gray-50">
+                    <td className="px-6 py-4 text-center">{new Date(estado.fechaRegistro).toLocaleDateString()}</td>
+                    <td className="px-6 py-4 text-center">{estado.cantidadG}</td>
+                    <td className="px-6 py-4 text-center">{estado.bajas}</td>
+                    <td className="px-6 py-4 text-center">{estado.semana}</td>
+                    <td className="px-6 py-4 text-center">{nombreEtapa}</td> {/* Muestra el nombre de la etapa */}
+                    <td className="px-6 py-4 text-center">
+                      <button
+                        onClick={() => handleEdit(estado)}
+                        disabled={isDisabled}
+                        className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-colors duration-300 ${isDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-yellow-500 text-white hover:bg-yellow-600'}`}
+                      >
+                        <FaEdit className="inline-block mr-1" /> Editar
+                      </button>
+                      <button
+                        onClick={() => handleDelete(estado.idEstado)}
+                        disabled={isDisabled}
+                        className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-colors duration-300 ${isDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 text-white hover:bg-red-600'}`}
+                      >
+                        <FaTrash className="inline-block mr-1" /> Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
                 <td colSpan="6" className="py-4 text-center text-gray-500">No hay registros de estado disponibles.</td>
               </tr>
             )}
           </tbody>
+
+
         </table>
       </div>
 
