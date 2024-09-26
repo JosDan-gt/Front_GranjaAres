@@ -18,6 +18,7 @@ import Producto from './components/Ventas/Producto.jsx';
 import Ventas from './components/Ventas/Ventas.jsx';
 import RazaG from './components/Razas/RazasG.jsx';
 import ProduccionG from './components/Produccion/ProduccionG.jsx';
+import Usuarios from './components/Perfiles/Usuario.jsx';
 
 // Componente para mostrar errores globalmente
 const ErrorDisplay = () => {
@@ -67,6 +68,7 @@ function App() {
                         <Route path="/cliente" element={<Cliente />} />
                         <Route path="/producto" element={<Producto />} />
                         <Route path="/venta" element={<Ventas />} />
+                        <Route path="/usuario" element={<Usuarios />} />
                         {/* Ruta por defecto para manejar páginas no encontradas (404) */}
                         <Route path="*" element={<Navigate to="/dashboard" replace />} />
                       </Routes>

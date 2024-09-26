@@ -71,6 +71,11 @@ const HorizontalMenu = () => {
                       Gestión de Lotes
                     </Link>
                   </li>
+                  <li>
+                    <Link to="/usuario" className="block font-extrabold text-black hover:text-yellow-300 transition duration-300 ease-in-out transform hover:scale-105">
+                      Usuarios
+                    </Link>
+                  </li>
                 </ul>
               )}
             </li>
