@@ -11,11 +11,23 @@ const LoteSelector = ({ onSelectLote }) => {
     const fetchLotes = async () => {
       try {
         const response = await axiosInstance.get(`/api/lotes?dadosDeBaja=${dadosDeBaja}`);
-        setLotes(response.data);
-        if (response.data.length > 0) {
-          const firstLote = response.data[0].idLote;
+        console.log(response.data); // Revisa la estructura de los datos
+
+        
+        // Verificar que el campo estado esté presente y sea diferente de 0
+        const filteredLotes = response.data.filter(lote => {
+          // Asegurarse de que lote.estado sea distinto de 0
+          return lote.estado !== false;
+        });
+
+        setLotes(filteredLotes);
+        if (filteredLotes.length > 0) {
+          const firstLote = filteredLotes[0].idLote;
           setSelectedLote(firstLote); // Establece el primer lote en el estado
           onSelectLote(firstLote); // Selecciona el primer lote automáticamente
+        } else {
+          setSelectedLote(''); // No selecciona ningún lote si no hay disponibles
+          onSelectLote(''); // No selecciona ningún lote si no hay disponibles
         }
       } catch (error) {
         console.error('Error fetching lotes:', error);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../axiosInstance';
-import { FaSave, FaTimes, FaBroom } from 'react-icons/fa'; // Importar iconos
+import { FaSave, FaTimes, FaBroom } from 'react-icons/fa';
 
 const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isDisabled }) => {
   const [formData, setFormData] = useState({
@@ -8,8 +8,9 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
     fechaRegistro: '',
     semana: '',
     idEtapa: '',
+    descripcion: '', // Nuevo campo de descripción
   });
-  const [etapas, setEtapas] = useState([]); // Inicializa etapas como un array vacío
+  const [etapas, setEtapas] = useState([]);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -20,6 +21,7 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
         fechaRegistro: estadoData.fechaRegistro ? estadoData.fechaRegistro.split('T')[0] : '',
         semana: estadoData.semana.toString(),
         idEtapa: estadoData.idEtapa.toString(),
+        descripcion: estadoData.descripcion || '', // Inicializar la descripción
       });
     }
   };
@@ -28,17 +30,17 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
     const fetchEtapas = async () => {
       try {
         const response = await axiosInstance.get('/getetapas');
-        setEtapas(response.data); // Guarda las etapas en el estado
+        setEtapas(response.data);
       } catch (error) {
         console.error('Error fetching etapas:', error);
       }
     };
 
     fetchEtapas();
-  }, []); // No es necesario agregar setEtapas como dependencia
+  }, []);
 
   useEffect(() => {
-    resetFormData(); // Resetea los datos del formulario cuando cambia estadoData
+    resetFormData();
   }, [estadoData]);
 
   const handleChange = (e) => {
@@ -63,6 +65,9 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
     if (!isEditing && !formData.fechaRegistro) {
       newErrors.fechaRegistro = 'El campo Fecha de Registro es obligatorio.';
     }
+    if (!formData.descripcion) {
+      newErrors.descripcion = 'El campo Descripción es obligatorio.';
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -83,6 +88,7 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
           semana: parseInt(formData.semana, 10),
           idEtapa: parseInt(formData.idEtapa, 10),
           idLote: idLote,
+          descripcion: formData.descripcion, // Enviar descripción al backend
         });
         alert('Estado del lote actualizado exitosamente.');
       } else {
@@ -92,6 +98,7 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
           semana: parseInt(formData.semana, 10),
           idEtapa: parseInt(formData.idEtapa, 10),
           idLote: idLote,
+          descripcion: formData.descripcion, // Enviar descripción al backend
         });
         alert('Estado del lote creado exitosamente.');
       }
@@ -101,6 +108,7 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
         fechaRegistro: '',
         semana: '',
         idEtapa: '',
+        descripcion: '', // Resetear descripción
       });
       onCancel();
       onSubmit();
@@ -168,6 +176,17 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
             </select>
             {errors.idEtapa && <p className="text-xs mt-1 text-red-600">{errors.idEtapa}</p>}
           </div>
+          <div className="col-span-1 sm:col-span-2 md:col-span-3">
+            <label className="block text-sm font-semibold mb-1 text-blue-900">Descripción</label>
+            <textarea
+              name="descripcion"
+              value={formData.descripcion}
+              onChange={handleChange}
+              className="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
+              placeholder="Ingrese una descripción"
+            />
+            {errors.descripcion && <p className="text-xs mt-1 text-red-600">{errors.descripcion}</p>}
+          </div>
           {!isEditing && (
             <div>
               <label className="block text-sm font-semibold mb-1 text-blue-900">Fecha de Registro</label>
@@ -221,6 +240,7 @@ const EstadoLoteForm = ({ estadoData, isEditing, onSubmit, onCancel, idLote, isD
                 fechaRegistro: '',
                 semana: '',
                 idEtapa: '',
+                descripcion: '', // Resetear descripción
               })
             }
             className="w-full sm:w-auto px-4 py-2 font-semibold bg-gray-500 text-white rounded-md shadow-md hover:bg-gray-600 transition-all duration-300 flex items-center justify-center"

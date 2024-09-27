@@ -2,12 +2,11 @@ import React, { useEffect, useState } from 'react';
 import axiosInstance from '../axiosInstance';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import EstadoLoteForm from './EstadoLoteForm';
-import { FaCalendarAlt, FaEdit, FaTrash, FaEgg, FaSortUp, FaSortDown, FaBox } from 'react-icons/fa';
+import { FaCalendarAlt, FaEdit, FaTrash } from 'react-icons/fa';
+import { GiEggClutch } from 'react-icons/gi';
+import { LuReplace } from 'react-icons/lu';
 import { MdRealEstateAgent } from "react-icons/md";
-import { LuReplace } from "react-icons/lu";
-import { GiEggClutch } from "react-icons/gi";
 import { TbBuildingEstate } from "react-icons/tb";
-
 
 const EstadoLote = () => {
   const { idLote } = useParams();
@@ -23,6 +22,8 @@ const EstadoLote = () => {
   const [loading, setLoading] = useState(true);
   const [estadoLote, setEstadoLote] = useState([]);
   const [etapas, setEtapas] = useState([]);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   const isDisabled = estadoBaja !== undefined ? estadoBaja : false;
 
@@ -31,7 +32,6 @@ const EstadoLote = () => {
       try {
         setLoading(true);
         const response = await axiosInstance.get(`/getestadolote?idLote=${idLote}`);
-        console.log(response.data); // Verifica qué datos estás recibiendo
         const sortedData = response.data.sort((a, b) => new Date(b.fechaRegistro) - new Date(a.fechaRegistro));
         setEstadoLote(sortedData);
       } catch (error) {
@@ -40,9 +40,10 @@ const EstadoLote = () => {
         setLoading(false);
       }
     };
+
     const fetchEtapas = async () => {
       try {
-        const response = await axiosInstance.get('/getetapas'); // Llama al endpoint que trae las etapas
+        const response = await axiosInstance.get('/getetapas');
         setEtapas(response.data);
       } catch (error) {
         console.error('Error fetching etapas:', error);
@@ -64,7 +65,6 @@ const EstadoLote = () => {
       fetchEtapas();
     }
   }, [idLote]);
-
 
   const handleAddNew = () => {
     setSelectedEstado(null);
@@ -106,12 +106,6 @@ const EstadoLote = () => {
     }
   };
 
-
-  const totalPages = Math.ceil(estadoLote.length / itemsPerPage);
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = estadoLote.slice(indexOfFirstItem, indexOfLastItem);
-
   const handleFormSubmit = () => {
     setShowForm(false);
     setIsEditing(false);
@@ -126,6 +120,28 @@ const EstadoLote = () => {
       }
     };
     fetchEstadoLote();
+  };
+
+  const handleFilterByDate = () => {
+    const filteredData = estadoLote.filter((estado) => {
+      const fecha = new Date(estado.fechaRegistro);
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      return (!startDate || fecha >= start) && (!endDate || fecha <= end);
+    });
+    setEstadoLote(filteredData);
+  };
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const totalPages = Math.ceil(estadoLote.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = estadoLote.slice(indexOfFirstItem, indexOfLastItem);
+
+  const isMostRecent = (estado) => {
+    const mostRecent = estadoLote[0]; // El primer elemento tras ordenar es el más reciente
+    return mostRecent && estado.idEstado === mostRecent.idEstado;
   };
 
   const Pagination = ({ totalPages, currentPage, paginate }) => {
@@ -152,8 +168,6 @@ const EstadoLote = () => {
     );
   };
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
   return (
     <div className="p-6 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 shadow-xl rounded-xl">
       <div className="flex justify-start mb-6 text-lg items-center">
@@ -171,6 +185,8 @@ const EstadoLote = () => {
       <h2 className="text-3xl font-extrabold text-gray-800 mb-6 text-center tracking-wider">
         <MdRealEstateAgent className="inline-block mb-2 text-blue-700" /> Estado del Lote
       </h2>
+
+
 
       {!isLoteBaja && (
         <div className="flex justify-center mb-6">
@@ -196,66 +212,102 @@ const EstadoLote = () => {
         />
       )}
 
-      <div className="overflow-x-auto max-w-full rounded-lg shadow-lg">
-        <table className="w-full text-sm text-left text-gray-700 bg-white rounded-lg">
-          <thead className="text-xs text-white uppercase bg-gradient-to-r from-blue-600 to-blue-800">
-            <tr>
-              <th className="px-6 py-3 text-center cursor-pointer" onClick={handleSortByDate}>
-                <FaCalendarAlt className="inline-block mr-1" /> Fecha de Registro {sortDirection === 'asc' ? <FaSortUp /> : <FaSortDown />}
-              </th>
-              <th className="px-6 py-3 text-center">Cantidad de Gallinas</th>
-              <th className="px-6 py-3 text-center">Bajas</th>
-              <th className="px-6 py-3 text-center">Semana</th>
-              <th className="px-6 py-3 text-center">Etapa</th>
-              <th className="px-6 py-3 text-center">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="6" className="py-4 text-center text-gray-500">Cargando...</td>
-              </tr>
-            ) : currentItems.length ? (
-              currentItems.map((estado) => {
-                // Encuentra el nombre de la etapa correspondiente al idEtapa
-                const etapa = etapas.find((e) => e.idEtapa === estado.idEtapa);
-                const nombreEtapa = etapa ? etapa.nombre : 'Etapa desconocida'; // Muestra 'Etapa desconocida' si no encuentra la etapa
 
-                return (
-                  <tr key={estado.idEstado} className="border-b hover:bg-gray-50">
-                    <td className="px-6 py-4 text-center">{new Date(estado.fechaRegistro).toLocaleDateString()}</td>
-                    <td className="px-6 py-4 text-center">{estado.cantidadG}</td>
-                    <td className="px-6 py-4 text-center">{estado.bajas}</td>
-                    <td className="px-6 py-4 text-center">{estado.semana}</td>
-                    <td className="px-6 py-4 text-center">{nombreEtapa}</td> {/* Muestra el nombre de la etapa */}
-                    <td className="px-6 py-4 text-center">
-                      <button
-                        onClick={() => handleEdit(estado)}
-                        disabled={isDisabled}
-                        className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-colors duration-300 ${isDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-yellow-500 text-white hover:bg-yellow-600'}`}
-                      >
-                        <FaEdit className="inline-block mr-1" /> Editar
-                      </button>
-                      <button
-                        onClick={() => handleDelete(estado.idEstado)}
-                        disabled={isDisabled}
-                        className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-colors duration-300 ${isDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 text-white hover:bg-red-600'}`}
-                      >
-                        <FaTrash className="inline-block mr-1" /> Eliminar
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan="6" className="py-4 text-center text-gray-500">No hay registros de estado disponibles.</td>
-              </tr>
-            )}
-          </tbody>
+      {/* Filtros por rango de fecha */}
+      <div className="mb-6 flex space-x-4">
+        <div>
+          <label className="block text-sm font-semibold mb-1 text-blue-900">Fecha Inicio</label>
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="w-32 p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-600" // Ajuste de ancho
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-semibold mb-1 text-blue-900">Fecha Fin</label>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="w-32 p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-600" // Ajuste de ancho
+          />
+        </div>
+      </div>
 
+      <div className="flex justify-end mb-6">
+        <button
+          onClick={handleFilterByDate}
+          className="px-4 py-2 text-sm font-semibold bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300"
+        >
+          Filtrar por Fecha
+        </button>
+      </div>
 
-        </table>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {loading ? (
+          <div className="col-span-3 text-center text-gray-500">Cargando...</div>
+        ) : currentItems.length ? (
+          currentItems.map((estado) => {
+            const etapa = etapas.find((e) => e.idEtapa === estado.idEtapa);
+            const nombreEtapa = etapa ? etapa.nombre : 'Etapa desconocida';
+
+            return (
+              <div key={estado.idEstado} className="p-4 bg-white rounded-lg shadow-lg transition hover:shadow-xl">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-bold text-gray-700">Estado: {nombreEtapa}</h3>
+                  <div className="text-gray-500">
+                    <FaCalendarAlt className="inline-block mr-1" />
+                    {new Date(estado.fechaRegistro).toLocaleDateString()}
+                  </div>
+                </div>
+
+                {/* Sección para la información de cantidad y bajas en dos columnas */}
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div className="text-center bg-blue-100 text-blue-700 p-2 rounded-lg">
+                    <p className="text-sm">Cantidad de Gallinas</p>
+                    <p className="font-semibold text-xl">{estado.cantidadG}</p>
+                  </div>
+                  <div className="text-center bg-red-100 text-red-700 p-2 rounded-lg">
+                    <p className="text-sm">Bajas</p>
+                    <p className="font-semibold text-xl">{estado.bajas}</p>
+                  </div>
+                </div>
+
+                {/* Sección para Semana en una fila */}
+                <div className="mt-4 text-center bg-green-100 text-green-700 p-2 rounded-lg">
+                  <p className="text-sm">Semana</p>
+                  <p className="font-semibold text-xl">{estado.semana}</p>
+                </div>
+
+                {/* Sección para Descripción destacada */}
+                <div className="mt-4 bg-gray-100 p-4 rounded-lg shadow-inner">
+                  <p className="text-sm font-semibold text-gray-800">Descripción</p>
+                  <p className="text-gray-700 text-lg">{estado.descripcion || 'No disponible'}</p>
+                </div>
+
+                <div className="flex justify-between mt-6">
+                  <button
+                    onClick={() => handleEdit(estado)}
+                    disabled={!isMostRecent(estado) || isDisabled}
+                    className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-colors duration-300 ${!isMostRecent(estado) || isDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-yellow-500 text-white hover:bg-yellow-600'}`}
+                  >
+                    <FaEdit className="inline-block mr-1" /> Editar
+                  </button>
+                  <button
+                    onClick={() => handleDelete(estado.idEstado)}
+                    disabled={!isMostRecent(estado) || isDisabled}
+                    className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-colors duration-300 ${!isMostRecent(estado) || isDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 text-white hover:bg-red-600'}`}
+                  >
+                    <FaTrash className="inline-block mr-1" /> Eliminar
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <div className="col-span-3 text-center text-gray-500">No hay registros de estado disponibles.</div>
+        )}
       </div>
 
       <Pagination totalPages={totalPages} currentPage={currentPage} paginate={paginate} />

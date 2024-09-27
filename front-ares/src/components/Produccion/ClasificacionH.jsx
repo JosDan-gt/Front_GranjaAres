@@ -15,7 +15,7 @@ const ClasificacionH = () => {
   const [clasificacion, setClasificacion] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(2); // Mostrar 2 días por página
   const [sortOrder, setSortOrder] = useState('desc');
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
@@ -46,11 +46,21 @@ const ClasificacionH = () => {
 
   const sortData = (data) => {
     return data.sort((a, b) => {
-      const dateA = new Date(a.fechaClaS);
-      const dateB = new Date(b.fechaClaS);
-      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+      const dateClasificacionA = new Date(a.fechaClaS);
+      const dateClasificacionB = new Date(b.fechaClaS);
+      const dateProduccionA = new Date(a.fechaRegistroP);
+      const dateProduccionB = new Date(b.fechaRegistroP);
+
+      // Comparar primero por la fecha de clasificación
+      if (dateClasificacionA.getTime() !== dateClasificacionB.getTime()) {
+        return sortOrder === 'asc' ? dateClasificacionA - dateClasificacionB : dateClasificacionB - dateClasificacionA;
+      }
+
+      // Si las fechas de clasificación son iguales, comparar por la fecha de producción
+      return sortOrder === 'asc' ? dateProduccionA - dateProduccionB : dateProduccionB - dateProduccionA;
     });
   };
+
 
   const handleSortChange = () => {
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -70,11 +80,29 @@ const ClasificacionH = () => {
     });
   };
 
+  const groupByDate = (data, key) => {
+    return data.reduce((acc, item) => {
+      const date = new Date(item[key]).toLocaleDateString(); // Agrupamos por fecha legible
+      if (!acc[date]) acc[date] = [];
+      acc[date].push(item);
+      return acc;
+    }, {});
+  };
+
+  const paginateData = (data) => {
+    const groupedByDate = groupByDate(data, 'fechaRegistroP');
+    const allDates = Object.keys(groupedByDate);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    return allDates.slice(indexOfFirstItem, indexOfLastItem).reduce((acc, date) => {
+      acc[date] = groupedByDate[date];
+      return acc;
+    }, {});
+  };
+
   const filteredData = filterData(clasificacion);
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const paginatedData = paginateData(filteredData);
+  const totalPages = Math.ceil(Object.keys(groupByDate(filteredData, 'fechaRegistroP')).length / itemsPerPage);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -115,8 +143,8 @@ const ClasificacionH = () => {
             key={number}
             onClick={() => paginate(number)}
             className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-all duration-300 focus:outline-none ${currentPage === number
-                ? 'bg-gradient-to-r from-blue-600 to-blue-800 text-white'
-                : 'bg-white text-blue-700 border border-gray-300 hover:bg-blue-100 hover:text-blue-900'
+              ? 'bg-gradient-to-r from-blue-600 to-blue-800 text-white'
+              : 'bg-white text-blue-700 border border-gray-300 hover:bg-blue-100 hover:text-blue-900'
               }`}
           >
             {number}
@@ -153,13 +181,15 @@ const ClasificacionH = () => {
         Clasificación de Huevos
       </h2>
 
+
+
       <div className="flex justify-center mb-4">
         <button
           disabled={isDisabled}
           onClick={handleAddClick}
           className={`w-full sm:w-auto px-6 py-3 text-white font-semibold rounded-full shadow-lg transition-all duration-300 ${isDisabled
-              ? 'bg-gray-400 text-gray-500 cursor-not-allowed'
-              : 'bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700'
+            ? 'bg-gray-400 text-gray-500 cursor-not-allowed'
+            : 'bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700'
             }`}
         >
           <FaBox className="inline-block mr-2" /> {/* Ícono en el botón */}
@@ -177,94 +207,97 @@ const ClasificacionH = () => {
         />
       )}
 
+      {/* Filtro de rango de fecha y tamaño */}
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+        <div className="mb-4 sm:mb-0">
+          <label className="font-semibold text-gray-700">Rango de Fechas:</label>
+          <DatePicker
+            selectsRange
+            startDate={dateRange[0]}
+            endDate={dateRange[1]}
+            onChange={handleDateRangeChange}
+            isClearable={true}
+            className="ml-2 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholderText="Selecciona un rango de fechas"
+          />
+        </div>
+
+        <div className="mb-4 sm:mb-0">
+          <label className="font-semibold text-gray-700">Filtrar por Tamaño:</label>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="ml-2 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Buscar por tamaño"
+          />
+        </div>
+      </div>
+
       <div className="overflow-x-auto max-w-full rounded-lg shadow-lg">
-        <table className="w-full text-sm text-left text-gray-700 bg-white rounded-lg">
-          <thead className="text-xs text-white uppercase bg-gradient-to-r from-blue-600 to-blue-800">
-            <tr>
-              <th className="px-6 py-3 text-center">Tamaño</th>
-              <th className="px-6 py-3 text-center">
-                <FaBox className="inline-block mr-1" /> Cajas
-              </th>
-              <th className="px-6 py-3 text-center">
-                <FaLayerGroup className="inline-block mr-1" /> Cartones Extra
-              </th>
-              <th className="px-6 py-3 text-center">
-                <FaEgg className="inline-block mr-1" /> Huevos Sueltos
-              </th>
-              <th className="px-6 py-3 text-center">Cantidad Total</th>
-              <th className="px-6 py-3 text-center">
-                <div className="flex items-center justify-center">
-                  Fecha de Clasificación
-                  <button
-                    onClick={handleSortChange}
-                    className="ml-2 text-gray-200 flex items-center"
+        {Object.keys(paginatedData).map((productionDate) => (
+          <div key={productionDate}>
+            <h3 className="text-lg font-bold text-gray-700 mb-4">
+              Fecha de Producción: {productionDate}
+            </h3>
+            <table className="w-full text-sm text-left text-gray-700 bg-white rounded-lg mb-6">
+              <thead className="text-xs text-white uppercase bg-gradient-to-r from-blue-600 to-blue-800">
+                <tr>
+                  <th className="px-6 py-3 text-center">Tamaño</th>
+                  <th className="px-6 py-3 text-center">
+                    <FaBox className="inline-block mr-1" /> Cajas
+                  </th>
+                  <th className="px-6 py-3 text-center">
+                    <FaLayerGroup className="inline-block mr-1" /> Cartones Extra
+                  </th>
+                  <th className="px-6 py-3 text-center">
+                    <FaEgg className="inline-block mr-1" /> Huevos Sueltos
+                  </th>
+                  <th className="px-6 py-3 text-center">Cantidad Total</th>
+                  <th className="px-6 py-3 text-center">Fecha de Clasificación</th>
+                  <th className="px-6 py-3 text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedData[productionDate].map((item, index) => (
+                  <tr
+                    key={index}
+                    className={`bg-white border-b hover:bg-gray-50 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                      }`}
                   >
-                    {sortOrder === 'asc' ? <FaSortUp /> : <FaSortDown />}
-                  </button>
-                </div>
-              </th>
-              <th className="px-6 py-3 text-center">Fecha de Producción</th>
-              <th className="px-6 py-3 text-center">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="8" className="py-4 text-center text-gray-500">
-                  Cargando datos...
-                </td>
-              </tr>
-            ) : currentItems.length ? (
-              currentItems.map((item, index) => (
-                <tr
-                  key={index}
-                  className={`bg-white border-b hover:bg-gray-50 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
-                    }`}
-                >
-                  <td className="px-6 py-4 text-center">{item.tamano}</td>
-                  <td className="px-6 py-4 text-center">{item.cajas}</td>
-                  <td className="px-6 py-4 text-center">{item.cartonesExtras}</td>
-                  <td className="px-6 py-4 text-center">{item.huevosSueltos}</td>
-                  <td className="px-6 py-4 text-center">{item.totalUnitaria}</td>
-                  <td className="px-6 py-4 text-center">
-                    {item.fechaClaS
-                      ? new Date(item.fechaClaS).toLocaleDateString()
-                      : 'Sin fecha'}
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    {item.fechaRegistroP
-                      ? new Date(item.fechaRegistroP).toLocaleDateString()
-                      : 'Sin fecha'}
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <button
-                      disabled={isDisabled}
-                      onClick={() => handleEditClick(item)}
-                      className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-all duration-300 ${isDisabled
+                    <td className="px-6 py-4 text-center">{item.tamano}</td>
+                    <td className="px-6 py-4 text-center">{item.cajas}</td>
+                    <td className="px-6 py-4 text-center">{item.cartonesExtras}</td>
+                    <td className="px-6 py-4 text-center">{item.huevosSueltos}</td>
+                    <td className="px-6 py-4 text-center">{item.totalUnitaria}</td>
+                    <td className="px-6 py-4 text-center">
+                      {item.fechaClaS
+                        ? new Date(item.fechaClaS).toLocaleDateString()
+                        : 'Sin fecha'}
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <button
+                        disabled={isDisabled}
+                        onClick={() => handleEditClick(item)}
+                        className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-all duration-300 ${isDisabled
                           ? 'bg-gray-400 text-gray-500 cursor-not-allowed'
                           : 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white hover:from-yellow-400 hover:to-yellow-500'
-                        }`}
-                    >
-                      <FaEdit className="inline-block mr-2" /> {/* Ícono de editar */}
-                      Editar
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="8" className="py-4 text-center text-gray-500">
-                  No hay registros disponibles.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+                          }`}
+                      >
+                        <FaEdit className="inline-block mr-2" /> {/* Ícono de editar */}
+                        Editar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ))}
         <Pagination totalPages={totalPages} currentPage={currentPage} paginate={paginate} />
       </div>
     </div>
   );
-
 };
 
 export default ClasificacionH;

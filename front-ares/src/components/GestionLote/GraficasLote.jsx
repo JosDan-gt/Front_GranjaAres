@@ -41,6 +41,7 @@ const styles = StyleSheet.create({
 });
 
 const ITEMS_PER_PAGE = 5;
+
 // Componente de PDF para Producción
 const ProductionPDFDocument = ({ productionData, productionImage }) => (
     <Document>
@@ -158,7 +159,7 @@ const CombinedPDFDocument = ({ productionData, classificationData, estadoLoteDat
                 </View>
                 {classificationData.map((d, index) => (
                     <View key={index} style={styles.tableRow}>
-                        <Text style={[styles.tableCol, styles.tableCell]}>{d.fechaRegistro}</Text>
+                        <Text style={[styles.tableCol, styles.tableCell]}>{d.fechaRegistroP}</Text>
                         <Text style={[styles.tableCol, styles.tableCell]}>{d.tamano}</Text>
                         <Text style={[styles.tableCol, styles.tableCell]}>{d.totalUnitaria}</Text>
                     </View>
@@ -258,27 +259,25 @@ const GraficasLote = ({ idLote }) => {
     };
 
     const processClassificationChartData = () => {
-        const labels = [...new Set(classificationData.map(d => d.fechaRegistro))];
+        const labels = [...new Set(classificationData.map(d => d.fechaRegistro))]; // Extraer etiquetas únicas para las fechas
         const tamanoGroups = ['Pigui', 'Pequeño', 'Mediano', 'Grande', 'Extra Grande'];
 
         const datasets = tamanoGroups.map(tamano => ({
             label: tamano,
             data: labels.map(label => {
                 const data = classificationData.find(d => d.fechaRegistro === label && d.tamano === tamano);
-                return data ? data.totalUnitaria : 0;
+                return data ? data.totalUnitaria : 0;  // Si no hay datos para una combinación, devuelve 0
             }),
-            backgroundColor: tamano === 'Pigui' ? 'rgba(139, 69, 19, 0.2)' : // Marrón
-                tamano === 'Pequeño' ? 'rgba(85, 107, 47, 0.2)' : // Verde oliva
-                    tamano === 'Mediano' ? 'rgba(218, 165, 32, 0.2)' : // Dorado
-                        tamano === 'Grande' ? 'rgba(107, 142, 35, 0.2)' : // Verde oscuro
-                            tamano === 'Extra Grande' ? 'rgba(154, 205, 50, 0.2)' : // Verde amarillento
-                                'rgba(160, 82, 45, 0.2)',  // Marrón oscuro por defecto
+            backgroundColor: tamano === 'Pigui' ? 'rgba(139, 69, 19, 0.2)' : 
+                tamano === 'Pequeño' ? 'rgba(85, 107, 47, 0.2)' : 
+                tamano === 'Mediano' ? 'rgba(218, 165, 32, 0.2)' : 
+                tamano === 'Grande' ? 'rgba(107, 142, 35, 0.2)' : 
+                'rgba(154, 205, 50, 0.2)', // Extra Grande
             borderColor: tamano === 'Pigui' ? 'rgba(139, 69, 19, 1)' :
                 tamano === 'Pequeño' ? 'rgba(85, 107, 47, 1)' :
-                    tamano === 'Mediano' ? 'rgba(218, 165, 32, 1)' :
-                        tamano === 'Grande' ? 'rgba(107, 142, 35, 1)' :
-                            tamano === 'Extra Grande' ? 'rgba(154, 205, 50, 1)' :
-                                'rgba(160, 82, 45, 1)',  // Marrón oscuro por defecto
+                tamano === 'Mediano' ? 'rgba(218, 165, 32, 1)' :
+                tamano === 'Grande' ? 'rgba(107, 142, 35, 1)' :
+                'rgba(154, 205, 50, 1)', // Extra Grande
             fill: true,
             tension: 0.4,
         }));
@@ -320,7 +319,6 @@ const GraficasLote = ({ idLote }) => {
     const paginatedProductionData = productionData.slice((currentPageProd - 1) * ITEMS_PER_PAGE, currentPageProd * ITEMS_PER_PAGE);
     const paginatedClassificationData = classificationData.slice((currentPageClass - 1) * ITEMS_PER_PAGE, currentPageClass * ITEMS_PER_PAGE);
     const paginatedEstadoLoteData = estadoLoteData.slice((currentPageEstado - 1) * ITEMS_PER_PAGE, currentPageEstado * ITEMS_PER_PAGE);
-
 
     return (
         <div className="container mx-auto p-4">
@@ -445,12 +443,13 @@ const GraficasLote = ({ idLote }) => {
                             <tbody>
                                 {paginatedClassificationData.map((d, index) => (
                                     <tr key={index} className="bg-white border-b hover:bg-red-50">
-                                        <td className="px-6 py-4 text-center">{d.fechaRegistro}</td>
+                                        <td className="px-6 py-4 text-center">{d.fechaRegistroP}</td>
                                         <td className="px-6 py-4 text-center">{d.tamano}</td>
                                         <td className="px-6 py-4 text-center">{d.totalUnitaria}</td>
                                     </tr>
                                 ))}
                             </tbody>
+
                         </table>
                     </div>
                     <div className="flex justify-between items-center mt-4">

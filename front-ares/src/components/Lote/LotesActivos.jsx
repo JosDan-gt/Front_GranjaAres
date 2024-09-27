@@ -154,11 +154,11 @@ const LotesActivos = ({ reloadFlag, triggerReload }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center">
               <div className="bg-blue-100 p-4 rounded-lg shadow-md">
                 <p className="text-sm font-semibold text-gray-800">Cantidad Inicial</p>
-                <p className="text-lg font-bold text-blue-600">{lote.cantidadGctual}</p>
+                <p className="text-lg font-bold text-blue-600">{lote.cantidadG}</p>
               </div>
               <div className="bg-green-100 p-4 rounded-lg shadow-md">
                 <p className="text-sm font-semibold text-gray-800">Cantidad Actual</p>
-                <p className="text-lg font-bold text-green-600">{lote.cantidadG}</p>
+                <p className="text-lg font-bold text-green-600">{lote.cantidadGctual}</p>
               </div>
               <div className="bg-yellow-100 p-4 rounded-lg shadow-md sm:col-span-2">
                 <p className="text-sm font-semibold text-gray-800">Fecha de Adquisición</p>
