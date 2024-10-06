@@ -69,31 +69,31 @@ const UsuarioForm = ({ usuarioData, isEditing, onSubmit, onCancel }) => {
         e.preventDefault();
         if (validateForm()) {
             try {
-                // Si la contraseña está vacía, no la enviamos
                 const payload = {
                     id: formData.id,
                     nombreUser: formData.nombreUser,
                     email: formData.email,
                     roleId: parseInt(formData.roleId, 10),
-                    ...(formData.contrasena && { contrasena: formData.contrasena }), // Solo se incluye si hay valor
+                    ...(formData.contrasena && { contrasena: formData.contrasena }),
                 };
-    
+
                 const url = isEditing ? `/api/usuarios/update/${formData.id}` : '/api/usuarios/register';
                 const method = isEditing ? 'put' : 'post';
-    
+
                 await axiosInstance[method](url, payload);
-    
+
                 alert(`Usuario ${isEditing ? 'actualizado' : 'registrado'} exitosamente`);
                 if (onSubmit) {
                     onSubmit();
                 }
             } catch (error) {
-                console.error(`Error al ${isEditing ? 'actualizar' : 'registrar'} el usuario:`, error);
-                alert(`Error al ${isEditing ? 'actualizar' : 'registrar'} el usuario. Intenta nuevamente.`);
+                console.error('Error en la respuesta del servidor:', error.response.data);
+                alert(`Error al ${isEditing ? 'actualizar' : 'registrar'} el usuario: ${error.response.data.message || 'Intenta nuevamente.'}`);
             }
         }
     };
-    
+
+
 
     const handleClear = () => {
         setFormData({

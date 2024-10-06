@@ -77,11 +77,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="p-8 min-h-screen bg-cover bg-center"
-      style={{
-        backgroundImage: `url(${back})`,
-      }}
-    >
+    <div className="p-8 min-h-screen bg-cover bg-center">
       <div className="mb-8 text-center">
         <h1 className="text-5xl font-extrabold text-gray-800 mb-6">Dashboard</h1>
 

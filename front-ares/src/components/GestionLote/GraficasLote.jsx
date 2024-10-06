@@ -4,66 +4,113 @@ import { Line } from 'react-chartjs-2';
 import { Document, Page, Text, View, StyleSheet, PDFDownloadLink, Image } from '@react-pdf/renderer';
 import { FaDownload, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
-// Estilos para el PDF
+
+// Estilos mejorados para el PDF
 const styles = StyleSheet.create({
     page: {
-        padding: 20,
+        padding: 30,
+        fontSize: 12,
+        fontFamily: 'Helvetica',
+    },
+    header: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    footer: {
+        fontSize: 10,
+        textAlign: 'center',
+        marginTop: 20,
+        color: '#888',
     },
     section: {
-        marginBottom: 10,
+        marginBottom: 20,
         padding: 10,
         borderBottomWidth: 1,
         borderColor: '#eaeaea',
     },
     title: {
-        fontSize: 18,
+        fontSize: 14,
         marginBottom: 10,
         fontWeight: 'bold',
         textAlign: 'center',
+        color: '#333',
     },
     table: {
         display: 'table',
-        width: 'auto',
-        marginBottom: 10,
+        width: '100%',
+        marginBottom: 20,
     },
     tableRow: {
         flexDirection: 'row',
+    },
+    tableColHeader: {
+        width: '33%',
+        padding: 5,
+        backgroundColor: '#f5f5f5',
+        borderBottomWidth: 1,
+        borderColor: '#eaeaea',
+        textAlign: 'center',
+        fontWeight: 'bold',
     },
     tableCol: {
         width: '33%',
         padding: 5,
         borderBottomWidth: 1,
         borderColor: '#eaeaea',
+        textAlign: 'center',
     },
     tableCell: {
         fontSize: 10,
     },
+    image: {
+        marginBottom: 10,
+        marginTop: 10,
+    }
 });
 
 const ITEMS_PER_PAGE = 5;
+
+
+// Componente para el encabezado de página
+const PDFHeader = ({ title }) => (
+    <View>
+        <Text style={styles.header}>{title}</Text>
+    </View>
+);
+
+// Componente para el pie de página
+const PDFFooter = () => (
+    <View style={styles.footer}>
+        <Text>© 2024 - Granja Ares - Registro Formal de Producción</Text>
+    </View>
+);
 
 // Componente de PDF para Producción
 const ProductionPDFDocument = ({ productionData, productionImage }) => (
     <Document>
         <Page style={styles.page}>
+            <PDFHeader title="Registro de Producción" />
             <View style={styles.section}>
-                <Text style={styles.title}>Producción</Text>
-                {productionImage && <Image src={productionImage} />}
+                <Text style={styles.title}>Producción General</Text>
+                {productionImage && <Image src={productionImage} style={styles.image} />}
                 <View style={styles.table}>
                     <View style={styles.tableRow}>
-                        <Text style={[styles.tableCol, styles.tableCell]}>Fecha</Text>
-                        <Text style={[styles.tableCol, styles.tableCell]}>Producción</Text>
-                        <Text style={[styles.tableCol, styles.tableCell]}>Defectuosos</Text>
+                        <Text style={styles.tableColHeader}>Fecha</Text>
+                        <Text style={styles.tableColHeader}>Producción</Text>
+                        <Text style={styles.tableColHeader}>Defectuosos</Text>
                     </View>
                     {productionData.map((d, index) => (
                         <View key={index} style={styles.tableRow}>
-                            <Text style={[styles.tableCol, styles.tableCell]}>{d.fechaRegistro}</Text>
-                            <Text style={[styles.tableCol, styles.tableCell]}>{d.produccion}</Text>
-                            <Text style={[styles.tableCol, styles.tableCell]}>{d.defectuosos}</Text>
+                            <Text style={styles.tableCol}>{d.fechaRegistro}</Text>
+                            <Text style={styles.tableCol}>{d.produccion}</Text>
+                            <Text style={styles.tableCol}>{d.defectuosos}</Text>
                         </View>
                     ))}
                 </View>
             </View>
+            <PDFFooter />
         </Page>
     </Document>
 );
@@ -72,24 +119,26 @@ const ProductionPDFDocument = ({ productionData, productionImage }) => (
 const ClassificationPDFDocument = ({ classificationData, classificationImage }) => (
     <Document>
         <Page style={styles.page}>
+            <PDFHeader title="Registro de Clasificación" />
             <View style={styles.section}>
-                <Text style={styles.title}>Clasificación</Text>
-                {classificationImage && <Image src={classificationImage} />}
+                <Text style={styles.title}>Clasificación de Tamaños</Text>
+                {classificationImage && <Image src={classificationImage} style={styles.image} />}
                 <View style={styles.table}>
                     <View style={styles.tableRow}>
-                        <Text style={[styles.tableCol, styles.tableCell]}>Fecha</Text>
-                        <Text style={[styles.tableCol, styles.tableCell]}>Tamaño</Text>
-                        <Text style={[styles.tableCol, styles.tableCell]}>Total Unitaria</Text>
+                        <Text style={styles.tableColHeader}>Fecha</Text>
+                        <Text style={styles.tableColHeader}>Tamaño</Text>
+                        <Text style={styles.tableColHeader}>Total Unitaria</Text>
                     </View>
                     {classificationData.map((d, index) => (
                         <View key={index} style={styles.tableRow}>
-                            <Text style={[styles.tableCol, styles.tableCell]}>{d.fechaRegistro}</Text>
-                            <Text style={[styles.tableCol, styles.tableCell]}>{d.tamano}</Text>
-                            <Text style={[styles.tableCol, styles.tableCell]}>{d.totalUnitaria}</Text>
+                            <Text style={styles.tableCol}>{d.fechaRegistro}</Text>
+                            <Text style={styles.tableCol}>{d.tamano}</Text>
+                            <Text style={styles.tableCol}>{d.totalUnitaria}</Text>
                         </View>
                     ))}
                 </View>
             </View>
+            <PDFFooter />
         </Page>
     </Document>
 );
@@ -98,24 +147,26 @@ const ClassificationPDFDocument = ({ classificationData, classificationImage }) 
 const EstadoLotePDFDocument = ({ estadoLoteData, estadoLoteImage }) => (
     <Document>
         <Page style={styles.page}>
+            <PDFHeader title="Registro de Estado del Lote" />
             <View style={styles.section}>
-                <Text style={styles.title}>Estado del Lote</Text>
-                {estadoLoteImage && <Image src={estadoLoteImage} />}
+                <Text style={styles.title}>Estado de las Gallinas</Text>
+                {estadoLoteImage && <Image src={estadoLoteImage} style={styles.image} />}
                 <View style={styles.table}>
                     <View style={styles.tableRow}>
-                        <Text style={[styles.tableCol, styles.tableCell]}>Fecha</Text>
-                        <Text style={[styles.tableCol, styles.tableCell]}>Cantidad Gallinas</Text>
-                        <Text style={[styles.tableCol, styles.tableCell]}>Bajas</Text>
+                        <Text style={styles.tableColHeader}>Fecha</Text>
+                        <Text style={styles.tableColHeader}>Cantidad Gallinas</Text>
+                        <Text style={styles.tableColHeader}>Bajas</Text>
                     </View>
                     {estadoLoteData.map((d, index) => (
                         <View key={index} style={styles.tableRow}>
-                            <Text style={[styles.tableCol, styles.tableCell]}>{d.fechaRegistro}</Text>
-                            <Text style={[styles.tableCol, styles.tableCell]}>{d.cantidadG}</Text>
-                            <Text style={[styles.tableCol, styles.tableCell]}>{d.bajas}</Text>
+                            <Text style={styles.tableCol}>{d.fechaRegistro}</Text>
+                            <Text style={styles.tableCol}>{d.cantidadG}</Text>
+                            <Text style={styles.tableCol}>{d.bajas}</Text>
                         </View>
                     ))}
                 </View>
             </View>
+            <PDFFooter />
         </Page>
     </Document>
 );
@@ -123,73 +174,71 @@ const EstadoLotePDFDocument = ({ estadoLoteData, estadoLoteImage }) => (
 // Componente de PDF combinado para todas las secciones
 const CombinedPDFDocument = ({ productionData, classificationData, estadoLoteData, productionImage, classificationImage, estadoLoteImage }) => (
     <Document>
-        {/* Página de Producción */}
         <Page style={styles.page}>
+            <PDFHeader title="Reporte General de Producción, Clasificación y Estado del Lote" />
             <View style={styles.section}>
                 <Text style={styles.title}>Producción</Text>
-                {productionImage && <Image src={productionImage} />}
-            </View>
-            <View style={styles.table}>
-                <View style={styles.tableRow}>
-                    <Text style={[styles.tableCol, styles.tableCell]}>Fecha</Text>
-                    <Text style={[styles.tableCol, styles.tableCell]}>Producción</Text>
-                    <Text style={[styles.tableCol, styles.tableCell]}>Defectuosos</Text>
-                </View>
-                {productionData.map((d, index) => (
-                    <View key={index} style={styles.tableRow}>
-                        <Text style={[styles.tableCol, styles.tableCell]}>{d.fechaRegistro}</Text>
-                        <Text style={[styles.tableCol, styles.tableCell]}>{d.produccion}</Text>
-                        <Text style={[styles.tableCol, styles.tableCell]}>{d.defectuosos}</Text>
+                {productionImage && <Image src={productionImage} style={styles.image} />}
+                <View style={styles.table}>
+                    <View style={styles.tableRow}>
+                        <Text style={styles.tableColHeader}>Fecha</Text>
+                        <Text style={styles.tableColHeader}>Producción</Text>
+                        <Text style={styles.tableColHeader}>Defectuosos</Text>
                     </View>
-                ))}
+                    {productionData.map((d, index) => (
+                        <View key={index} style={styles.tableRow}>
+                            <Text style={styles.tableCol}>{d.fechaRegistro}</Text>
+                            <Text style={styles.tableCol}>{d.produccion}</Text>
+                            <Text style={styles.tableCol}>{d.defectuosos}</Text>
+                        </View>
+                    ))}
+                </View>
             </View>
-        </Page>
 
-        {/* Página de Clasificación */}
-        <Page style={styles.page}>
             <View style={styles.section}>
                 <Text style={styles.title}>Clasificación</Text>
-                {classificationImage && <Image src={classificationImage} />}
-            </View>
-            <View style={styles.table}>
-                <View style={styles.tableRow}>
-                    <Text style={[styles.tableCol, styles.tableCell]}>Fecha</Text>
-                    <Text style={[styles.tableCol, styles.tableCell]}>Tamaño</Text>
-                    <Text style={[styles.tableCol, styles.tableCell]}>Total Unitaria</Text>
-                </View>
-                {classificationData.map((d, index) => (
-                    <View key={index} style={styles.tableRow}>
-                        <Text style={[styles.tableCol, styles.tableCell]}>{d.fechaRegistroP}</Text>
-                        <Text style={[styles.tableCol, styles.tableCell]}>{d.tamano}</Text>
-                        <Text style={[styles.tableCol, styles.tableCell]}>{d.totalUnitaria}</Text>
+                {classificationImage && <Image src={classificationImage} style={styles.image} />}
+                <View style={styles.table}>
+                    <View style={styles.tableRow}>
+                        <Text style={styles.tableColHeader}>Fecha</Text>
+                        <Text style={styles.tableColHeader}>Tamaño</Text>
+                        <Text style={styles.tableColHeader}>Total Unitaria</Text>
                     </View>
-                ))}
+                    {classificationData.map((d, index) => (
+                        <View key={index} style={styles.tableRow}>
+                            <Text style={styles.tableCol}>{d.fechaRegistro}</Text>
+                            <Text style={styles.tableCol}>{d.tamano}</Text>
+                            <Text style={styles.tableCol}>{d.totalUnitaria}</Text>
+                        </View>
+                    ))}
+                </View>
             </View>
-        </Page>
 
-        {/* Página de Estado del Lote */}
-        <Page style={styles.page}>
             <View style={styles.section}>
                 <Text style={styles.title}>Estado del Lote</Text>
-                {estadoLoteImage && <Image src={estadoLoteImage} />}
-            </View>
-            <View style={styles.table}>
-                <View style={styles.tableRow}>
-                    <Text style={[styles.tableCol, styles.tableCell]}>Fecha</Text>
-                    <Text style={[styles.tableCol, styles.tableCell]}>Cantidad Gallinas</Text>
-                    <Text style={[styles.tableCol, styles.tableCell]}>Bajas</Text>
-                </View>
-                {estadoLoteData.map((d, index) => (
-                    <View key={index} style={styles.tableRow}>
-                        <Text style={[styles.tableCol, styles.tableCell]}>{d.fechaRegistro}</Text>
-                        <Text style={[styles.tableCol, styles.tableCell]}>{d.cantidadG}</Text>
-                        <Text style={[styles.tableCol, styles.tableCell]}>{d.bajas}</Text>
+                {estadoLoteImage && <Image src={estadoLoteImage} style={styles.image} />}
+                <View style={styles.table}>
+                    <View style={styles.tableRow}>
+                        <Text style={styles.tableColHeader}>Fecha</Text>
+                        <Text style={styles.tableColHeader}>Cantidad Gallinas</Text>
+                        <Text style={styles.tableColHeader}>Bajas</Text>
                     </View>
-                ))}
+                    {estadoLoteData.map((d, index) => (
+                        <View key={index} style={styles.tableRow}>
+                            <Text style={styles.tableCol}>{d.fechaRegistro}</Text>
+                            <Text style={styles.tableCol}>{d.cantidadG}</Text>
+                            <Text style={styles.tableCol}>{d.bajas}</Text>
+                        </View>
+                    ))}
+                </View>
             </View>
+            <PDFFooter />
         </Page>
     </Document>
 );
+
+export { ProductionPDFDocument, ClassificationPDFDocument, EstadoLotePDFDocument, CombinedPDFDocument };
+
 
 const GraficasLote = ({ idLote }) => {
     const [productionData, setProductionData] = useState([]);
@@ -225,16 +274,28 @@ const GraficasLote = ({ idLote }) => {
     }, [idLote, period]);
 
     useEffect(() => {
-        if (productionChartRef.current) {
-            setProductionImage(productionChartRef.current.toBase64Image());
+        if (productionChartRef.current && productionData.length > 0) {
+            // Añade un pequeño retraso para asegurarte de que la gráfica esté completamente renderizada
+            setTimeout(() => {
+                const productionImageBase64 = productionChartRef.current.toBase64Image();
+                setProductionImage(productionImageBase64);
+            }, 1000); // 500ms debería ser suficiente, ajusta si es necesario
         }
-        if (classificationChartRef.current) {
-            setClassificationImage(classificationChartRef.current.toBase64Image());
+        if (classificationChartRef.current && classificationData.length > 0) {
+            setTimeout(() => {
+                const classificationImageBase64 = classificationChartRef.current.toBase64Image();
+                setClassificationImage(classificationImageBase64);
+            }, 1000);
         }
-        if (estadoLoteChartRef.current) {
-            setEstadoLoteImage(estadoLoteChartRef.current.toBase64Image());
+        if (estadoLoteChartRef.current && estadoLoteData.length > 0) {
+            setTimeout(() => {
+                const estadoLoteImageBase64 = estadoLoteChartRef.current.toBase64Image();
+                setEstadoLoteImage(estadoLoteImageBase64);
+            }, 1000);
         }
     }, [productionData, classificationData, estadoLoteData]);
+
+
 
     const productionChart = {
         labels: productionData.map(d => d.fechaRegistro),
@@ -268,16 +329,16 @@ const GraficasLote = ({ idLote }) => {
                 const data = classificationData.find(d => d.fechaRegistro === label && d.tamano === tamano);
                 return data ? data.totalUnitaria : 0;  // Si no hay datos para una combinación, devuelve 0
             }),
-            backgroundColor: tamano === 'Pigui' ? 'rgba(139, 69, 19, 0.2)' : 
-                tamano === 'Pequeño' ? 'rgba(85, 107, 47, 0.2)' : 
-                tamano === 'Mediano' ? 'rgba(218, 165, 32, 0.2)' : 
-                tamano === 'Grande' ? 'rgba(107, 142, 35, 0.2)' : 
-                'rgba(154, 205, 50, 0.2)', // Extra Grande
+            backgroundColor: tamano === 'Pigui' ? 'rgba(139, 69, 19, 0.2)' :
+                tamano === 'Pequeño' ? 'rgba(85, 107, 47, 0.2)' :
+                    tamano === 'Mediano' ? 'rgba(218, 165, 32, 0.2)' :
+                        tamano === 'Grande' ? 'rgba(107, 142, 35, 0.2)' :
+                            'rgba(154, 205, 50, 0.2)', // Extra Grande
             borderColor: tamano === 'Pigui' ? 'rgba(139, 69, 19, 1)' :
                 tamano === 'Pequeño' ? 'rgba(85, 107, 47, 1)' :
-                tamano === 'Mediano' ? 'rgba(218, 165, 32, 1)' :
-                tamano === 'Grande' ? 'rgba(107, 142, 35, 1)' :
-                'rgba(154, 205, 50, 1)', // Extra Grande
+                    tamano === 'Mediano' ? 'rgba(218, 165, 32, 1)' :
+                        tamano === 'Grande' ? 'rgba(107, 142, 35, 1)' :
+                            'rgba(154, 205, 50, 1)', // Extra Grande
             fill: true,
             tension: 0.4,
         }));
