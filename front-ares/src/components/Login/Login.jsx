@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { AuthContext } from '../Context/AuthContext'; // Asegúrate de que este path es correcto
 import fondoLogin from '../Img/FallGuys.jpg';
+import LogoGLA from '../Img/LogoGLA.png';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -52,7 +53,12 @@ function Login() {
       className="min-h-screen flex items-center justify-center bg-gray-100 bg-cover bg-center"
       style={{ backgroundImage: `url(${fondoLogin})` }}
     >
-      <div className="bg-white bg-opacity-90 p-10 rounded-lg shadow-xl w-full max-w-md">
+      <div className="bg-white bg-opacity-90 p-10 rounded-lg shadow-xl w-full max-w-md ml-4 mr-4">
+
+        <div className="flex justify-center mb-6">
+          <img src={LogoGLA} alt="LogoGLA" className="w-60 h-auto" />
+        </div>
+
         <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Bienvenido</h2>
         <p className="text-center text-gray-600 mb-4">Por favor, inicia sesión para continuar</p>
         <form onSubmit={handleLogin}>

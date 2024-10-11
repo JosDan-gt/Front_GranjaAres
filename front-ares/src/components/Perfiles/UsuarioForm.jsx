@@ -70,12 +70,13 @@ const UsuarioForm = ({ usuarioData, isEditing, onSubmit, onCancel }) => {
         if (validateForm()) {
             try {
                 const payload = {
-                    id: formData.id,
                     nombreUser: formData.nombreUser,
                     email: formData.email,
                     roleId: parseInt(formData.roleId, 10),
-                    ...(formData.contrasena && { contrasena: formData.contrasena }),
+                    ...(formData.contrasena && { contrasena: formData.contrasena }),  // Solo incluye la contraseña si está presente
                 };
+
+                console.log("Payload enviado:", payload);  // Verifica lo que se está enviando
 
                 const url = isEditing ? `/api/usuarios/update/${formData.id}` : '/api/usuarios/register';
                 const method = isEditing ? 'put' : 'post';
@@ -87,11 +88,12 @@ const UsuarioForm = ({ usuarioData, isEditing, onSubmit, onCancel }) => {
                     onSubmit();
                 }
             } catch (error) {
-                console.error('Error en la respuesta del servidor:', error.response.data);
-                alert(`Error al ${isEditing ? 'actualizar' : 'registrar'} el usuario: ${error.response.data.message || 'Intenta nuevamente.'}`);
+                console.error('Error en la respuesta del servidor:', error.response?.data || error);
+                alert(`Error al ${isEditing ? 'actualizar' : 'registrar'} el usuario. Intenta nuevamente.`);
             }
         }
     };
+
 
 
 

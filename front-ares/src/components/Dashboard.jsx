@@ -102,40 +102,41 @@ const Dashboard = () => {
 
       {/* Detalles del Lote */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        <div className="bg-gray-100/65 shadow-lg rounded-lg p-6 hover:shadow-xl transition-shadow">
+        <div className="bg-green-100 shadow-lg rounded-lg p-6 hover:shadow-xl transition-shadow">
           <h4 className="font-semibold text-gray-700 mb-2 flex items-center">
-            <FaEgg className="mr-2 text-gray-600" size={25}/> Producción Total
+            <FaEgg className="mr-2 text-gray-600" size={25} /> Producción Total
           </h4>
           <p className="text-gray-900 text-2xl font-bold">{datosLote?.produccionTotal || 0} huevos</p>
         </div>
-        <div className="bg-gray-100/65 shadow-lg rounded-lg p-6 hover:shadow-xl transition-shadow">
+        <div className="bg-violet-100 shadow-lg rounded-lg p-6 hover:shadow-xl transition-shadow">
           <h4 className="font-semibold text-gray-700 mb-2 flex items-center">
-          <FaFeatherAlt className="mr-2 text-gray-600" size={25}/> Cantidad de Gallinas Inicial
+            <FaFeatherAlt className="mr-2 text-gray-600" size={25} /> Cantidad de Gallinas Actual
           </h4>
           <p className="text-gray-900 text-2xl font-bold">{datosLote?.cantidadGallinasActual || 'No disponible'}</p>
         </div>
-        <div className="bg-gray-100/65 shadow-lg rounded-lg p-6 hover:shadow-xl transition-shadow">
+        <div className="bg-amber-100 shadow-lg rounded-lg p-6 hover:shadow-xl transition-shadow">
           <h4 className="font-semibold text-gray-700 mb-2 flex items-center">
-            <GiChicken className="mr-2 text-gray-600" size={30} /> Cantidad de Gallinas Actual
+            <GiChicken className="mr-2 text-gray-600" size={30} /> Cantidad de Gallinas Inicial
           </h4>
           <p className="text-gray-900 text-2xl font-bold">{datosLote?.cantidadGallinas || 'No disponible'}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-gray-100/65 shadow-lg rounded-lg p-6 hover:shadow-xl transition-shadow">
+        <div className="bg-red-100 shadow-lg rounded-lg p-6 hover:shadow-xl transition-shadow">
           <h4 className="font-semibold text-gray-700 mb-2 flex items-center">
-            <FaExclamationTriangle className="mr-2 text-gray-600" size={25}/> Bajas Totales
+            <FaExclamationTriangle className="mr-2 text-gray-600" size={25} /> Bajas Totales
           </h4>
           <p className="text-gray-900 text-2xl font-bold">{datosLote?.bajas != null ? datosLote.bajas : 'No disponible'}</p>
         </div>
-        <div className="bg-gray-100/65 shadow-lg rounded-lg p-6 hover:shadow-xl transition-shadow">
+        <div className="bg-sky-100 shadow-lg rounded-lg p-6 hover:shadow-xl transition-shadow">
           <h4 className="font-semibold text-gray-700 mb-2 flex items-center">
-            <TbHexagonLetterR className="mr-2 text-gray-600" size={30}/> Raza
+            <TbHexagonLetterR className="mr-2 text-gray-600" size={30} /> Raza
           </h4>
           <p className="text-gray-900 text-2xl font-bold">{datosLote?.raza || 'No disponible'}</p>
         </div>
       </div>
+
 
       {/* Botones para seleccionar el periodo */}
       <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-6">

@@ -5,6 +5,7 @@ import { AuthContext } from './Context/AuthContext';
 import { FiLogOut } from 'react-icons/fi';
 import fondoHeader from './Img/fondoHeader.jpg';
 import HorizontalMenu from './Sidebar/Sidebar'; // Importa el menú horizontal
+import LogoGLA from './Img/LogoGLA.png';
 
 const Header = () => {
   const { setIsAuthenticated } = useContext(AuthContext);
@@ -20,27 +21,48 @@ const Header = () => {
   return (
     <>
       <header
-        className="relative text-white p-4 flex justify-between items-center shadow-lg"
+        className="relative text-white flex justify-center items-center shadow-lg"
         style={{
           backgroundImage: `url(${fondoHeader})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          height: '150px',
+          height: '200px',
         }}
       >
-        <div className="relative flex items-center space-x-4 z-10">
-          
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-yellow-400">
-            Granja Los Ares
-          </h1>
+        {/* Fondo degradado para mejorar la visibilidad */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black opacity-50 z-0"></div>
+
+        {/* Contenedor del logo y el título en fila */}
+        <div className="relative flex items-center space-x-3 sm:space-x-6 z-10">
+          {/* Logo más grande con animación en hover */}
+          <div className="flex-shrink-0">
+            <img
+              src={LogoGLA}
+              alt="LogoGLA"
+              className="w-24 sm:w-32 md:w-40 h-auto transform transition-transform duration-300 hover:scale-110"
+            />
+          </div>
+
+          {/* Título con diseño mejorado */}
+          <div className="text-left">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-yellow-400 tracking-wide"
+              style={{
+                textShadow: "2px 2px 4px rgba(0, 0, 0, 0.8)"  // Esto crea un borde oscuro
+              }}
+            >
+              Granja Los Ares
+            </h1>
+          </div>
+
         </div>
 
+        {/* Botón de logout más compacto */}
         <button
           onClick={handleLogout}
-          className="relative text-white p-2 rounded-lg transition duration-300 hover:bg-red-600 z-10"
+          className="absolute bottom-3 right-3 text-white p-1 sm:p-1.5 md:p-2 rounded-lg transition duration-300 bg-red-500 hover:bg-red-600 flex items-center z-10"
         >
-          <FiLogOut size={28} />
+          <FiLogOut size={20} className="sm:size-10" />
         </button>
       </header>
 
