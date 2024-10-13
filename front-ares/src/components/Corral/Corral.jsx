@@ -20,6 +20,7 @@ const Corral = () => {
     const isUser = roles.includes('User');
     const isAdmin = roles.includes('Admin');
 
+    
     useEffect(() => {
         const fetchCorrales = async () => {
             setLoading(true);
