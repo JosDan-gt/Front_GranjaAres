@@ -10,7 +10,6 @@ import { GiChicken } from "react-icons/gi";
 import { TbHexagonLetterR } from "react-icons/tb";
 
 // Importa tu imagen de fondo
-import back from '../components/Img/Back2.jpeg';  // Asegúrate de colocar la imagen en la carpeta correcta
 
 const Dashboard = () => {
   const [lotes, setLotes] = useState([]);
