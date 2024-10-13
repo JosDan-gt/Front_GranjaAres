@@ -24,8 +24,6 @@ function Login() {
         password,
       });
 
-      console.log('Respuesta completa del backend:', response.data);
-
       const token = response.data.accessToken;
 
       if (token) {
