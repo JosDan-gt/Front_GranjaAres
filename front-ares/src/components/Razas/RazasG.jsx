@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaEdit, FaPlus } from 'react-icons/fa'; // Iconos para el diseño
+import { FaEdit, FaPlus } from 'react-icons/fa'; 
 import axiosInstance from '../axiosInstance';
 import RazaForm from './RazasGForm';
 
@@ -7,9 +7,10 @@ const RazaG = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [editRaza, setEditRaza] = useState(null); // Estado para la raza a editar
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10); 
+  const [editRaza, setEditRaza] = useState(null);
 
-  // Función para obtener los datos de la API
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -26,33 +27,67 @@ const RazaG = () => {
     fetchData();
   }, []);
 
-  // Manejar cuando se haga clic en "Actualizar"
   const handleUpdateClick = (raza) => {
-    setEditRaza(raza); // Pasar los datos completos de la raza
-    setShowForm(true); // Mostrar el formulario
+    setEditRaza(raza); 
+    setShowForm(true); 
   };
 
-  // Función para cerrar el formulario
   const handleFormClose = () => {
     setShowForm(false);
     setEditRaza(null);
-    fetchData(); // Actualizar la lista después de agregar o editar una raza
+    fetchData(); 
   };
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+
+  const Pagination = ({ totalPages, currentPage, paginate }) => {
+    const maxPageVisibles = 3;
+    const pageNumbers = [];
+
+    const inicioPage = Math.max(1, currentPage - Math.floor(maxPageVisibles / 2));
+    const finPage = Math.min(totalPages, inicioPage + maxPageVisibles - 1);
+
+    for (let i = inicioPage; i <= finPage; i++) {
+      pageNumbers.push(i);
+    }
+
+    return (
+      <div className="flex justify-center mt-4">
+        {pageNumbers.map((number) => (
+          <button
+            key={number}
+            onClick={() => paginate(number)}
+            className={`px-3 py-1 mx-1 border border-gray-300 rounded-md ${
+              currentPage === number
+                ? 'bg-green-700 text-white'
+                : 'bg-white text-green-700 hover:bg-green-200'
+            }`}
+          >
+            {number}
+          </button>
+        ))}
+      </div>
+    );
+  };
+
+  const currentItems = data.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="p-6 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 shadow-xl rounded-xl">
-      {/* Título centrado */}
       <h2 className="text-3xl font-extrabold text-gray-800 mb-6 text-center tracking-wider">
-        <FaPlus className="inline-block mb-2 text-green-700" /> {/* Ícono en el título */}
-        Raza de Gallinas
+        <FaPlus className="inline-block mb-2 text-green-700" /> Raza de Gallinas
       </h2>
 
-      {/* Botón centrado */}
       <div className="flex justify-center mb-4">
         <button
           onClick={() => {
             setShowForm(!showForm);
-            setEditRaza(null); // Resetea los datos si es un nuevo registro
+            setEditRaza(null); 
           }}
           className={`px-6 py-3 text-white font-semibold rounded-full shadow-lg transition-all duration-300 ${
             showForm
@@ -60,7 +95,7 @@ const RazaG = () => {
               : 'bg-gradient-to-r from-green-600 to-green-800 hover:from-green-500 hover:to-green-700'
           }`}
         >
-          <FaPlus className="inline-block mr-2" /> {/* Ícono de agregar */}
+          <FaPlus className="inline-block mr-2" />
           {showForm ? 'Ocultar Formulario' : 'Agregar Nueva Raza'}
         </button>
       </div>
@@ -69,7 +104,7 @@ const RazaG = () => {
 
       {loading ? (
         <p className="text-gray-700 text-center">Cargando datos...</p>
-      ) : data.length > 0 ? (
+      ) : currentItems.length > 0 ? (
         <div className="overflow-x-auto max-w-full rounded-lg shadow-lg">
           <table className="min-w-full text-sm text-left text-gray-700 bg-white rounded-lg">
             <thead className="text-xs text-white uppercase bg-gradient-to-r from-green-600 to-green-800">
@@ -83,12 +118,10 @@ const RazaG = () => {
               </tr>
             </thead>
             <tbody>
-              {data.map((raza, index) => (
+              {currentItems.map((raza, index) => (
                 <tr
                   key={raza.idRaza}
-                  className={`bg-white border-b hover:bg-gray-50 ${
-                    index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
-                  }`}
+                  className={`border-b ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-100`}
                 >
                   <td className="px-6 py-4 text-center">{raza.raza}</td>
                   <td className="px-6 py-4 text-center">{raza.origen}</td>
@@ -98,10 +131,9 @@ const RazaG = () => {
                   <td className="px-6 py-4 text-center">
                     <button
                       onClick={() => handleUpdateClick(raza)}
-                      className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-semibold rounded-lg shadow-md hover:from-yellow-400 hover:to-yellow-500 transition-all duration-300 flex items-center"
+                      className="px-4 py-2 bg-yellow-500 hover:bg-yellow-400 text-white rounded-lg"
                     >
-                      <FaEdit className="inline-block mr-2" /> {/* Ícono de editar */}
-                      Actualizar
+                      <FaEdit className="inline-block mr-2" /> Actualizar
                     </button>
                   </td>
                 </tr>
@@ -112,6 +144,8 @@ const RazaG = () => {
       ) : (
         <p className="text-gray-600 text-center">No hay datos disponibles.</p>
       )}
+
+      <Pagination totalPages={totalPages} currentPage={currentPage} paginate={paginate} />
     </div>
   );
 };

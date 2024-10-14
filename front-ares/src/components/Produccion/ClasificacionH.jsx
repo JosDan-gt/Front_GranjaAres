@@ -13,13 +13,13 @@ import { GiEggClutch } from "react-icons/gi";
 const ClasificacionH = () => {
   const { id } = useParams();
   const [clasificacion, setClasificacion] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(2); // Mostrar 2 días por página
-  const [sortOrder, setSortOrder] = useState('desc');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showForm, setShowForm] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [cargando, setCargando] = useState(false);
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [clasPorPagina] = useState(2); // Mostrar 2 días por página
+  const [ordenar, setOrdenar] = useState('desc');
+  const [busqueda, setBusqueda] = useState('');
+  const [mostrarForm, setMostrarForm] = useState(false);
+  const [selecElemnt, setSelecElemnt] = useState(null);
   const location = useLocation();
   const { estadoBaja } = location.state || {};
   const [dateRange, setDateRange] = useState([null, null]);
@@ -27,8 +27,8 @@ const ClasificacionH = () => {
 
   const isDisabled = estadoBaja !== undefined ? estadoBaja : false;
 
-  const refreshData = async () => {
-    setLoading(true);
+  const refrescarData = async () => {
+    setCargando(true);
     try {
       const response = await axiosInstance.get(`/clasific1?IdLote=${id}`);
       const data = Array.isArray(response.data) ? response.data : [response.data];
@@ -36,13 +36,13 @@ const ClasificacionH = () => {
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
-      setLoading(false);
+      setCargando(false);
     }
   };
 
   useEffect(() => {
-    refreshData();
-  }, [id, sortOrder]);
+    refrescarData();
+  }, [id, ordenar]);
 
   const sortData = (data) => {
     return data.sort((a, b) => {
@@ -53,22 +53,17 @@ const ClasificacionH = () => {
 
       // Comparar primero por la fecha de clasificación
       if (dateClasificacionA.getTime() !== dateClasificacionB.getTime()) {
-        return sortOrder === 'asc' ? dateClasificacionA - dateClasificacionB : dateClasificacionB - dateClasificacionA;
+        return ordenar === 'asc' ? dateClasificacionA - dateClasificacionB : dateClasificacionB - dateClasificacionA;
       }
 
       // Si las fechas de clasificación son iguales, comparar por la fecha de producción
-      return sortOrder === 'asc' ? dateProduccionA - dateProduccionB : dateProduccionB - dateProduccionA;
+      return ordenar === 'asc' ? dateProduccionA - dateProduccionB : dateProduccionB - dateProduccionA;
     });
-  };
-
-
-  const handleSortChange = () => {
-    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
 
   const filterData = (data) => {
     return data.filter((item) => {
-      const term = searchTerm.toLowerCase();
+      const term = busqueda.toLowerCase();
       const itemFecha = new Date(item[selectedDateType]).getTime();
       const rangeStart = dateRange[0] ? dateRange[0].getTime() : null;
       const rangeEnd = dateRange[1] ? dateRange[1].getTime() : null;
@@ -92,8 +87,8 @@ const ClasificacionH = () => {
   const paginateData = (data) => {
     const groupedByDate = groupByDate(data, 'fechaRegistroP');
     const allDates = Object.keys(groupedByDate);
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const indexOfLastItem = paginaActual * clasPorPagina;
+    const indexOfFirstItem = indexOfLastItem - clasPorPagina;
     return allDates.slice(indexOfFirstItem, indexOfLastItem).reduce((acc, date) => {
       acc[date] = groupedByDate[date];
       return acc;
@@ -102,23 +97,23 @@ const ClasificacionH = () => {
 
   const filteredData = filterData(clasificacion);
   const paginatedData = paginateData(filteredData);
-  const totalPages = Math.ceil(Object.keys(groupByDate(filteredData, 'fechaRegistroP')).length / itemsPerPage);
+  const totalPages = Math.ceil(Object.keys(groupByDate(filteredData, 'fechaRegistroP')).length / clasPorPagina);
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber) => setPaginaActual(pageNumber);
 
   const handleAddClick = () => {
-    setSelectedItem(null);
-    setShowForm(true);
+    setSelecElemnt(null);
+    setMostrarForm(true);
   };
 
   const handleEditClick = (item) => {
-    setSelectedItem(item);
-    setShowForm(true);
+    setSelecElemnt(item);
+    setMostrarForm(true);
   };
 
   const handleCloseForm = () => {
-    setShowForm(false);
-    setSelectedItem(null);
+    setMostrarForm(false);
+    setSelecElemnt(null);
   };
 
   const handleDateRangeChange = (dates) => {
@@ -130,9 +125,14 @@ const ClasificacionH = () => {
     setSelectedDateType(e.target.value);
   };
 
-  const Pagination = ({ totalPages, currentPage, paginate }) => {
+  const Paginacion = ({ totalPages, paginaActual, paginate }) => {
+    const maxPageVisibles = 3
     const pageNumbers = [];
-    for (let i = 1; i <= totalPages; i++) {
+
+    const inicioPage = Math.max(1, paginaActual - Math.floor(maxPageVisibles / 2));
+    const finPage = Math.min(totalPages, inicioPage + maxPageVisibles - 1);
+
+    for (let i = inicioPage; i <= finPage; i++) {
       pageNumbers.push(i);
     }
 
@@ -142,7 +142,7 @@ const ClasificacionH = () => {
           <button
             key={number}
             onClick={() => paginate(number)}
-            className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-all duration-300 focus:outline-none ${currentPage === number
+            className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-all duration-300 focus:outline-none ${paginaActual === number
               ? 'bg-gradient-to-r from-blue-600 to-blue-800 text-white'
               : 'bg-white text-blue-700 border border-gray-300 hover:bg-blue-100 hover:text-blue-900'
               }`}
@@ -197,13 +197,13 @@ const ClasificacionH = () => {
         </button>
       </div>
 
-      {showForm && (
+      {mostrarForm && (
         <ClasificacionForm
-          item={selectedItem}
+          item={selecElemnt}
           idLote={id}
           onClose={handleCloseForm}
-          refreshData={refreshData}
-          isUpdateMode={selectedItem !== null}
+          refrescarData={refrescarData}
+          isUpdateMode={selecElemnt !== null}
         />
       )}
 
@@ -226,8 +226,8 @@ const ClasificacionH = () => {
           <label className="font-semibold text-gray-700">Filtrar por Tamaño:</label>
           <input
             type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
             className="ml-2 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Buscar por tamaño"
           />
@@ -294,7 +294,7 @@ const ClasificacionH = () => {
             </table>
           </div>
         ))}
-        <Pagination totalPages={totalPages} currentPage={currentPage} paginate={paginate} />
+        <Paginacion totalPages={totalPages} paginaActual={paginaActual} paginate={paginate} />
       </div>
     </div>
   );

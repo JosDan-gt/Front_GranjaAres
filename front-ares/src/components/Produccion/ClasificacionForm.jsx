@@ -12,7 +12,7 @@ import { BsFillLayersFill } from "react-icons/bs";
 
 
 
-const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData }) => {
+const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refrescarData }) => {
   const { roles } = useContext(AuthContext);
   const isAdminOrGestor = roles.includes('Admin') || roles.includes('Gestor');
 
@@ -28,7 +28,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
   const [fechasProduccion, setFechasProduccion] = useState([]);
   const [selectedProduccion, setSelectedProduccion] = useState(null);
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [cargando, setCargando] = useState(false);
 
   useEffect(() => {
     const fetchFechasProduccion = async () => {
@@ -182,10 +182,10 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setCargando(true);
 
     if (!validateForm()) {
-      setLoading(false);
+      setCargando(false);
       return;
     }
 
@@ -210,7 +210,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
 
       alert(`Clasificación ${isUpdateMode ? 'actualizada' : 'registrada'} exitosamente.`);
       onClose();
-      refreshData();
+      refrescarData();
     } catch (error) {
       if (error.response && error.response.data) {
         alert(`Error al registrar clasificación: ${error.response.data.message || 'Error desconocido.'}`);
@@ -219,7 +219,7 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
       }
       console.error('Error al registrar clasificación:', error);
     } finally {
-      setLoading(false);
+      setCargando(false);
     }
   };
 
@@ -355,11 +355,11 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refreshData })
               </button>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={cargando}
                 className="flex items-center justify-center w-full sm:w-auto px-4 py-2 bg-green-700 text-white font-semibold rounded-lg shadow-md hover:bg-green-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
               >
                 <FaSave className="mr-2" /> {/* Ícono de guardar */}
-                {loading ? 'Guardando...' : isUpdateMode ? 'Actualizar' : 'Guardar'}
+                {cargando ? 'Guardando...' : isUpdateMode ? 'Actualizar' : 'Guardar'}
               </button>
             </div>
           )}

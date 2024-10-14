@@ -90,7 +90,17 @@ const Usuarios = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = activeUsuarios.slice(indexOfFirstItem, indexOfLastItem);
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const paginate = ({ totalPages, currentPage, paginate }) => {
+    const maxPageVisibles = 3
+    const pageNumbers = [];
+
+    const inicioPage = Math.max(1, currentPage - Math.floor(maxPageVisibles / 2));
+    const finPage = Math.min(totalPages, inicioPage + maxPageVisibles - 1);
+
+    for (let i = inicioPage; i <= finPage; i++) {
+      pageNumbers.push(i);
+    }
+  }
 
   return (
     <div className="p-6 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 shadow-xl rounded-xl">
@@ -228,8 +238,8 @@ const Usuarios = () => {
             key={index}
             onClick={() => paginate(index + 1)}
             className={`mx-1 px-4 py-2 text-white font-semibold rounded-lg shadow-md ${currentPage === index + 1
-                ? 'bg-blue-800'
-                : 'bg-blue-600 hover:bg-blue-500 transition-all duration-300'
+              ? 'bg-blue-800'
+              : 'bg-blue-600 hover:bg-blue-500 transition-all duration-300'
               }`}
           >
             {index + 1}

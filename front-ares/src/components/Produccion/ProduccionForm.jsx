@@ -25,11 +25,38 @@ const ProduccionForm = ({ item, idLote, onClose, refreshData }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevFormData => ({
+  
+    // Validación para evitar números negativos
+    if (parseInt(value, 10) < 0) {
+      setErrors((prev) => ({ ...prev, [name]: 'El valor no puede ser negativo.' }));
+      return; // No actualiza el estado si el valor es negativo
+    }
+  
+    // Validación específica para `cantSueltos` y `cantCartones`
+    if (name === 'cantSueltos' && value > 29) {
+      setErrors((prev) => ({ ...prev, cantSueltos: 'No puede ser mayor a 29.' }));
+      return;
+    }
+  
+    if (name === 'cantCartones' && value > 11) {
+      setErrors((prev) => ({ ...prev, cantCartones: 'No puede ser mayor a 11.' }));
+      return;
+    }
+  
+    if (name === 'cantCajas' && value > 11) {
+      setErrors((prev) => ({ ...prev, cantCartones: 'No puede ser mayor a 11.' }));
+      return;
+    }
+    // Elimina errores si el valor vuelve a ser válido
+    setErrors((prev) => ({ ...prev, [name]: '' }));
+  
+    // Actualiza el estado del formulario
+    setFormData((prevFormData) => ({
       ...prevFormData,
-      [name]: value
+      [name]: value,
     }));
   };
+  
 
   const validateForm = () => {
     const newErrors = {};

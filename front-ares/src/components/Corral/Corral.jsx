@@ -134,6 +134,7 @@ const Corral = () => {
 
     // Cambio de página
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    
 
     return (
         <div className="p-6 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 shadow-xl rounded-xl">

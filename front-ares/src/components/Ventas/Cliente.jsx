@@ -77,8 +77,13 @@ const ClientesActivos = () => {
   };
 
   const Pagination = ({ totalPages, currentPage, paginate }) => {
+    const maxPageVisibles = 3;
     const pageNumbers = [];
-    for (let i = 1; i <= totalPages; i++) {
+
+    const inicioPage = Math.max(1, currentPage - Math.floor(maxPageVisibles / 2));
+    const finPage = Math.min(totalPages, inicioPage + maxPageVisibles - 1);
+
+    for (let i = inicioPage; i <= finPage; i++) {
       pageNumbers.push(i);
     }
 
