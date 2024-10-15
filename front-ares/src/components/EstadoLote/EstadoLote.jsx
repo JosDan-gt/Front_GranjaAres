@@ -7,6 +7,7 @@ import { GiEggClutch } from 'react-icons/gi';
 import { LuReplace } from 'react-icons/lu';
 import { MdRealEstateAgent } from "react-icons/md";
 import { TbBuildingEstate } from "react-icons/tb";
+import { FaSpinner } from 'react-icons/fa';
 
 const EstadoLote = () => {
   const { idLote } = useParams();
@@ -246,7 +247,9 @@ const EstadoLote = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
-          <div className="col-span-3 text-center text-gray-500">Cargando...</div>
+          <div className="col-span-3 flex justify-center items-center h-40">
+            <FaSpinner className="animate-spin text-blue-500 text-5xl" />
+          </div>
         ) : currentItems.length ? (
           currentItems.map((estado) => {
             const etapa = etapas.find((e) => e.idEtapa === estado.idEtapa);
@@ -306,9 +309,12 @@ const EstadoLote = () => {
             );
           })
         ) : (
-          <div className="col-span-3 text-center text-gray-500">No hay registros de estado disponibles.</div>
+          <div className="col-span-3 text-center text-gray-500">
+            No hay registros de estado disponibles.
+          </div>
         )}
       </div>
+
 
       <Pagination totalPages={totalPages} currentPage={currentPage} paginate={paginate} />
     </div>

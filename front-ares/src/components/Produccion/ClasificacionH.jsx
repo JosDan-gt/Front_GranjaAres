@@ -9,6 +9,8 @@ import { useLocation } from 'react-router-dom';
 import { MdRealEstateAgent } from "react-icons/md";
 import { LuReplace } from "react-icons/lu";
 import { GiEggClutch } from "react-icons/gi";
+import { FaSpinner } from 'react-icons/fa';
+
 
 const ClasificacionH = () => {
   const { id } = useParams();
@@ -28,7 +30,7 @@ const ClasificacionH = () => {
   const isDisabled = estadoBaja !== undefined ? estadoBaja : false;
 
   const refrescarData = async () => {
-    setCargando(true);
+    setCargando(true); // Mostrar el spinner
     try {
       const response = await axiosInstance.get(`/clasific1?IdLote=${id}`);
       const data = Array.isArray(response.data) ? response.data : [response.data];
@@ -36,9 +38,10 @@ const ClasificacionH = () => {
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
-      setCargando(false);
+      setCargando(false); // Ocultar el spinner
     }
   };
+  
 
   useEffect(() => {
     refrescarData();
@@ -234,69 +237,74 @@ const ClasificacionH = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto max-w-full rounded-lg shadow-lg">
-        {Object.keys(paginatedData).map((productionDate) => (
-          <div key={productionDate}>
-            <h3 className="text-lg font-bold text-gray-700 mb-4">
-              Fecha de Producción: {productionDate}
-            </h3>
-            <table className="w-full text-sm text-left text-gray-700 bg-white rounded-lg mb-6">
-              <thead className="text-xs text-white uppercase bg-gradient-to-r from-blue-600 to-blue-800">
-                <tr>
-                  <th className="px-6 py-3 text-center">Tamaño</th>
-                  <th className="px-6 py-3 text-center">
-                    <FaBox className="inline-block mr-1" /> Cajas
-                  </th>
-                  <th className="px-6 py-3 text-center">
-                    <FaLayerGroup className="inline-block mr-1" /> Cartones Extra
-                  </th>
-                  <th className="px-6 py-3 text-center">
-                    <FaEgg className="inline-block mr-1" /> Huevos Sueltos
-                  </th>
-                  <th className="px-6 py-3 text-center">Cantidad Total</th>
-                  <th className="px-6 py-3 text-center">Fecha de Clasificación</th>
-                  <th className="px-6 py-3 text-center">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedData[productionDate].map((item, index) => (
-                  <tr
-                    key={index}
-                    className={`bg-white border-b hover:bg-gray-50 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
-                      }`}
-                  >
-                    <td className="px-6 py-4 text-center">{item.tamano}</td>
-                    <td className="px-6 py-4 text-center">{item.cajas}</td>
-                    <td className="px-6 py-4 text-center">{item.cartonesExtras}</td>
-                    <td className="px-6 py-4 text-center">{item.huevosSueltos}</td>
-                    <td className="px-6 py-4 text-center">{item.totalUnitaria}</td>
-                    <td className="px-6 py-4 text-center">
-                      {item.fechaClaS
-                        ? new Date(item.fechaClaS).toLocaleDateString()
-                        : 'Sin fecha'}
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <button
-                        disabled={isDisabled}
-                        onClick={() => handleEditClick(item)}
-                        className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-all duration-300 ${isDisabled
-                          ? 'bg-gray-400 text-gray-500 cursor-not-allowed'
-                          : 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white hover:from-yellow-400 hover:to-yellow-500'
-                          }`}
-                      >
-                        <FaEdit className="inline-block mr-2" /> {/* Ícono de editar */}
-                        Editar
-                      </button>
-                    </td>
+      {cargando ? (
+        <div className="flex justify-center items-center h-40">
+          <FaSpinner className="animate-spin text-blue-500 text-4xl" />
+        </div>
+      ) : (
+        <div className="overflow-x-auto max-w-full rounded-lg shadow-lg">
+          {Object.keys(paginatedData).map((productionDate) => (
+            <div key={productionDate}>
+              <h3 className="text-lg font-bold text-gray-700 mb-4">
+                Fecha de Producción: {productionDate}
+              </h3>
+              <table className="w-full text-sm text-left text-gray-700 bg-white rounded-lg mb-6">
+                <thead className="text-xs text-white uppercase bg-gradient-to-r from-blue-600 to-blue-800">
+                  <tr>
+                    <th className="px-6 py-3 text-center">Tamaño</th>
+                    <th className="px-6 py-3 text-center">
+                      <FaBox className="inline-block mr-1" /> Cajas
+                    </th>
+                    <th className="px-6 py-3 text-center">
+                      <FaLayerGroup className="inline-block mr-1" /> Cartones Extra
+                    </th>
+                    <th className="px-6 py-3 text-center">
+                      <FaEgg className="inline-block mr-1" /> Huevos Sueltos
+                    </th>
+                    <th className="px-6 py-3 text-center">Cantidad Total</th>
+                    <th className="px-6 py-3 text-center">Fecha de Clasificación</th>
+                    <th className="px-6 py-3 text-center">Acciones</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ))}
-        <Paginacion totalPages={totalPages} paginaActual={paginaActual} paginate={paginate} />
-      </div>
-    </div>
+                </thead>
+                <tbody>
+                  {paginatedData[productionDate].map((item, index) => (
+                    <tr
+                      key={index}
+                      className={`bg-white border-b hover:bg-gray-50 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                        }`}
+                    >
+                      <td className="px-6 py-4 text-center">{item.tamano}</td>
+                      <td className="px-6 py-4 text-center">{item.cajas}</td>
+                      <td className="px-6 py-4 text-center">{item.cartonesExtras}</td>
+                      <td className="px-6 py-4 text-center">{item.huevosSueltos}</td>
+                      <td className="px-6 py-4 text-center">{item.totalUnitaria}</td>
+                      <td className="px-6 py-4 text-center">
+                        {item.fechaClaS
+                          ? new Date(item.fechaClaS).toLocaleDateString()
+                          : 'Sin fecha'}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <button
+                          disabled={isDisabled}
+                          onClick={() => handleEditClick(item)}
+                          className={`px-4 py-2 font-semibold rounded-lg shadow-md transition-all duration-300 ${isDisabled
+                            ? 'bg-gray-400 text-gray-500 cursor-not-allowed'
+                            : 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white hover:from-yellow-400 hover:to-yellow-500'
+                            }`}
+                        >
+                          <FaEdit className="inline-block mr-2" /> {/* Ícono de editar */}
+                          Editar
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ))}
+          <Paginacion totalPages={totalPages} paginaActual={paginaActual} paginate={paginate} />
+        </div>
+      )}</div>
   );
 };
 

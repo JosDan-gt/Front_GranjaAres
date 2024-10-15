@@ -113,11 +113,31 @@ const ClasificacionForm = ({ idLote, onClose, isUpdateMode, item, refrescarData 
       if (!regex.test(value)) return;
     }
 
+    if (parseInt(value, 10) < 0) {
+      setErrors((prev) => ({ ...prev, [name]: 'El valor no puede ser negativo.' }));
+      return; // No actualiza el estado si el valor es negativo
+    }
+
+    if (name === 'huevosSueltos' && value > 29) {
+      setErrors((prev) => ({ ...prev, huevosSueltos: 'No puede ser mayor a 29.' }));
+      return;
+    }
+  
+    if (name === 'cartonesExtras' && value > 11) {
+      setErrors((prev) => ({ ...prev, cartonesExtras: 'No puede ser mayor a 11.' }));
+      return;
+    }
+
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value, // Actualizamos siempre el valor del campo, incluso si es el mismo
     }));
   };
+
+  
+
+
+
 
   const handleFechaProduChange = (e) => {
     const fechaSeleccionada = e.target.value;

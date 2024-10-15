@@ -2,14 +2,13 @@ import React, { useEffect, useState, useContext } from 'react';
 import axiosInstance from '../axiosInstance';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../Context/AuthContext';
-import { FaArrowUp, FaBoxOpen } from 'react-icons/fa';
+import { FaArrowUp, FaBoxOpen, FaSpinner } from 'react-icons/fa';
 import { IoIosAlert } from "react-icons/io";
-
 
 const LotesDadosDeBaja = ({ reloadFlag, triggerReload }) => {
     const [lotesDadosDeBaja, setLotesDadosDeBaja] = useState([]);
+    const [isLoading, setIsLoading] = useState(true); // Unificado el estado de carga
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(true);
     const { roles } = useContext(AuthContext);
     const isAdmin = roles.includes('Admin');
     const isUser = roles.includes('User');
@@ -17,12 +16,13 @@ const LotesDadosDeBaja = ({ reloadFlag, triggerReload }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                setIsLoading(true); // Mostrar el spinner
                 const response = await axiosInstance.get('/api/lotes?dadosDeBaja=true');
                 setLotesDadosDeBaja(response.data || []);
             } catch (error) {
                 console.error('Error fetching data:', error.response ? error.response.data : error.message);
             } finally {
-                setIsLoading(false);
+                setIsLoading(false); // Ocultar el spinner
             }
         };
 
@@ -37,19 +37,7 @@ const LotesDadosDeBaja = ({ reloadFlag, triggerReload }) => {
             return;
         }
 
-        switch (value) {
-            case 'produccionG':
-                navigate(`/produccionG/${idLote}`, { state: { estadoBaja: selectedLote.estadoBaja } });
-                break;
-            case 'clasificacion':
-                navigate(`/clasificacion/${idLote}`, { state: { estadoBaja: selectedLote.estadoBaja } });
-                break;
-            case 'estado':
-                navigate(`/estado/${idLote}`, { state: { estadoBaja: selectedLote.estadoBaja } });
-                break;
-            default:
-                break;
-        }
+        navigate(`/${value}/${idLote}`, { state: { estadoBaja: selectedLote.estadoBaja } });
     };
 
     const handleDarDeAlta = async (idLote) => {
@@ -67,18 +55,25 @@ const LotesDadosDeBaja = ({ reloadFlag, triggerReload }) => {
     };
 
     if (isLoading) {
-        return <p>Cargando datos, por favor espera...</p>;
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <FaSpinner className="animate-spin text-red-500 text-6xl" />
+            </div>
+        );
     }
 
     return (
-        <div className="p-8 bg-gradient-to-r  from-red-100 to-gray-200 shadow-lg rounded-lg">
+        <div className="p-8 bg-gradient-to-r from-red-100 to-gray-200 shadow-lg rounded-lg">
             <div className="flex flex-col sm:flex-row justify-between items-center mb-8 space-y-4 sm:space-y-0">
                 <h2 className="text-4xl font-extrabold tracking-wider text-red-800">Lotes Dados de Baja</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {lotesDadosDeBaja.map((lote) => (
-                    <div key={lote.idLote} className="bg-white rounded-lg shadow-xl p-6 hover:shadow-2xl transition-shadow duration-300 transform hover:scale-105">
+                    <div
+                        key={lote.idLote}
+                        className="bg-white rounded-lg shadow-xl p-6 hover:shadow-2xl transition-shadow duration-300 transform hover:scale-105"
+                    >
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-2xl font-extrabold text-red-800">{lote.numLote}</h3>
                             <IoIosAlert className="text-red-600 text-3xl" />
@@ -91,10 +86,11 @@ const LotesDadosDeBaja = ({ reloadFlag, triggerReload }) => {
                             </div>
                             <div className="bg-gray-100 p-4 rounded-lg shadow-md">
                                 <p className="text-sm font-semibold text-gray-700">Fecha de Adquisición</p>
-                                <p className="text-lg font-bold text-gray-600">{new Date(lote.fechaAdq).toLocaleDateString()}</p>
+                                <p className="text-lg font-bold text-gray-600">
+                                    {new Date(lote.fechaAdq).toLocaleDateString()}
+                                </p>
                             </div>
                         </div>
-
 
                         <label className="block text-sm font-medium text-gray-800 mt-6">Acciones</label>
                         <select
@@ -107,7 +103,6 @@ const LotesDadosDeBaja = ({ reloadFlag, triggerReload }) => {
                             {isAdmin && <option value="clasificacion">Clasificación</option>}
                             {isAdmin && <option value="estado">Estado</option>}
                         </select>
-
 
                         {isAdmin && (
                             <div className="flex flex-col mt-6 space-y-3">

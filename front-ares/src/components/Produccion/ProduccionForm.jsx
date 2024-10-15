@@ -33,17 +33,17 @@ const ProduccionForm = ({ item, idLote, onClose, refreshData }) => {
     }
   
     // Validación específica para `cantSueltos` y `cantCartones`
+    if (name === 'defectuosos' && value > 29) {
+      setErrors((prev) => ({ ...prev, defectuosos: 'No puede ser mayor a 29.' }));
+      return;
+    }
+
     if (name === 'cantSueltos' && value > 29) {
       setErrors((prev) => ({ ...prev, cantSueltos: 'No puede ser mayor a 29.' }));
       return;
     }
   
     if (name === 'cantCartones' && value > 11) {
-      setErrors((prev) => ({ ...prev, cantCartones: 'No puede ser mayor a 11.' }));
-      return;
-    }
-  
-    if (name === 'cantCajas' && value > 11) {
       setErrors((prev) => ({ ...prev, cantCartones: 'No puede ser mayor a 11.' }));
       return;
     }

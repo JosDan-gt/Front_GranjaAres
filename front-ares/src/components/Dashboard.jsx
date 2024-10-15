@@ -5,21 +5,20 @@ import ClasificacionGrafica from '../components/Dashboard/clasificacionGrafica.j
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { AuthContext } from '../components/Context/AuthContext.jsx';
-import { FaEgg, FaUserAlt, FaChartBar, FaFeatherAlt, FaExclamationTriangle } from 'react-icons/fa'; // Íconos
+import { FaEgg, FaUserAlt, FaChartBar, FaFeatherAlt, FaExclamationTriangle } from 'react-icons/fa'; 
 import { GiChicken } from "react-icons/gi";
 import { TbHexagonLetterR } from "react-icons/tb";
-
-// Importa tu imagen de fondo
+import { FaSpinner } from 'react-icons/fa';
 
 const Dashboard = () => {
   const [lotes, setLotes] = useState([]);
   const [datosLote, setDatosLote] = useState(null);
   const [loteActual, setLoteActual] = useState(null);
+  const [loading, setLoading] = useState(true); // Estado para la carga
   const [period, setPeriod] = useState('diario');
   const navigate = useNavigate();
   const { setIsAuthenticated } = useContext(AuthContext);
 
-  // Verificar autenticación al montar el componente
   useEffect(() => {
     const token = localStorage.getItem('token') || Cookies.get('token');
     if (token) {
@@ -30,25 +29,23 @@ const Dashboard = () => {
     }
   }, [navigate, setIsAuthenticated]);
 
-  // Cargar lotes
   useEffect(() => {
     const fetchLotes = async () => {
       try {
         const response = await axiosInstance.get('/api/lotes');
         setLotes(response.data);
-
         if (response.data.length > 0) {
           setLoteActual(response.data[0].idLote);
         }
       } catch (error) {
         console.error('Error fetching lotes:', error);
+      } finally {
+        setLoading(false); // Desactivamos la carga
       }
     };
-
     fetchLotes();
   }, []);
 
-  // Cargar detalles del lote seleccionado
   useEffect(() => {
     if (loteActual !== null) {
       const fetchLoteData = async () => {
@@ -59,10 +56,17 @@ const Dashboard = () => {
           console.error('Error fetching lote data:', error);
         }
       };
-
       fetchLoteData();
     }
   }, [loteActual]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center mt-24">
+        <FaSpinner className="animate-spin text-6xl text-gray-600" />
+      </div>
+    );
+  }
 
   if (!lotes.length) {
     return (
@@ -79,7 +83,6 @@ const Dashboard = () => {
     <div className="p-8 min-h-screen bg-cover bg-center">
       <div className="mb-8 text-center">
         <h1 className="text-5xl font-extrabold text-gray-800 mb-6">Dashboard</h1>
-
         <div className="mb-6">
           <label htmlFor="lote-select" className="block text-2xl font-semibold mb-2 text-gray-800">
             Selecciona un Lote:
@@ -99,7 +102,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Detalles del Lote */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <div className="bg-green-100 shadow-lg rounded-lg p-6 hover:shadow-xl transition-shadow">
           <h4 className="font-semibold text-gray-700 mb-2 flex items-center">
@@ -136,33 +138,20 @@ const Dashboard = () => {
         </div>
       </div>
 
-
-      {/* Botones para seleccionar el periodo */}
       <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-6">
-        <button
-          onClick={() => setPeriod('diario')}
-          className={`px-5 py-3 rounded-lg text-xl font-semibold shadow-md transition-colors duration-300 ${period === 'diario' ? 'bg-red-700' : 'bg-red-700'
-            } text-white hover:bg-red-800 w-full sm:w-auto`}
-        >
-          Diario
-        </button>
-        <button
-          onClick={() => setPeriod('semanal')}
-          className={`px-5 py-3 rounded-lg text-xl font-semibold shadow-md transition-colors duration-300 ${period === 'semanal' ? 'bg-blue-700' : 'bg-blue-700'
-            } text-white hover:bg-blue-800 w-full sm:w-auto`}
-        >
-          Semanal
-        </button>
-        <button
-          onClick={() => setPeriod('mensual')}
-          className={`px-5 py-3 rounded-lg text-xl font-semibold shadow-md transition-colors duration-300 ${period === 'mensual' ? 'bg-gray-700' : 'bg-gray-600'
-            } text-white hover:bg-gray-700 w-full sm:w-auto`}
-        >
-          Mensual
-        </button>
+        {['diario', 'semanal', 'mensual'].map((p) => (
+          <button
+            key={p}
+            onClick={() => setPeriod(p)}
+            className={`px-5 py-3 rounded-lg text-xl font-semibold shadow-md transition-colors duration-300 ${
+              period === p ? 'bg-gray-700' : 'bg-gray-600'
+            } text-white hover:bg-gray-800 w-full sm:w-auto`}
+          >
+            {p.charAt(0).toUpperCase() + p.slice(1)}
+          </button>
+        ))}
       </div>
 
-      {/* Gráficas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white shadow-lg rounded-lg p-6 hover:shadow-xl transition-shadow">
           <ProduccionGrafica idLote={loteActual} period={period} />
@@ -172,7 +161,6 @@ const Dashboard = () => {
         </div>
       </div>
     </div>
-
   );
 };
 
