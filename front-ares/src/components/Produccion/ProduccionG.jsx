@@ -183,6 +183,7 @@ const ProduccionG = () => {
             refreshData();
           }}
           refreshData={refreshData}
+          isEditing={!!currentItem}
         />
       )}
 
