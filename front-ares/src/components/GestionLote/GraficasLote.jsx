@@ -116,7 +116,7 @@ const ProductionPDFDocument = ({ productionData, productionImage }) => (
 );
 
 // Componente de PDF para Clasificación
-const ClassificationPDFDocument = ({ classificationData, classificationImage }) => (
+const ClassificationPDFDocument = ({ classificationData, classificationImage, period }) => (
     <Document>
         <Page style={styles.page}>
             <PDFHeader title="Registro de Clasificación" />
@@ -130,18 +130,24 @@ const ClassificationPDFDocument = ({ classificationData, classificationImage }) 
                         <Text style={styles.tableColHeader}>Total Unitaria</Text>
                     </View>
                     {classificationData.map((d, index) => (
-                        <View key={index} style={styles.tableRow}>
-                            <Text style={styles.tableCol}>{d.fechaRegistro}</Text>
-                            <Text style={styles.tableCol}>{d.tamano}</Text>
-                            <Text style={styles.tableCol}>{d.totalUnitaria}</Text>
-                        </View>
+                        <tr key={index} className="bg-white border-b hover:bg-red-50">
+                            <td className="px-6 py-4 text-center">
+                                {period === 'semanal' && d.fechaInicio && d.fechaFin
+                                    ? `Semana ${d.fechaRegistro} (${d.fechaInicio} - ${d.fechaFin})`
+                                    : d.fechaRegistro}
+                            </td>
+                            <td className="px-6 py-4 text-center">{d.tamano}</td>
+                            <td className="px-6 py-4 text-center">{d.totalUnitaria}</td>
+                        </tr>
                     ))}
+
                 </View>
             </View>
             <PDFFooter />
         </Page>
     </Document>
 );
+
 
 // Componente de PDF para Estado del Lote
 const EstadoLotePDFDocument = ({ estadoLoteData, estadoLoteImage }) => (
@@ -273,6 +279,16 @@ const GraficasLote = ({ idLote }) => {
         }
     }, [idLote, period]);*/}
 
+    // Función para obtener el rango de fechas de una semana a partir del número de semana y el año
+    function getStartAndEndOfWeek(week, year) {
+        const firstDayOfYear = new Date(year, 0, 1);
+        const daysOffset = ((week - 1) * 7) - firstDayOfYear.getDay() + 1;
+        const startOfWeek = new Date(firstDayOfYear.setDate(firstDayOfYear.getDate() + daysOffset));
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6); // Añadir 6 días para obtener el final de la semana
+        return { startOfWeek, endOfWeek };
+    }
+
 
     useEffect(() => {
         if (idLote) {
@@ -281,13 +297,14 @@ const GraficasLote = ({ idLote }) => {
                     setProductionData(response.data || []); // Asegúrate de que siempre se asigne un arreglo
                 })
                 .catch(error => console.error('Error fetching production data:', error));
-    
+
             axiosInstance.get(`/api/dashboard/clasificacion/${idLote}/${period}`)
                 .then(response => {
                     setClassificationData(response.data || []); // Manejo seguro del retorno de datos
+                    console.log(response.data);
                 })
                 .catch(error => console.error('Error fetching classification data:', error));
-    
+
             axiosInstance.get(`/getestadolote?idLote=${idLote}`)
                 .then(response => {
                     setEstadoLoteData(response.data || []); // Asegúrate de asignar un arreglo
@@ -295,51 +312,76 @@ const GraficasLote = ({ idLote }) => {
                 .catch(error => console.error('Error fetching estado lote data:', error));
         }
     }, [idLote, period]);
-    
+
 
 
     useEffect(() => {
-        // Aseguramos que el gráfico solo intente hacer algo si hay datos y la referencia es válida
         if (productionChartRef.current && productionData.length > 0) {
-            setTimeout(() => {
-                const productionImageBase64 = productionChartRef.current.toBase64Image();
-                setProductionImage(productionImageBase64);
-            }, 1000);
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    const productionImageBase64 = productionChartRef.current.toBase64Image();
+                    setProductionImage(productionImageBase64);
+                }, 1000);
+            });
         }
-    
+
         return () => {
-            // Verificamos que productionChartRef.current no sea null antes de intentar destruir el gráfico
             if (productionChartRef.current && productionChartRef.current.chartInstance) {
                 productionChartRef.current.chartInstance.destroy();
             }
             setProductionImage(null);
         };
     }, [productionData]);
-    
+
     useEffect(() => {
-        if (classificationChartRef.current && classificationData.length > 0) {
-            setTimeout(() => {
-                const classificationImageBase64 = classificationChartRef.current.toBase64Image();
-                setClassificationImage(classificationImageBase64);
-            }, 1000);
+        if (idLote) {
+            axiosInstance.get(`/api/dashboard/clasificacion/${idLote}/${period}`)
+                .then(response => {
+                    const classificationData = response.data || [];
+
+                    if (period === 'semanal') {
+                        // Procesar los datos para añadir las fechas de inicio y fin
+                        const processedData = classificationData.map(item => {
+                            const match = item.fechaRegistro.match(/Semana (\d+) del (\d+)/);
+
+                            if (match) {
+                                const weekNum = parseInt(match[1]);
+                                const year = parseInt(match[2]);
+                                const { startOfWeek, endOfWeek } = getStartAndEndOfWeek(weekNum, year);
+
+                                return {
+                                    ...item,
+                                    fechaInicio: startOfWeek.toISOString().split('T')[0], // YYYY-MM-DD
+                                    fechaFin: endOfWeek.toISOString().split('T')[0], // YYYY-MM-DD
+                                };
+                            }
+                            return item;  // Si no es semanal, regresa el item sin cambios
+                        });
+
+                        setClassificationData(processedData);
+                    } else {
+                        setClassificationData(classificationData);
+                    }
+                })
+                .catch(error => console.error('Error fetching classification data:', error));
         }
-    
-        return () => {
-            if (classificationChartRef.current && classificationChartRef.current.chartInstance) {
-                classificationChartRef.current.chartInstance.destroy();
-            }
-            setClassificationImage(null);
-        };
-    }, [classificationData]);
-    
+    }, [idLote, period]);
+
+
+
+
+
+
     useEffect(() => {
         if (estadoLoteChartRef.current && estadoLoteData.length > 0) {
-            setTimeout(() => {
-                const estadoLoteImageBase64 = estadoLoteChartRef.current.toBase64Image();
-                setEstadoLoteImage(estadoLoteImageBase64);
-            }, 1000);
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    const estadoLoteImageBase64 = estadoLoteChartRef.current.toBase64Image();
+                    setEstadoLoteImage(estadoLoteImageBase64);
+                }, 1000);
+            });
         }
-    
+
         return () => {
             if (estadoLoteChartRef.current && estadoLoteChartRef.current.chartInstance) {
                 estadoLoteChartRef.current.chartInstance.destroy();
@@ -347,9 +389,9 @@ const GraficasLote = ({ idLote }) => {
             setEstadoLoteImage(null);
         };
     }, [estadoLoteData]);
-    
-    
-    
+
+
+
 
 
 
@@ -488,6 +530,7 @@ const GraficasLote = ({ idLote }) => {
                                 <FaDownload className="mr-2" /> Descargar PDF de Producción
                             </>)}
                         </PDFDownloadLink>
+
                     </div>
                 </div>
 
@@ -555,6 +598,7 @@ const GraficasLote = ({ idLote }) => {
                     </div>
                 </div>
 
+
                 {/* Tabla de Clasificación */}
                 <div className="bg-white p-4 rounded-lg shadow-lg border border-red-300 mt-4">
                     <h2 className="text-lg font-bold mb-4 text-center text-red-800">Clasificación Detallada</h2>
@@ -570,7 +614,9 @@ const GraficasLote = ({ idLote }) => {
                             <tbody>
                                 {paginatedClassificationData.map((d, index) => (
                                     <tr key={index} className="bg-white border-b hover:bg-red-50">
-                                        <td className="px-6 py-4 text-center">{d.fechaRegistro}</td>
+                                        <td className="px-6 py-4 text-center">
+                                            {period === 'semanal' ? `Semana ${d.fechaRegistro} (${d.fechaInicio} - ${d.fechaFin})` : d.fechaRegistro}
+                                        </td>
                                         <td className="px-6 py-4 text-center">{d.tamano}</td>
                                         <td className="px-6 py-4 text-center">{d.totalUnitaria}</td>
                                     </tr>
@@ -599,6 +645,7 @@ const GraficasLote = ({ idLote }) => {
                         </button>
                     </div>
                 </div>
+
 
                 {/* Gráfica de Estado del Lote */}
                 <div className="bg-white p-4 rounded-lg shadow-lg border border-brown-300">
