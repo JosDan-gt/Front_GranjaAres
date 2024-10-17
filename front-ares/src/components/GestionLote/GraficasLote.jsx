@@ -257,7 +257,7 @@ const GraficasLote = ({ idLote }) => {
     const classificationChartRef = useRef(null);
     const estadoLoteChartRef = useRef(null);
 
-    useEffect(() => {
+    {/*useEffect(() => {
         if (idLote) {
             axiosInstance.get(`/api/dashboard/produccion/${idLote}/${period}`)
                 .then(response => setProductionData(response.data))
@@ -271,29 +271,85 @@ const GraficasLote = ({ idLote }) => {
                 .then(response => setEstadoLoteData(response.data))
                 .catch(error => console.error('Error fetching estado lote data:', error));
         }
-    }, [idLote, period]);
+    }, [idLote, period]);*/}
+
 
     useEffect(() => {
+        if (idLote) {
+            axiosInstance.get(`/api/dashboard/produccion/${idLote}/${period}`)
+                .then(response => {
+                    setProductionData(response.data || []); // Asegúrate de que siempre se asigne un arreglo
+                })
+                .catch(error => console.error('Error fetching production data:', error));
+    
+            axiosInstance.get(`/api/dashboard/clasificacion/${idLote}/${period}`)
+                .then(response => {
+                    setClassificationData(response.data || []); // Manejo seguro del retorno de datos
+                })
+                .catch(error => console.error('Error fetching classification data:', error));
+    
+            axiosInstance.get(`/getestadolote?idLote=${idLote}`)
+                .then(response => {
+                    setEstadoLoteData(response.data || []); // Asegúrate de asignar un arreglo
+                })
+                .catch(error => console.error('Error fetching estado lote data:', error));
+        }
+    }, [idLote, period]);
+    
+
+
+    useEffect(() => {
+        // Aseguramos que el gráfico solo intente hacer algo si hay datos y la referencia es válida
         if (productionChartRef.current && productionData.length > 0) {
-            // Añade un pequeño retraso para asegurarte de que la gráfica esté completamente renderizada
             setTimeout(() => {
                 const productionImageBase64 = productionChartRef.current.toBase64Image();
                 setProductionImage(productionImageBase64);
-            }, 1000); // 500ms debería ser suficiente, ajusta si es necesario
+            }, 1000);
         }
+    
+        return () => {
+            // Verificamos que productionChartRef.current no sea null antes de intentar destruir el gráfico
+            if (productionChartRef.current && productionChartRef.current.chartInstance) {
+                productionChartRef.current.chartInstance.destroy();
+            }
+            setProductionImage(null);
+        };
+    }, [productionData]);
+    
+    useEffect(() => {
         if (classificationChartRef.current && classificationData.length > 0) {
             setTimeout(() => {
                 const classificationImageBase64 = classificationChartRef.current.toBase64Image();
                 setClassificationImage(classificationImageBase64);
             }, 1000);
         }
+    
+        return () => {
+            if (classificationChartRef.current && classificationChartRef.current.chartInstance) {
+                classificationChartRef.current.chartInstance.destroy();
+            }
+            setClassificationImage(null);
+        };
+    }, [classificationData]);
+    
+    useEffect(() => {
         if (estadoLoteChartRef.current && estadoLoteData.length > 0) {
             setTimeout(() => {
                 const estadoLoteImageBase64 = estadoLoteChartRef.current.toBase64Image();
                 setEstadoLoteImage(estadoLoteImageBase64);
             }, 1000);
         }
-    }, [productionData, classificationData, estadoLoteData]);
+    
+        return () => {
+            if (estadoLoteChartRef.current && estadoLoteChartRef.current.chartInstance) {
+                estadoLoteChartRef.current.chartInstance.destroy();
+            }
+            setEstadoLoteImage(null);
+        };
+    }, [estadoLoteData]);
+    
+    
+    
 
 
 
@@ -373,6 +429,15 @@ const GraficasLote = ({ idLote }) => {
         ],
     };
 
+
+    useEffect(() => {
+        return () => {
+            productionChartRef.current = null;
+            classificationChartRef.current = null;
+            estadoLoteChartRef.current = null;
+        };
+    }, []);
+
     const handlePageClickProd = (pageNumber) => setCurrentPageProd(pageNumber);
     const handlePageClickClass = (pageNumber) => setCurrentPageClass(pageNumber);
     const handlePageClickEstado = (pageNumber) => setCurrentPageEstado(pageNumber);
@@ -409,6 +474,7 @@ const GraficasLote = ({ idLote }) => {
                 <div className="bg-white p-4 rounded-lg shadow-lg border border-yellow-300">
                     <h2 className="text-lg font-bold mb-4 text-center text-yellow-800">Producción</h2>
                     <div className="w-full h-64">
+                        {/*<Line ref={productionChartRef} data={productionChart} options={{ maintainAspectRatio: false }} />*/}
                         <Line ref={productionChartRef} data={productionChart} options={{ maintainAspectRatio: false }} />
                     </div>
                     <div className="flex justify-center mt-4">
@@ -504,7 +570,7 @@ const GraficasLote = ({ idLote }) => {
                             <tbody>
                                 {paginatedClassificationData.map((d, index) => (
                                     <tr key={index} className="bg-white border-b hover:bg-red-50">
-                                        <td className="px-6 py-4 text-center">{d.fechaRegistroP}</td>
+                                        <td className="px-6 py-4 text-center">{d.fechaRegistro}</td>
                                         <td className="px-6 py-4 text-center">{d.tamano}</td>
                                         <td className="px-6 py-4 text-center">{d.totalUnitaria}</td>
                                     </tr>
