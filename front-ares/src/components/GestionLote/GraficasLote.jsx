@@ -88,7 +88,7 @@ const PDFFooter = () => (
 );
 
 // Componente de PDF para Producción
-const ProductionPDFDocument = ({ productionData, productionImage }) => (
+const ProductionPDFDocument = ({ productionData, productionImage, period }) => (
     <Document>
         <Page style={styles.page}>
             <PDFHeader title="Registro de Producción" />
@@ -103,9 +103,9 @@ const ProductionPDFDocument = ({ productionData, productionImage }) => (
                     </View>
                     {productionData.map((d, index) => (
                         <View key={index} style={styles.tableRow}>
-                            <Text style={styles.tableCol}>{d.fechaRegistro}</Text>
-                            <Text style={styles.tableCol}>{d.produccion}</Text>
-                            <Text style={styles.tableCol}>{d.defectuosos}</Text>
+                            <Text style={styles.tableCol}><Text>{period === 'semanal' ? `Semana ${d.fechaRegistro} (${d.fechaInicio} - ${d.fechaFin})` : d.fechaRegistro}</Text></Text>
+                            <Text style={styles.tableCol}><Text>{d.produccion}</Text></Text>
+                            <Text style={styles.tableCol}><Text>{d.defectuosos}</Text></Text>
                         </View>
                     ))}
                 </View>
@@ -114,6 +114,7 @@ const ProductionPDFDocument = ({ productionData, productionImage }) => (
         </Page>
     </Document>
 );
+
 
 // Componente de PDF para Clasificación
 const ClassificationPDFDocument = ({ classificationData, classificationImage, period }) => (
@@ -130,17 +131,12 @@ const ClassificationPDFDocument = ({ classificationData, classificationImage, pe
                         <Text style={styles.tableColHeader}>Total Unitaria</Text>
                     </View>
                     {classificationData.map((d, index) => (
-                        <tr key={index} className="bg-white border-b hover:bg-red-50">
-                            <td className="px-6 py-4 text-center">
-                                {period === 'semanal' && d.fechaInicio && d.fechaFin
-                                    ? `Semana ${d.fechaRegistro} (${d.fechaInicio} - ${d.fechaFin})`
-                                    : d.fechaRegistro}
-                            </td>
-                            <td className="px-6 py-4 text-center">{d.tamano}</td>
-                            <td className="px-6 py-4 text-center">{d.totalUnitaria}</td>
-                        </tr>
+                        <View key={index} style={styles.tableRow}>
+                            <Text style={styles.tableCol}><Text>{period === 'semanal' ? `Semana ${d.fechaRegistro} (${d.fechaInicio} - ${d.fechaFin})` : d.fechaRegistro}</Text></Text>
+                            <Text style={styles.tableCol}><Text>{d.tamano}</Text></Text>
+                            <Text style={styles.tableCol}><Text>{d.totalUnitaria}</Text></Text>
+                        </View>
                     ))}
-
                 </View>
             </View>
             <PDFFooter />
@@ -153,10 +149,9 @@ const ClassificationPDFDocument = ({ classificationData, classificationImage, pe
 const EstadoLotePDFDocument = ({ estadoLoteData, estadoLoteImage }) => (
     <Document>
         <Page style={styles.page}>
-            <PDFHeader title="Registro de Estado del Lote" />
             <View style={styles.section}>
                 <Text style={styles.title}>Estado de las Gallinas</Text>
-                {estadoLoteImage && <Image src={estadoLoteImage} style={styles.image} />}
+                {estadoLoteImage && <Image src={estadoLoteImage} />}
                 <View style={styles.table}>
                     <View style={styles.tableRow}>
                         <Text style={styles.tableColHeader}>Fecha</Text>
@@ -165,20 +160,19 @@ const EstadoLotePDFDocument = ({ estadoLoteData, estadoLoteImage }) => (
                     </View>
                     {estadoLoteData.map((d, index) => (
                         <View key={index} style={styles.tableRow}>
-                            <Text style={styles.tableCol}>{d.fechaRegistro}</Text>
+                            <Text style={styles.tableCol}>{d.fechaRegistro.split('T')[0]}</Text> {/* Solo mostrar YYYY-MM-DD */}
                             <Text style={styles.tableCol}>{d.cantidadG}</Text>
                             <Text style={styles.tableCol}>{d.bajas}</Text>
                         </View>
                     ))}
                 </View>
             </View>
-            <PDFFooter />
         </Page>
     </Document>
 );
 
 // Componente de PDF combinado para todas las secciones
-const CombinedPDFDocument = ({ productionData, classificationData, estadoLoteData, productionImage, classificationImage, estadoLoteImage }) => (
+const CombinedPDFDocument = ({ productionData, classificationData, estadoLoteData, productionImage, classificationImage, estadoLoteImage, period }) => (
     <Document>
         <Page style={styles.page}>
             <PDFHeader title="Reporte General de Producción, Clasificación y Estado del Lote" />
@@ -193,11 +187,16 @@ const CombinedPDFDocument = ({ productionData, classificationData, estadoLoteDat
                     </View>
                     {productionData.map((d, index) => (
                         <View key={index} style={styles.tableRow}>
-                            <Text style={styles.tableCol}>{d.fechaRegistro}</Text>
+                            <Text style={styles.tableCol}>
+                                {period === 'semanal'
+                                    ? `${d.fechaRegistro} (${d.fechaInicio} - ${d.fechaFin})`
+                                    : d.fechaRegistro}
+                            </Text>
                             <Text style={styles.tableCol}>{d.produccion}</Text>
                             <Text style={styles.tableCol}>{d.defectuosos}</Text>
                         </View>
                     ))}
+
                 </View>
             </View>
 
@@ -263,22 +262,6 @@ const GraficasLote = ({ idLote }) => {
     const classificationChartRef = useRef(null);
     const estadoLoteChartRef = useRef(null);
 
-    {/*useEffect(() => {
-        if (idLote) {
-            axiosInstance.get(`/api/dashboard/produccion/${idLote}/${period}`)
-                .then(response => setProductionData(response.data))
-                .catch(error => console.error('Error fetching production data:', error));
-
-            axiosInstance.get(`/api/dashboard/clasificacion/${idLote}/${period}`)
-                .then(response => setClassificationData(response.data))
-                .catch(error => console.error('Error fetching classification data:', error));
-
-            axiosInstance.get(`/getestadolote?idLote=${idLote}`)
-                .then(response => setEstadoLoteData(response.data))
-                .catch(error => console.error('Error fetching estado lote data:', error));
-        }
-    }, [idLote, period]);*/}
-
     // Función para obtener el rango de fechas de una semana a partir del número de semana y el año
     function getStartAndEndOfWeek(week, year) {
         const firstDayOfYear = new Date(year, 0, 1);
@@ -290,31 +273,40 @@ const GraficasLote = ({ idLote }) => {
     }
 
 
+
+
+    // Consolidar las llamadas a Axios en un solo useEffect
     useEffect(() => {
         if (idLote) {
+            // Llamada a Producción
             axiosInstance.get(`/api/dashboard/produccion/${idLote}/${period}`)
                 .then(response => {
-                    setProductionData(response.data || []); // Asegúrate de que siempre se asigne un arreglo
+                    const productionData = response.data || [];
+                    console.log('Datos de producción recibidos:', productionData);  // Verifica si los datos tienen `semana` y `anio`
+                    setProductionData(period === 'semanal' ? processProductionData(productionData) : productionData);
                 })
                 .catch(error => console.error('Error fetching production data:', error));
 
+            // Llamada a Clasificación
             axiosInstance.get(`/api/dashboard/clasificacion/${idLote}/${period}`)
                 .then(response => {
-                    setClassificationData(response.data || []); // Manejo seguro del retorno de datos
-                    console.log(response.data);
+                    const classificationData = response.data || [];
+                    setClassificationData(period === 'semanal' ? processClassificationData(classificationData) : classificationData);
                 })
                 .catch(error => console.error('Error fetching classification data:', error));
 
-            axiosInstance.get(`/getestadolote?idLote=${idLote}`)
+            // Llamada a Estado del Lote
+            axiosInstance.get(`/api/dashboard/estadolote/${idLote}/${period}`)
                 .then(response => {
-                    setEstadoLoteData(response.data || []); // Asegúrate de asignar un arreglo
+                    const estadoLoteData = response.data || [];
+                    setEstadoLoteData(period === 'semanal' ? processEstadoLoteData(estadoLoteData) : estadoLoteData);
                 })
                 .catch(error => console.error('Error fetching estado lote data:', error));
+
         }
     }, [idLote, period]);
 
-
-
+    // Procesamiento de las imágenes para los gráficos
     useEffect(() => {
         if (productionChartRef.current && productionData.length > 0) {
             requestAnimationFrame(() => {
@@ -334,43 +326,22 @@ const GraficasLote = ({ idLote }) => {
     }, [productionData]);
 
     useEffect(() => {
-        if (idLote) {
-            axiosInstance.get(`/api/dashboard/clasificacion/${idLote}/${period}`)
-                .then(response => {
-                    const classificationData = response.data || [];
-
-                    if (period === 'semanal') {
-                        // Procesar los datos para añadir las fechas de inicio y fin
-                        const processedData = classificationData.map(item => {
-                            const match = item.fechaRegistro.match(/Semana (\d+) del (\d+)/);
-
-                            if (match) {
-                                const weekNum = parseInt(match[1]);
-                                const year = parseInt(match[2]);
-                                const { startOfWeek, endOfWeek } = getStartAndEndOfWeek(weekNum, year);
-
-                                return {
-                                    ...item,
-                                    fechaInicio: startOfWeek.toISOString().split('T')[0], // YYYY-MM-DD
-                                    fechaFin: endOfWeek.toISOString().split('T')[0], // YYYY-MM-DD
-                                };
-                            }
-                            return item;  // Si no es semanal, regresa el item sin cambios
-                        });
-
-                        setClassificationData(processedData);
-                    } else {
-                        setClassificationData(classificationData);
-                    }
-                })
-                .catch(error => console.error('Error fetching classification data:', error));
+        if (classificationChartRef.current && classificationData.length > 0) {
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    const classificationImageBase64 = classificationChartRef.current.toBase64Image();
+                    setClassificationImage(classificationImageBase64);
+                }, 1000);
+            });
         }
-    }, [idLote, period]);
 
-
-
-
-
+        return () => {
+            if (classificationChartRef.current && classificationChartRef.current.chartInstance) {
+                classificationChartRef.current.chartInstance.destroy();
+            }
+            setClassificationImage(null);
+        };
+    }, [classificationData]);
 
     useEffect(() => {
         if (estadoLoteChartRef.current && estadoLoteData.length > 0) {
@@ -389,6 +360,109 @@ const GraficasLote = ({ idLote }) => {
             setEstadoLoteImage(null);
         };
     }, [estadoLoteData]);
+
+    // Funciones de procesamiento de datos semanales
+    function processProductionData(productionData) {
+        return productionData.map(item => {
+            // Agrega el año de forma manual o ajusta aquí el año si es diferente
+            const year = 2024;  // Asumimos que las semanas corresponden al año 2024
+
+            // Verifica si el campo fechaRegistro tiene el formato de "Semana X"
+            const match = item.fechaRegistro.match(/Semana (\d+)/);
+
+            if (match) {
+                const weekNum = parseInt(match[1]);
+
+                // Obtén el rango de fechas para esa semana
+                const { startOfWeek, endOfWeek } = getStartAndEndOfWeek(weekNum, year);
+
+                // Asegúrate de que startOfWeek y endOfWeek estén definidos
+                if (startOfWeek && endOfWeek) {
+                    return {
+                        ...item,
+                        fechaInicio: startOfWeek.toISOString().split('T')[0],
+                        fechaFin: endOfWeek.toISOString().split('T')[0],
+                    };
+                }
+            }
+
+            // Si no coincide el formato o hay un error, devuelve los datos originales sin cambios
+            return {
+                ...item,
+                fechaInicio: 'Fecha no disponible',
+                fechaFin: 'Fecha no disponible',
+            };
+        });
+    }
+
+    function processEstadoLoteData(estadoLoteData) {
+        return estadoLoteData.map(item => {
+            if (period === 'semanal') {
+                // Si es semanal, ya viene en formato "Semana X"
+                const year = 2024;  // Ajusta según sea necesario
+                const match = item.fechaRegistro.match(/Semana (\d+)/);
+                if (match) {
+                    const weekNum = parseInt(match[1]);
+                    const { startOfWeek, endOfWeek } = getStartAndEndOfWeek(weekNum, year);
+                    return {
+                        ...item,
+                        fechaInicio: startOfWeek.toISOString().split('T')[0],
+                        fechaFin: endOfWeek.toISOString().split('T')[0]
+                    };
+                }
+            } else if (period === 'mensual') {
+                // Si es mensual, ya viene en formato "YYYY-MM"
+                return {
+                    ...item,
+                    fechaInicio: `${item.fechaRegistro}-01`,  // Primer día del mes
+                    fechaFin: `${item.fechaRegistro}-28`     // Día 28 como fin del mes (ajústalo según sea necesario)
+                };
+            } else {
+                // Si es diario, usamos la fecha tal cual
+                return {
+                    ...item,
+                    fechaInicio: item.fechaRegistro,
+                    fechaFin: item.fechaRegistro
+                };
+            }
+            return item;  // Si no es ningún caso, devolvemos el item tal cual
+        });
+    }
+
+
+    function processClassificationData(classificationData) {
+        return classificationData.map(item => {
+            if (period === 'semanal') {
+                // Si es semanal, ya viene en formato "Semana X"
+                const year = 2024;  // Ajusta según sea necesario
+                const match = item.fechaRegistro.match(/Semana (\d+)/);
+                if (match) {
+                    const weekNum = parseInt(match[1]);
+                    const { startOfWeek, endOfWeek } = getStartAndEndOfWeek(weekNum, year);
+                    return {
+                        ...item,
+                        fechaInicio: startOfWeek.toISOString().split('T')[0],
+                        fechaFin: endOfWeek.toISOString().split('T')[0]
+                    };
+                }
+            } else if (period === 'mensual') {
+                // Si es mensual, ya viene en formato "YYYY-MM"
+                return {
+                    ...item,
+                    fechaInicio: `${item.fechaRegistro}-01`,  // Primer día del mes
+                    fechaFin: `${item.fechaRegistro}-28`     // Día 28 como fin del mes (ajústalo según sea necesario)
+                };
+            } else {
+                // Si es diario, usamos la fecha tal cual
+                return {
+                    ...item,
+                    fechaInicio: item.fechaRegistro,
+                    fechaFin: item.fechaRegistro
+                };
+            }
+            return item;
+        });
+    }
 
 
 
@@ -415,7 +489,52 @@ const GraficasLote = ({ idLote }) => {
                 tension: 0.4,
             },
         ],
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Fecha',
+                    },
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Cantidad',
+                    },
+                },
+            },
+            plugins: {
+                zoom: {
+                    pan: {
+                        enabled: true, // Habilita el paneo (arrastre)
+                        mode: 'x', // Paneo solo en el eje X
+                        modifierKey: 'ctrl', // Habilitar paneo solo cuando se presiona la tecla Ctrl (opcional)
+                    },
+                    zoom: {
+                        wheel: {
+                            enabled: true, // Habilita el zoom con la rueda del mouse
+                        },
+                        pinch: {
+                            enabled: true, // Habilita el zoom táctil
+                        },
+                        mode: 'x', // Solo permite zoom en el eje X
+                    },
+                },
+            },
+            layout: {
+                padding: {
+                    left: 0,
+                    right: 0,
+                    top: 10,
+                    bottom: 10,
+                },
+            },
+        },
     };
+
 
     const processClassificationChartData = () => {
         const labels = [...new Set(classificationData.map(d => d.fechaRegistro))]; // Extraer etiquetas únicas para las fechas
@@ -444,13 +563,59 @@ const GraficasLote = ({ idLote }) => {
         return {
             labels,
             datasets,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Fecha',
+                        },
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Total Unitaria',
+                        },
+                    },
+                },
+                plugins: {
+                    zoom: {
+                        pan: {
+                            enabled: true, // Habilitar paneo (arrastre)
+                            mode: 'x', // Paneo en el eje X
+                            modifierKey: 'ctrl', // Habilitar paneo solo cuando se presione la tecla Ctrl (opcional)
+                        },
+                        zoom: {
+                            wheel: {
+                                enabled: true, // Habilitar zoom con la rueda del mouse
+                            },
+                            pinch: {
+                                enabled: true, // Habilitar zoom táctil
+                            },
+                            mode: 'x', // Solo permite zoom en el eje X
+                        },
+                    },
+                },
+                layout: {
+                    padding: {
+                        left: 0,
+                        right: 0,
+                        top: 10,
+                        bottom: 10,
+                    },
+                },
+            },
         };
     };
+
+
 
     const classificationChart = processClassificationChartData();
 
     const estadoLoteChart = {
-        labels: estadoLoteData.map(d => d.fechaRegistro),
+        labels: estadoLoteData.map(d => d.fechaRegistro.split('T')[0]), // Solo muestra la fecha sin la hora
         datasets: [
             {
                 label: 'Cantidad de Gallinas',
@@ -469,7 +634,52 @@ const GraficasLote = ({ idLote }) => {
                 tension: 0.4,
             },
         ],
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Fecha',
+                    },
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Cantidad de Gallinas',
+                    },
+                },
+            },
+            plugins: {
+                zoom: {
+                    pan: {
+                        enabled: true, // Habilita el paneo (arrastre)
+                        mode: 'x', // Paneo solo en el eje X
+                        modifierKey: 'ctrl', // Paneo con tecla Ctrl (opcional)
+                    },
+                    zoom: {
+                        wheel: {
+                            enabled: true, // Habilita el zoom con la rueda del mouse
+                        },
+                        pinch: {
+                            enabled: true, // Habilita el zoom táctil
+                        },
+                        mode: 'x', // Solo permite zoom en el eje X
+                    },
+                },
+            },
+            layout: {
+                padding: {
+                    left: 0,
+                    right: 0,
+                    top: 10,
+                    bottom: 10,
+                },
+            },
+        },
     };
+
 
 
     useEffect(() => {
@@ -511,14 +721,14 @@ const GraficasLote = ({ idLote }) => {
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
                 {/* Gráfica de Producción */}
                 <div className="bg-white p-4 rounded-lg shadow-lg border border-yellow-300">
                     <h2 className="text-lg font-bold mb-4 text-center text-yellow-800">Producción</h2>
-                    <div className="w-full h-64">
-                        {/*<Line ref={productionChartRef} data={productionChart} options={{ maintainAspectRatio: false }} />*/}
-                        <Line ref={productionChartRef} data={productionChart} options={{ maintainAspectRatio: false }} />
+                    <div className="w-full h-96">
+                        <Line ref={productionChartRef} data={productionChart} options={productionChart.options} />
                     </div>
+
                     <div className="flex justify-center mt-4">
                         <PDFDownloadLink
                             document={<ProductionPDFDocument productionData={productionData} productionImage={productionImage} />}
@@ -530,7 +740,6 @@ const GraficasLote = ({ idLote }) => {
                                 <FaDownload className="mr-2" /> Descargar PDF de Producción
                             </>)}
                         </PDFDownloadLink>
-
                     </div>
                 </div>
 
@@ -549,12 +758,15 @@ const GraficasLote = ({ idLote }) => {
                             <tbody>
                                 {paginatedProductionData.map((d, index) => (
                                     <tr key={index} className="bg-white border-b hover:bg-orange-50">
-                                        <td className="px-6 py-4 text-center">{d.fechaRegistro}</td>
+                                        <td className="px-6 py-4 text-center">
+                                            {period === 'semanal' ? ` ${d.fechaRegistro} (${d.fechaInicio} - ${d.fechaFin})` : d.fechaRegistro}
+                                        </td>
                                         <td className="px-6 py-4 text-center">{d.produccion}</td>
                                         <td className="px-6 py-4 text-center">{d.defectuosos}</td>
                                     </tr>
                                 ))}
                             </tbody>
+
                         </table>
                     </div>
                     <div className="flex justify-between items-center mt-4">
@@ -581,9 +793,10 @@ const GraficasLote = ({ idLote }) => {
                 {/* Gráfica de Clasificación */}
                 <div className="bg-white p-4 rounded-lg shadow-lg border border-green-300">
                     <h2 className="text-lg font-bold mb-4 text-center text-green-800">Clasificación</h2>
-                    <div className="w-full h-64">
-                        <Line ref={classificationChartRef} data={classificationChart} options={{ maintainAspectRatio: false }} />
+                    <div className="w-full h-96">
+                        <Line ref={classificationChartRef} data={classificationChart} options={classificationChart.options} />
                     </div>
+
                     <div className="flex justify-center mt-4">
                         <PDFDownloadLink
                             document={<ClassificationPDFDocument classificationData={classificationData} classificationImage={classificationImage} />}
@@ -597,7 +810,6 @@ const GraficasLote = ({ idLote }) => {
                         </PDFDownloadLink>
                     </div>
                 </div>
-
 
                 {/* Tabla de Clasificación */}
                 <div className="bg-white p-4 rounded-lg shadow-lg border border-red-300 mt-4">
@@ -615,7 +827,7 @@ const GraficasLote = ({ idLote }) => {
                                 {paginatedClassificationData.map((d, index) => (
                                     <tr key={index} className="bg-white border-b hover:bg-red-50">
                                         <td className="px-6 py-4 text-center">
-                                            {period === 'semanal' ? `Semana ${d.fechaRegistro} (${d.fechaInicio} - ${d.fechaFin})` : d.fechaRegistro}
+                                            {period === 'semanal' ? ` ${d.fechaRegistro} (${d.fechaInicio} - ${d.fechaFin})` : d.fechaRegistro}
                                         </td>
                                         <td className="px-6 py-4 text-center">{d.tamano}</td>
                                         <td className="px-6 py-4 text-center">{d.totalUnitaria}</td>
@@ -646,13 +858,13 @@ const GraficasLote = ({ idLote }) => {
                     </div>
                 </div>
 
-
                 {/* Gráfica de Estado del Lote */}
                 <div className="bg-white p-4 rounded-lg shadow-lg border border-brown-300">
                     <h2 className="text-lg font-bold mb-4 text-center text-brown-800">Estado del Lote</h2>
-                    <div className="w-full h-64">
-                        <Line ref={estadoLoteChartRef} data={estadoLoteChart} options={{ maintainAspectRatio: false }} />
+                    <div className="w-full h-96">
+                        <Line ref={estadoLoteChartRef} data={estadoLoteChart} options={estadoLoteChart.options} />
                     </div>
+
                     <div className="flex justify-center mt-4">
                         <PDFDownloadLink
                             document={<EstadoLotePDFDocument estadoLoteData={estadoLoteData} estadoLoteImage={estadoLoteImage} />}
@@ -682,7 +894,9 @@ const GraficasLote = ({ idLote }) => {
                             <tbody>
                                 {paginatedEstadoLoteData.map((d, index) => (
                                     <tr key={index} className="bg-white border-b hover:bg-yellow-50">
-                                        <td className="px-6 py-4 text-center">{d.fechaRegistro}</td>
+                                        <td className="px-6 py-4 text-center">
+                                            {period === 'semanal' ? ` ${d.fechaRegistro} (${d.fechaInicio} - ${d.fechaFin})` : d.fechaRegistro}
+                                        </td>
                                         <td className="px-6 py-4 text-center">{d.cantidadG}</td>
                                         <td className="px-6 py-4 text-center">{d.bajas}</td>
                                     </tr>
@@ -725,7 +939,7 @@ const GraficasLote = ({ idLote }) => {
                         />
                     }
                     fileName="reporte_completo.pdf"
-                    className="bg-gradient-to-r from-brown-600 to-brown-700 text-white px-4 py-2 rounded-lg hover:from-brown-500 hover:to-brown-600 transition duration-200 flex items-center"
+                    className="bg-black from-brown-600 to-brown-700 text-white px-4 py-2 rounded-lg hover:from-brown-500 hover:to-brown-600 transition duration-200 flex items-center"
                     disabled={!productionImage || !classificationImage || !estadoLoteImage}
                 >
                     {({ loading }) => (loading ? 'Generando PDF...' : <>
@@ -734,7 +948,7 @@ const GraficasLote = ({ idLote }) => {
                 </PDFDownloadLink>
             </div>
         </div>
-    );
+    )
 
 };
 
