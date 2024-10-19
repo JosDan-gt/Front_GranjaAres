@@ -33,8 +33,11 @@ const VentasActivas = () => {
   const fetchVentasConDetalles = async () => {
     try {
       const response = await axiosInstance.get('/api/Ventas/VentasActivas');
-      const ventasData = response.data;
+      let ventasData = response.data;
       const detallesData = {};
+
+      // Ordenar las ventas por fecha en orden descendente (más reciente primero)
+      ventasData = ventasData.sort((a, b) => new Date(b.fechaVenta) - new Date(a.fechaVenta));
 
       setOriginalVentas(ventasData);
       setVentas(ventasData);
@@ -51,6 +54,7 @@ const VentasActivas = () => {
       console.error('Error fetching ventas activas y detalles:', error);
     }
   };
+
 
   // Obtener clientes y productos
   const fetchClientesYProductos = async () => {
