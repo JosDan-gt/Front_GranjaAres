@@ -15,7 +15,7 @@ export const getRolesFromToken = () => {
     
     return decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || [];
   } catch (error) {
-    console.error("Error decoding token:", error);
+    console.error("Error en decodificar token:", error);
     return [];
   }
 };

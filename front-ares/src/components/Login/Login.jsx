@@ -19,7 +19,7 @@ function Login() {
     e.preventDefault();
 
     try {
-      const response = await axios.post('https://backend20farmares-production.up.railway.app/api/Auth/login', {
+      const response = await axios.post('https://localhost:7272/api/Auth/login', {
         username,
         password,
       });

@@ -2,7 +2,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const axiosInstance = axios.create({
-  baseURL: 'https://backend20farmares-production.up.railway.app'
+  baseURL: 'https://localhost:7272'
 });
 
 // Interceptor para añadir el token a las solicitudes
