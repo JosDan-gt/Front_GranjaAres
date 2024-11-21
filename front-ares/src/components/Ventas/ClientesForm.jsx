@@ -86,7 +86,7 @@ const ClienteForm = ({ onCancel, onSubmit, cliente }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md max-w-full mb-4 mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Nombre del Cliente */}
         <div className="col-span-1">
@@ -146,7 +146,7 @@ const ClienteForm = ({ onCancel, onSubmit, cliente }) => {
       </div>
   
       {/* Acciones del Formulario */}
-      <div className="flex flex-col sm:flex-row justify-between mt-6 space-y-4 sm:space-y-0 sm:space-x-4">
+      <div className="flex flex-col sm:flex-row justify-end mt-6 space-y-4 sm:space-y-0 sm:space-x-4">
         <button
           type="button"
           onClick={onCancel}

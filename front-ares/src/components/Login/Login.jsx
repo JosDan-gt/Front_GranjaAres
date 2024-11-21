@@ -6,17 +6,22 @@ import Cookies from 'js-cookie';
 import { AuthContext } from '../Context/AuthContext'; // Asegúrate de que este path es correcto
 import fondoLogin from '../Img/FallGuys.jpg';
 import LogoGLA from '../Img/LogoGLA.png';
+import { FaSpinner } from 'react-icons/fa';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const { setIsAuthenticated, verifyToken } = useContext(AuthContext); // Aquí obtenemos setIsAuthenticated
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    setLoading(true);
+    setError('');
 
     try {
       const response = await axios.post('https://localhost:7272/api/Auth/login', {
@@ -43,6 +48,8 @@ function Login() {
     } catch (err) {
       console.error('Error en la solicitud:', err);
       setError('Nombre de usuario o contraseña incorrectos. Inténtalo de nuevo.');
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -96,8 +103,16 @@ function Login() {
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-300"
+            disabled={loading} //desabilita el boton si esta cargando
           >
-            Iniciar Sesión
+             {loading ? (
+              <div className="flex justify-center items-center">
+                <FaSpinner className="animate-spin mr-2" />
+                Iniciando Sesión
+              </div>
+            ) : (
+              'Iniciar Sesión'
+            )}
           </button>
         </form>
       </div>

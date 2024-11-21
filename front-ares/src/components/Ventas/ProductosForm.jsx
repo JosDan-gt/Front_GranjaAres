@@ -78,7 +78,7 @@ const ProductoForm = ({ onCancel, onSubmit, producto }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md max-w-full mb-4 mx-auto">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {/* Nombre del Producto */}
         <div>

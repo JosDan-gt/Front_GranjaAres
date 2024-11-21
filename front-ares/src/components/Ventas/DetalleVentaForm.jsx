@@ -75,15 +75,15 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
   };
 
   const handleRemoveDetail = (index) => {
-    // Validar que no se elimine el último detalle
-    if (formData.detallesVenta.length <= 1) {
-      handleError('No se puede eliminar el último detalle de venta.');
-      return;
-    }
-
+  if (formData.detallesVenta.length > 1) {
     const newDetallesVenta = formData.detallesVenta.filter((_, i) => i !== index);
     setFormData({ ...formData, detallesVenta: newDetallesVenta });
-  };
+  } else {
+    // Mostrar un mensaje de advertencia o manejar el caso de intentar eliminar el último detalle
+    alert('No se puede eliminar el último detalle de la venta.');
+  }
+};
+
 
 
   const handleClearForm = () => {
@@ -176,7 +176,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
 
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-7 bg-white p-6 rounded-lg shadow-sm max-w-full mx-auto">
       {/* Cliente y Fecha de Venta */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
@@ -251,7 +251,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
         </table>
       </div>
 
-      {/* Detalles de Venta */}
+      
       {/* Detalles de Venta */}
       <div className="space-y-4">
         {formData.detallesVenta.map((detalle, index) => (
@@ -353,7 +353,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
           </div>
         ))}
 
-        {/* Botón para agregar un nuevo detalle */}
+        
         {/* Botón para agregar un nuevo detalle */}
         {!isEditing && (
           <button
@@ -369,7 +369,7 @@ const DetalleVentaForm = ({ venta, isEditing, onCancel, onSubmit }) => {
 
 
       {/* Acciones del Formulario */}
-      <div className="flex flex-col sm:flex-row justify-between mt-6 space-y-4 sm:space-y-0 sm:space-x-4">
+      <div className="flex flex-col sm:flex-row justify-end mt-6 space-y-2 sm:space-y-0 sm:space-x-4">
         {!isEditing && (
           <button
             type="button"

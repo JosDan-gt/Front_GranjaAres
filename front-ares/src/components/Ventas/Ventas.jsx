@@ -98,11 +98,11 @@ const VentasActivas = () => {
     setVentas(filteredVentas);
   };
 
-  const handleAdd = () => {
-    setVentaSeleccionada(null);
-    setIsEditing(false);
-    setMostrarFormulario(true);
-  };
+  // const handleAdd = () => {
+  //   setVentaSeleccionada(null);
+  //   setIsEditing(false);
+  //   setMostrarFormulario(true);
+  // };
 
   const handleEdit = (venta) => {
     const fechaISO = venta.fechaVenta ? new Date(venta.fechaVenta).toISOString().split('T')[0] : '';
@@ -118,7 +118,9 @@ const VentasActivas = () => {
   };
 
 
+
   const handleFormCancel = () => {
+    setIsEditing(false);
     setVentaSeleccionada(null);
     setMostrarFormulario(false);
   };
@@ -211,8 +213,18 @@ const VentasActivas = () => {
             </>
           ) : (
             <>
-              <FaPlus className="inline-block mr-2" /> {/* Icono de agregar */}
-              Agregar Nueva Venta
+              {isEditing ? (
+                <>
+                  <FaPlus className="inline-block mr-2" />
+                  Mostrar Formulario
+                </>
+              ) : (
+                <>
+                  <FaPlus className="inline-block mr-2" />
+                  Agregar Nueva Venta
+                </>
+              )}
+
             </>
           )}
         </button>

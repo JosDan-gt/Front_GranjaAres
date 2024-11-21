@@ -152,7 +152,7 @@ const Dashboard = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
         <div className="bg-white shadow-lg rounded-lg p-6 hover:shadow-xl transition-shadow">
           <ProduccionGrafica idLote={loteActual} period={period} />
         </div>
